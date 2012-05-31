@@ -12,7 +12,6 @@
     },
     "id":                 "optin",
     "personalportal":     false,
-    "showinsakaigoodies": false,
     "type":               "sakai",
     "url":                "/devwidgets/optin/optin.html",
     "userdashboard":      false,
