@@ -40,7 +40,7 @@ define(["config/config", "config/env"], function(config) {
     config.defaultprivstructure["${refid}0"]["${refid}5"].dashboard.columns.column3.push({
         "uid": "id63754673110789",
         "visible": "block",
-        "name": "mylinks"
+        "name": "quicklinks"
     });
     
     

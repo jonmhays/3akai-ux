@@ -1,0 +1,17 @@
+{
+    "deletable":true,
+    "enabled":true,
+    "hasSettings":false,
+    "i18n": { 
+        "default": { 
+            "bundle": "/devwidgets/quicklinks/bundles/default.properties", 
+            "description":"Quick Links: a list of your favorite websites", 
+            "name":"Quick Links" 
+        } 
+    },
+    "id":"quicklinks",
+    "multipleinstance": false,
+    "personalportal":true,
+    "type":"sakai",
+    "url":"/devwidgets/quicklinks/quicklinks.html"
+}

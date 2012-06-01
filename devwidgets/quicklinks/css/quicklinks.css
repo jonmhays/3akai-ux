@@ -18,40 +18,40 @@
 
 /* Main */
 
-.mylinks .s3d-contentpage-title {
+.quicklinks .s3d-contentpage-title {
     margin-bottom: 0;
 }
 
-.mylinks .s3d-widget-footer {
+.quicklinks .s3d-widget-footer {
     margin-top: 0;
 }
 
-.mylinks_widget {
+.quicklinks_widget {
     position: relative;
 }
 
 /* Accordion */
-.mylinks_widget .link_list #accordion {
+.quicklinks_widget .link_list #accordion {
     padding: 0;
 }
 
-.mylinks_widget .link_list #accordion .accordion_pane {
+.quicklinks_widget .link_list #accordion .accordion_pane {
 }
 
-.mylinks_widget .link_list .accordion_content {
+.quicklinks_widget .link_list .accordion_content {
     margin: 0;
     padding: 0;
     display: none;
     height: 146px;
 }
 
-.mylinks_widget ul {
+.quicklinks_widget ul {
     list-style: none;
     margin: 0;
     padding: 0 0 2px 0;
 }
 
-.mylinks_widget .section_label {
+.quicklinks_widget .section_label {
     display: block;
     font-weight: bold;
     border-bottom: 2px solid #D5DBDF;
@@ -63,12 +63,12 @@
 }
 
 
-.mylinks_widget .accordion_open .section_label {
+.quicklinks_widget .accordion_open .section_label {
     background-color: #D5DBDF;
     color: #222;
 }
 
-.mylinks_widget .link_list li {
+.quicklinks_widget .link_list li {
     display: block;
     position: relative;
     list-style: none;
@@ -80,35 +80,35 @@
     overflow: hidden;
 }
 
-.mylinks_widget .link_list .link_grid li {
+.quicklinks_widget .link_list .link_grid li {
     float: left;
     width: 48%;
 }
 
-.mylinks_widget .link_list li:hover {
+.quicklinks_widget .link_list li:hover {
     background-color: #EFEFEF;
 }
 
-.mylinks_widget .link_list .no_links_message {
+.quicklinks_widget .link_list .no_links_message {
     text-align: center;
     padding: 48px 8px 2px;
 }
 
-.mylinks_widget .link_list a {
+.quicklinks_widget .link_list a {
     display: block;
     padding: 5px 24px 5px 5px;
     outline: none;
 }
 
-.mylinks_widget .link_list a:hover {
+.quicklinks_widget .link_list a:hover {
     background: no-repeat 10px 3px;
     text-decoration: none;
 }
 
-.mylinks_widget .icon_button {
+.quicklinks_widget .icon_button {
     display: block;
     float: right;
-    background-image: url("/devwidgets/mylinks/images/edit-delete-icon-sprite.png");
+    background-image: url("/devwidgets/quicklinks/images/edit-delete-icon-sprite.png");
     background-color: #EFEFEF;
     border: 1px solid #CCC;
     border-radius: 3px;
@@ -116,7 +116,7 @@
     width: 16px;
 }
 
-.mylinks_widget .link_list li .edit_buttons {
+.quicklinks_widget .link_list li .edit_buttons {
     display: none;
     position: absolute;
     top: 0;
@@ -127,37 +127,37 @@
     border-radius: 3px;
 }
 
-.mylinks_widget .link_list li:hover .edit_buttons {
+.quicklinks_widget .link_list li:hover .edit_buttons {
     display: block;
 }
 
-.mylinks_widget .icon_button:hover {
+.quicklinks_widget .icon_button:hover {
     border: 1px solid #2683BC;
     background-color: white;
 }
 
-.mylinks_widget .delete_icon {
+.quicklinks_widget .delete_icon {
     background-position: 0 0;
 }
 
-.mylinks_widget .edit_icon {
+.quicklinks_widget .edit_icon {
     background-position: -20px 0;
     margin-right: 3px;
 }
 
 /* Edit mode */
 
-.mylinks_widget .link_list #accordion a {
+.quicklinks_widget .link_list #accordion a {
     text-decoration: none;
 }
 
-.mylinks_widget .link_list #accordion a:hover {
+.quicklinks_widget .link_list #accordion a:hover {
     text-decoration: underline;
 }
 
 /* Add/Edit Link Panel */
 
-.mylinks_widget .addedit_link_panel {
+.quicklinks_widget .addedit_link_panel {
     position: absolute;
     top: 2.4em;
     left: 4%;
@@ -173,42 +173,42 @@
     color: #424242;
 }
 
-.mylinks_widget .addedit_link_panel label {
+.quicklinks_widget .addedit_link_panel label {
     display: block;
     font-size: 0.9em;
     padding: 0.6em 0 0.3em;
 }
 
-.mylinks_widget .addedit_link_panel .link-form input {
+.quicklinks_widget .addedit_link_panel .link-form input {
     width: 98%;
     padding: 0.2em;
 }
 
-.mylinks_widget .addedit_link_panel .button-list {
+.quicklinks_widget .addedit_link_panel .button-list {
     float: right;
     padding: 9px 10px;
 }
 
-.mylinks_widget .s3d-link-button {
+.quicklinks_widget .s3d-link-button {
     margin-right: 6px;
 }
 
-.mylinks_widget label.error {
+.quicklinks_widget label.error {
     text-align: center;
 }
 
-.mylinks_widget .addedit_link_panel h2.s3d-addlink-header {
+.quicklinks_widget .addedit_link_panel h2.s3d-addlink-header {
     border-bottom: 1px dotted #D4D4D4;
     font-size: 1.1em;
     padding-bottom: 6px;
     margin: 9px 10px 2px;
 }
 
-.mylinks_widget .addedit_link_panel .link-form-element {
+.quicklinks_widget .addedit_link_panel .link-form-element {
     padding: 0 10px;
 }
 
-.mylinks_widget .s3d-button.disabled {
+.quicklinks_widget .s3d-button.disabled {
 	-moz-opacity: 0.4;
 	filter:alpha(opacity=40);
 	opacity: 0.4;

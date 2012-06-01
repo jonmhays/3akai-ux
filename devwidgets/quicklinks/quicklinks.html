@@ -1,0 +1,91 @@
+<!-- CSS -->
+<link rel="stylesheet" type="text/css" href="/devwidgets/quicklinks/css/quicklinks.css"/>
+
+<div class="quicklinks_widget calc_widget">
+
+        <!-- MAIN PANEL: List of links and categories. -->
+        <div class="link_list">
+            <div id="accordion">__MSG__LOADING__<!-- filled by trimpath, HACK: don't remove 'Loading...', it is here to make IE8 think that the outer widget div is not empty --></div>
+
+
+            <div id="accordion_template" style="display:none;"><!--
+
+                    {var idx = 0}
+                    {for section in sections}
+                            {if idx == activeSection}
+                            <div class="accordion_pane accordion_open" data-sectionid="${idx}">
+                            {else}
+                            <div class="accordion_pane" data-sectionid="${idx}">
+                            {/if}
+                                <div class="section_label">${section.label}</div>
+                                <div class="accordion_content {if section.isEditable} quicklinks_section{/if}">
+                                    <ul>
+
+                                    {var i = 0}
+
+                                        {for link in section.links}
+                                                {var popText = section.isEditable ? link.url : link.popup_description}
+                                            <li class="link featuredcontent_content featuredcontent_content_medium">
+                                                    <a href="${link.url}"
+                                                        id="${link.id}"
+                                                        target="_blank"
+                                                        class="s3d-widget-links"
+                                                        title="${popText}"
+                                                        data-gatrack="true">${link.name|default:"no name"}</a>
+                                                        {if section.isEditable}
+                                                            <div class="edit_buttons">
+                                                                <div class="icon_button delete_icon delete-mylink" data-eltindex="${i}"><span class="fl-offScreen-hidden">__MSG__DELETE_LINK__: ${link.name|default:"no name"}</div>
+                                                                <div class="icon_button edit_icon edit-mylink" data-eltindex="${i}"><span class="fl-offScreen-hidden">__MSG__EDIT_LINK__: ${link.name|default:"no name"}</div>
+                                                            </div>
+                                                        {/if}
+
+                                            </li>
+
+                                            {eval}
+                                                i = i + 1
+                                            {/eval}
+                                        {forelse}
+                                            <div class="no_links_message">__MSG__NO_LINKS_EXIST__</div>
+                                        {/for}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            {eval}
+                                idx = idx + 1
+                            {/eval}
+                    {/for}
+
+            --></div>
+
+
+        <!-- ADD/EDIT LINK PANEL: Allows user to add a new link or edit an existing link. -->
+        <div class="addedit_link_panel">
+                <form id="quicklinks-form" class="link-form" action="" method="post">
+                        <h2 class="addedit_link_panel_title s3d-addlink-header">__MSG__ADD_LINK__</h2>
+                        <div class="link-form-element">
+                                <label class="elm-label" for="link-title">__MSG__LINK_TITLE__:</label>
+                                <input type="text" id="link-title" class="save-link-keydown" name="link-title" aria-required="true" />
+                        </div>
+                        <div class="link-form-element">
+                                <label class="elm-label" for="link-url">__MSG__LINK_URL__:</label>
+                                <input type="text" id="link-url" name="link-url" aria-required="true" class="appendhttp url required save-link-keydown"/>
+                        </div>
+                </form>
+
+                <div class="button-list">
+                        <button id="cancel-button" class="s3d-link-button s3d-bold">__MSG__CANCEL__</button>
+                        <button id="addlink-button" class="s3d-button s3d-overlay-button save-link-click"><span class="s3d-button-inner s3d-button-link-2-state-inner">__MSG__ADD_LINK__</span></button>
+                        <button id="savelink-button" class="s3d-button s3d-overlay-button save-link-click"><span class="s3d-button-inner s3d-button-link-2-state-inner">__MSG__SAVE__</span></button>
+                </div>
+        </div>
+    </div>
+
+    <div class="s3d-widget-footer">
+            <button class="s3d-button s3d-overlay-button fl-force-right calc_dash_widget_btn calc_dash_widget_footer_btn" id="add-link-mode">__MSG__ADD_A_LINK__</button>
+    </div>
+
+</div>
+
+<!-- JAVASCRIPT -->
+<script type="text/javascript" src="/devwidgets/quicklinks/javascript/quicklinks.js"></script>

@@ -68,6 +68,17 @@ define(["jquery","sakai/sakai.api.core","config/config_custom"],
         google.doInit();
     });
 
+    /**
+     * Attempts to automatically apply tracking to links based upon data attributes.
+     *
+     * @param {Event} event trigged usually by a click event on an href.
+     * @return {undefined} tracked click event.
+     */
+    $(window).on('click', 'a[data-gatrack="true"]', function (event) {
+          google.recordOutboundLink(this, 'Outbound Links', $(this).attr('href'));
+          return false;
+    });
+
     return google;
 
 });
