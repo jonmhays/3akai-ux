@@ -22,11 +22,11 @@
 
 require(
     [
-        "jquery",
-        "sakai/sakai.api.core",
-        "/devwidgets/quicklinks/javascript/default-links.js"
+        'jquery',
+        'sakai/sakai.api.core',
+        '/devwidgets/quicklinks/javascript/default-links.js'
     ],
-    function ($, sakai, defaultLinks) {
+    function($, sakai, defaultLinks) {
 
    /**
      * @name sakai_global.quicklinks
@@ -40,24 +40,24 @@ require(
      * @version 0.0.1
      * @param {String} tuid Unique id of the widget
      */
-    sakai_global.quicklinks = function (tuid) {
+    sakai_global.quicklinks = function(tuid) {
 
         /** VARIABLES. **/
 
         /** DOM elements. Configurable but be aware of validator dependencies. */
         var $widgetContainer =  $('#' + tuid);
-        var $linkTitleInput = $('#link-title' , $widgetContainer); //value attached to validator fn, remember to match.
-        var $linkUrlInput = $('#link-url', $widgetContainer); //value attached to validator fn, remember to match.
-        var $saveLinkKeydownClass = $('.save-link-keydown', $widgetContainer);
-        var $addEditPanel = $('.addedit_link_panel', $widgetContainer);
-        var $addEditPanelTitle = $('.addedit_link_panel_title' , $widgetContainer);
-        var $saveLinkButton = $('#savelink-button', $widgetContainer);
-        var $addLinkButton = $('#addlink-button', $widgetContainer);
-        var $saveLinkClickClass = $('.save-link-click', $widgetContainer);
-        var $accordionContainer = $('#accordion' , $widgetContainer);
-        var $addLinkModeBtn = $('#add-link-mode' , $widgetContainer);
-        var $cancelButton = $('#cancel-button' , $widgetContainer);
-        var $myLinksFormId = $('#quicklinks-form' , $widgetContainer);
+        var $linkTitleInput = $('#quicklinks-link-title' , $widgetContainer); //value attached to validator fn, remember to match.
+        var $linkUrlInput = $('#quicklinks-link-url', $widgetContainer); //value attached to validator fn, remember to match.
+        var $saveLinkKeydownClass = $('.quicklinks-save-link-keydown', $widgetContainer);
+        var $addEditPanel = $('.quicklinks_addedit_link_panel', $widgetContainer);
+        var $addEditPanelTitle = $('.quicklinks_addedit_link_panel_title' , $widgetContainer);
+        var $saveLinkButton = $('#quicklinks-savelink-button', $widgetContainer);
+        var $addLinkButton = $('#quicklinks-addlink-button', $widgetContainer);
+        var $saveLinkClickClass = $('.quicklinks-save-link-click', $widgetContainer);
+        var $accordionContainer = $('#quicklinks_accordion', $widgetContainer);
+        var $addLinkModeBtn = $('#quicklinks-add-link-mode', $widgetContainer);
+        var $cancelButton = $('#quicklinks-cancel-button', $widgetContainer);
+        var $myLinksFormId = $('#quicklinks-form', $widgetContainer);
 
         /** js keydown code for the ENTER key. */
         var ENTER_KEY = 13;
@@ -80,14 +80,14 @@ require(
          * @type Validator object (http://docs.jquery.com/Plugins/Validation#Validator).
          */
         var validator = $myLinksFormId.validate({
-            rules : {
-                "link-title" : {
+            rules: {
+                'quicklinks-link-title': {
                     required: true
                 },
-                "link-url" : {
-                    required : true,
-                    url : true,
-                    appendhttp : true
+                'quicklinks-link-url': {
+                    required: true,
+                    url: true,
+                    appendhttp: true
                 }
             }
         });
@@ -101,7 +101,7 @@ require(
          * @return {undefined} modifies the defaultLinks object by merging in the user link data. Also manipulates the dom
          * by trigging renderLinkList to show the updated defaultLinks object.
          */
-        var loadUserList = function () {
+        var loadUserList = function() {
             sakai.api.Widgets.loadWidgetData(tuid, function (success, data) {
                 if (success) {
                     // merge the user's links with the default links
@@ -133,7 +133,7 @@ require(
          *
          * @return {undefined} modified userLinkData json object with new link updates. Also refreshes the pane list.
          */
-        var saveLink = function (event) {
+        var saveLink = function() {
             if ($addLinkButton.attr('disabled') === 'true') {
                 return;
             }
@@ -143,13 +143,12 @@ require(
 
                 var index = $myLinksFormId.attr('data-eltindex');
 
-                if (index === null || index === '') {
-                    index = userLinkData.links.length;
-                }
+                index = index || userLinkData.links.length;
+
                 userLinkData.links[index] = {
-                    "name" : $linkTitleInput.val(),
-                    "url" : $linkUrlInput.val(),
-                    "popup_description": $linkTitleInput.val()
+                    'name' : $linkTitleInput.val(),
+                    'url' : $linkUrlInput.val(),
+                    'popup_description': $linkTitleInput.val()
                 };
                 defaultLinks.sections[defaultLinks.userSectionIndex] = userLinkData;
 
@@ -158,7 +157,7 @@ require(
                         cancelEditMode();
                         renderLinkList(defaultLinks);
                     } else {
-                        sakai.api.Util.notification.show("", sakai.api.i18n.getValueForKey('SERVER_ERROR_SAVE_LINK', 'quicklinks'),
+                        sakai.api.Util.notification.show('', sakai.api.i18n.getValueForKey('SERVER_ERROR_SAVE_LINK', 'quicklinks'),
                                 sakai.api.Util.notification.type.ERROR, false);
                     }
                 });
@@ -173,18 +172,18 @@ require(
          *
          * @return {undefined} buttons and keys common to the widget are bound to event handlers and their respective functions.
          */
-        var setupEventHandlers = function () {
-            $addLinkModeBtn.on('click.quicklinks', enterAddMode);
+        var setupEventHandlers = function() {
+            $addLinkModeBtn.on('click', enterAddMode);
 
-            $cancelButton.on('click.quicklinks', cancelEditMode);
+            $cancelButton.on('click', cancelEditMode);
 
-            $saveLinkClickClass.on('click.quicklinks', saveLink);
+            $saveLinkClickClass.on('click', saveLink);
 
-            $saveLinkKeydownClass.on('keydown.quicklinks', function (event) {
+            $saveLinkKeydownClass.on('keydown', function (event) {
                 if (event.keyCode === ENTER_KEY) {
                     event.preventDefault();
                     saveLink();
-                } else if(event.keyCode === ESC_KEY) {
+                } else if (event.keyCode === ESC_KEY) {
                     event.preventDefault();
                     cancelEditMode();
                 }
@@ -194,11 +193,11 @@ require(
         /**
          * Called when the quicklinks widget needs to be rendered or reloaded with new data.
          *
-         * @param {json} data defaultLinks json object with possible custom user links.
+         * @param {Object} data defaultLinks json object with possible custom user links.
          * @return {undefined}  rendered quicklinks accordion div.
          */
-        var renderLinkList = function (data) {
-            $accordionContainer.html(sakai.api.Util.TemplateRenderer('accordion_template', data));
+        var renderLinkList = function(data) {
+            $accordionContainer.html(sakai.api.Util.TemplateRenderer('quicklinks_accordion_template', data));
             setupAccordion();
             setupEditIcons();
         };
@@ -208,7 +207,7 @@ require(
          *
          * @param {String} title string to set the title to.
          */
-        var setAddEditLinkTitle = function (title) {
+        var setAddEditLinkTitle = function(title) {
             $addEditPanelTitle.text(title);
         };
 
@@ -265,20 +264,20 @@ require(
          * @return {undefined} edit and delete buttons on each link are attached to event handlers and their respective functions.
          */
         var setupEditIcons = function() {
-            $(".edit-mylink", $widgetContainer).on('click.quicklinks', function() {
+            $('.edit-mylink', $widgetContainer).on('click', function() {
                 var idx = $(this).attr('data-eltindex');
                 enterEditMode(idx);
             });
 
-            $(".delete-mylink", $widgetContainer).on('click.quicklinks', function() {
-                var idx = $(this).attr("data-eltindex");
+            $('.delete-mylink', $widgetContainer).on('click', function() {
+                var idx = $(this).attr('data-eltindex');
                 userLinkData.links.splice(idx, 1);
                 defaultLinks.sections[defaultLinks.userSectionIndex] = userLinkData;
                 sakai.api.Widgets.saveWidgetData(tuid, userLinkData, function(success) {
                     if (success) {
                         renderLinkList(defaultLinks);
                     } else {
-                        sakai.api.Util.notification.show("", sakai.api.i18n.getValueForKey('SERVER_ERROR_DELETE_LINK', 'quicklinks'),
+                        sakai.api.Util.notification.show('', sakai.api.i18n.getValueForKey('SERVER_ERROR_DELETE_LINK', 'quicklinks'),
                                 sakai.api.Util.notification.type.ERROR, false);
                     }
                 }, true);
@@ -301,7 +300,7 @@ require(
 
             var previousActiveSection = userLinkData.activeSection;
             if ($pane.length) {
-                userLinkData.activeSection = $pane.attr('data-sectionid');
+                userLinkData.activeSection = parseInt($pane.attr('data-sectionid'), 10);
             } else {
                 userLinkData.activeSection = 0;
             }
@@ -339,7 +338,7 @@ require(
          * @return {undefined} accordion menu with click handlers configured.
          */
         var setupAccordion = function() {
-            $('.section_label', $accordionContainer).on('click.quicklinks', function() {
+            $('.section_label', $accordionContainer).on('click', function() {
                 showPane($(this).parent());
             });
 
@@ -348,7 +347,6 @@ require(
             }
 
             showPane($('.accordion_open', $accordionContainer));
-
         };
 
         /** Initialization Function. */
