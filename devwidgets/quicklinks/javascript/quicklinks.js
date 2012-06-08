@@ -23,10 +23,11 @@
 require(
     [
         'jquery',
+        'underscore',
         'sakai/sakai.api.core',
         '/devwidgets/quicklinks/javascript/default-links.js'
     ],
-    function($, sakai, defaultLinks) {
+    function($, _, sakai, defaultLinks) {
 
    /**
      * @name sakai_global.quicklinks
@@ -92,12 +93,149 @@ require(
             }
         });
 
+        /**
+         * Role information could be stored in various places in the user object. This allows
+         * flexible definitions of how to reference the roles stored in the system.
+         * @param {String} lookupStrategy name of which lookup strategy is loaded.
+         * @param {Function} callback callback function to pass the list of retrieved roles off to.
+         */
+        var getMyRoles = function(lookupStrategy, callback) {
+            var listedRoles = [ 'ALL' ];
+
+            var strategies = {
+                'default': function(callback) {
+                    sakai.api.User.getUser(sakai.data.me.user.userid, function(success, data) {
+                        //for now, seems like OAE only supports 1 role per person.
+                        var exists = data && data.basic && data.basic.elements && data.basic.elements.role &&
+                                    data.basic.elements.role.value;
+                        var systemRole = (exists && data.basic.elements.role.value) || '';
+                        listedRoles.push(systemRole);
+                        callback(listedRoles);
+                    });
+                },
+
+                'testing': function(callback) {
+                    listedRoles.push('academic_related_staff', 'academic_staff', 'research_staff');
+                    callback(listedRoles);
+                },
+
+                'berkeley': function(callback) {
+                    sakai.api.User.getUser(sakai.data.me.user.userid, function(success, data) {
+                        $.each(data.institutional.elements.role, function(key, value) {
+                            if (key === 'value') {
+                                listedRoles.push(value);
+                            }
+                        });
+                        callback(listedRoles);
+                    });
+                }
+            }
+
+
+            if (strategies[lookupStrategy]) {
+                return strategies[lookupStrategy](callback);
+            } else {
+                return strategies.default(callback);
+            }
+        };
+
+        /**
+         * Will overwrite the filterLinksList function with a new definition that
+         * will filter the links in the json data object based on roles. Will run
+         * only once upon initialization if the widget is to be roleAware.
+         *
+         * @param {Array} data an array of role strings that the current user has.
+         */
+        var setFilterLinksList = function(data) {
+            filterLinksList = function(linkDataObj) {
+                var whiteListArr = data;
+                var ignoreIndex = defaultLinks.userSectionIndex || '-1';
+                var linkSections = linkDataObj.sections || {};
+
+                $.each(linkSections, function(index, value) {
+                    if (index !== ignoreIndex) {
+                        var linksArray = value.links || [];
+                        var valuesToRetain = [];
+                        $.each(linksArray, function(sub_index, sub_value){
+                            linkRoles = sub_value.roles || [];
+                            if (!_.isEmpty(_.intersection(whiteListArr, linkRoles))) {
+                                valuesToRetain.push(sub_value);
+                            }
+                        });
+
+                        value.links = valuesToRetain;
+                    }
+                })
+                return linkDataObj;
+            };
+        }
+
+        /**
+         * Default definition of filterLinksList. This could potentially be overwritten
+         * if the widget is to be made role aware (by setFilterLinksList). In the non-role aware
+         * state, the filter does a simple passthrough with the links data object.
+         *
+         * @param {Object} linkDataObj JSON object that needs to have a filter applied to it.
+         * @return {Object} JSON object of the links data that could of been filtered on based on roles.
+         */
+        var filterLinksList = function(linkDataObj) {
+            return linkDataObj;
+        }
+
+        /**
+         * Remaps the roles assigned by the system to the roles defined, mapped, and used
+         * in the default-links.js JSON data structure. This allows for custom definitions of
+         * "roles", role groupings, etc. If there are no matches between any listed systemRole
+         * and the rolesMappingsInLinks JSON structure, the system roles are still retained.
+         *
+         * @param {Array} systemRoles array of role strings returned by the system.
+         * @param {Object} roleMappingsInLinks role mappings one expects to find in the default-links.js
+         *      definition.
+         * @return {Array} an array of roles translated for use against default-links.js
+         */
+        var remapRoleGroupings = function(systemRoles, roleMappingsInLinks) {
+            var returnArray = [];
+            //check each one of the role buckets to see if it contains my systemAssignedRole.
+            $.each(roleMappingsInLinks, function(mappingIndex, mappingValue) {
+                if (!_.isEmpty(_.intersection(mappingValue, systemRoles))) {
+                    returnArray.push(mappingIndex);
+                }
+            });
+
+            returnArray = _.union(returnArray, systemRoles);
+            return returnArray;
+        }
+
+        /**
+         * Loading data for display of the widget. This will initially load the config.json file
+         * to check if the widget should be role aware before it deals with the json data stores of links.
+         * It also determines how and where to lookup the roles information.
+         * This is only called once upon widget load.
+         *
+         * @return {undefined} initialized quicklinks widget with data ready for consumption.
+         */
+        var loadUserData = function() {
+            var configObj = sakai.widgets.quicklinks || false;
+            var rolesEnabled = configObj.defaultConfiguration.roleAware || false;
+            var roleDefinitions = configObj.defaultConfiguration.roleMappings || {};
+            var roleLookupScheme = configObj.defaultConfiguration.roleLookupScheme || 'default';
+            //only loading the roles handling module if roles are enabled in config.json
+            if (rolesEnabled) {
+                getMyRoles(roleLookupScheme, function(data) {
+                    data = remapRoleGroupings(data, roleDefinitions);
+                    setFilterLinksList(data);
+                    loadUserList();
+                });
+            } else {
+                loadUserList();
+            }
+        };
+
         /** Main View Functions. **/
         /**
          * Load user's list if there is one, and merge it with the default links. If no user's list, just use
          * the default ones. Will also initialize and save a default user list on the first load to prevent continued
          * warning messages from loading for subsequent reloads.
-         *
          * @return {undefined} modifies the defaultLinks object by merging in the user link data. Also manipulates the dom
          * by trigging renderLinkList to show the updated defaultLinks object.
          */
@@ -110,7 +248,9 @@ require(
                     if (!$.isArray(userLinkData.links)) {
                         userLinkData.links = [];
                     }
+
                     defaultLinks.sections[defaultLinks.userSectionIndex] = userLinkData;
+
                 } else {
                     userLinkData.activeSection = 0;
                     //attempting to initialize user object for subsequent loads.
@@ -146,8 +286,8 @@ require(
                 index = index || userLinkData.links.length;
 
                 userLinkData.links[index] = {
-                    'name' : $linkTitleInput.val(),
-                    'url' : $linkUrlInput.val(),
+                    'name': $linkTitleInput.val(),
+                    'url': $linkUrlInput.val(),
                     'popup_description': $linkTitleInput.val()
                 };
                 defaultLinks.sections[defaultLinks.userSectionIndex] = userLinkData;
@@ -194,9 +334,10 @@ require(
          * Called when the quicklinks widget needs to be rendered or reloaded with new data.
          *
          * @param {Object} data defaultLinks json object with possible custom user links.
-         * @return {undefined}  rendered quicklinks accordion div.
+         * @return {undefined} rendered quicklinks accordion div.
          */
         var renderLinkList = function(data) {
+            data = filterLinksList(data);
             $accordionContainer.html(sakai.api.Util.TemplateRenderer('quicklinks_accordion_template', data));
             setupAccordion();
             setupEditIcons();
@@ -230,7 +371,7 @@ require(
          * @return {undefined} New modal div that will allow a user to add a new link.
          */
         var enterAddMode = function() {
-            showPane($('.accordion_pane:last'));
+            showPane($('.quicklinks_accordion_pane:last'));
             setAddEditLinkTitle(sakai.api.i18n.getValueForKey('ADD_LINK', 'quicklinks'));
             $myLinksFormId.attr('data-eltindex', '');
             $addEditPanel.show();
@@ -242,7 +383,7 @@ require(
         /**
          * Enters the mode to edit an existing link.
          * @param {int} index index of the link in the user list of links.
-         * @return {undefined}  New modal div that will allow a user to modify an existing link.
+         * @return {undefined} New modal div that will allow a user to modify an existing link.
          */
         var enterEditMode = function(index) {
             var link = userLinkData.links[index];
@@ -264,12 +405,12 @@ require(
          * @return {undefined} edit and delete buttons on each link are attached to event handlers and their respective functions.
          */
         var setupEditIcons = function() {
-            $('.edit-mylink', $widgetContainer).on('click', function() {
+            $('.quicklinks-edit-mylink', $widgetContainer).on('click', function() {
                 var idx = $(this).attr('data-eltindex');
                 enterEditMode(idx);
             });
 
-            $('.delete-mylink', $widgetContainer).on('click', function() {
+            $('.quicklinks-delete-mylink', $widgetContainer).on('click', function() {
                 var idx = $(this).attr('data-eltindex');
                 userLinkData.links.splice(idx, 1);
                 defaultLinks.sections[defaultLinks.userSectionIndex] = userLinkData;
@@ -286,16 +427,16 @@ require(
 
         /**
          * Show a specific pane
-         * @param {jquery selector} $pane jquery selector for a specific pane to show.
-         * @return {undefined}  opens up the pane specified by the $pane argument.
+         * @param {Object} $pane jquery selector for a specific pane to show.
+         * @return {undefined} opens up the pane specified by the $pane argument.
          */
         var showPane = function ($pane) {
-            if (!$pane.hasClass('accordion_open')) {
+            if (!$pane.hasClass('quicklinks_accordion_open')) {
                 closePanes();
-                $pane.addClass('accordion_open');
+                $pane.addClass('quicklinks_accordion_open');
             }
-            $pane.children('.accordion_content').slideDown(300, function() {
-                $pane.children('.accordion_content').css('overflow', 'auto');
+            $pane.children('.quicklinks_accordion_content').slideDown(300, function() {
+                $pane.children('.quicklinks_accordion_content').css('overflow', 'auto');
             });
 
             var previousActiveSection = userLinkData.activeSection;
@@ -313,12 +454,12 @@ require(
 
         /**
          * Hide a specific pane
-         * @param {jquery selector} $pane jquery selector for a specific pane to hide.
-         * @return {undefined}  collapses a pane that was open.
+         * @param {Object} $pane jquery selector for a specific pane to hide.
+         * @return {undefined} collapses a pane that was open.
          */
         var hidePane = function ($pane) {
-            $pane.removeClass('accordion_open');
-            $pane.children('.accordion_content').slideUp(300);
+            $pane.removeClass('quicklinks_accordion_open');
+            $pane.children('.quicklinks_accordion_content').slideUp(300);
         };
 
         /**
@@ -326,7 +467,7 @@ require(
          * @return {undefined} closes all the panes.
          */
         var closePanes = function () {
-            $('.accordion_pane', $accordionContainer).each(function () {
+            $('.quicklinks_accordion_pane', $accordionContainer).each(function () {
                 hidePane($(this));
             });
         };
@@ -338,22 +479,25 @@ require(
          * @return {undefined} accordion menu with click handlers configured.
          */
         var setupAccordion = function() {
-            $('.section_label', $accordionContainer).on('click', function() {
+            $('.quicklinks_section_label', $accordionContainer).on('click', function() {
                 showPane($(this).parent());
             });
 
             if ($accordionContainer.width() > 250) {
-                $accordionContainer.addClass('link_grid');
+                $accordionContainer.addClass('quicklinks_link_grid');
             }
 
-            showPane($('.accordion_open', $accordionContainer));
+            showPane($('.quicklinks_accordion_open', $accordionContainer));
         };
 
-        /** Initialization Function. */
+        /**
+         * Initialization Function.
+         */
         var doInit = function() {
-            loadUserList();
+            loadUserData();
             setupEventHandlers();
         };
+
 
         // run doInit() function when sakai_global.quicklinks object loads
         doInit();

@@ -26,11 +26,15 @@
     margin-top: 0;
 }
 
+.quicklinks .s3d-widget-footer .s3d-overlay-button {
+    margin: -5px -5px 0 0;
+}
+
 .quicklinks_widget {
     position: relative;
 }
 
-.quicklinks_widget .icon_button {
+.quicklinks_widget .quicklinks_icon_button {
     display: block;
     float: right;
     background-image: url("/devwidgets/quicklinks/images/edit-delete-icon-sprite.png");
@@ -42,11 +46,11 @@
 }
 
 /* Accordion */
-.quicklinks_widget .link_list #quicklinks_accordion {
+.quicklinks_widget .quicklinks_link_list #quicklinks_accordion {
     padding: 0;
 }
 
-.quicklinks_widget .link_list .accordion_content {
+.quicklinks_widget .quicklinks_link_list .quicklinks_accordion_content {
     margin: 0;
     padding: 0;
     display: none;
@@ -59,7 +63,7 @@
     padding: 0 0 2px 0;
 }
 
-.quicklinks_widget .section_label {
+.quicklinks_widget .quicklinks_section_label {
     display: block;
     font-weight: bold;
     border-bottom: 2px solid #D5DBDF;
@@ -70,47 +74,45 @@
     font-size: 0.9em;
 }
 
-.quicklinks_widget .accordion_open .section_label {
+.quicklinks_widget .quicklinks_accordion_open .quicklinks_section_label {
     background-color: #D5DBDF;
     color: #222;
 }
 
-.quicklinks_widget .link_list li {
+.quicklinks_widget .quicklinks_link_list li {
     display: block;
     position: relative;
     margin-top: 1%;
     margin-left: 1%;
-    -moz-border-radius: 3px;
     border-radius: 3px;
-    -webkit-border-radius: 3px;
     overflow: hidden;
 }
 
-.quicklinks_widget .link_list .link_grid li {
+.quicklinks_widget .quicklinks_link_list .quicklinks_link_grid li {
     float: left;
     width: 48%;
 }
 
-.quicklinks_widget .link_list li:hover {
+.quicklinks_widget .quicklinks_link_list li:hover {
     background-color: #EFEFEF;
 }
 
-.quicklinks_widget .link_list .no_links_message {
+.quicklinks_widget .quicklinks_link_list .quicklinks_no_links_message {
     text-align: center;
     padding: 48px 8px 2px;
 }
 
-.quicklinks_widget .link_list a {
+.quicklinks_widget .quicklinks_link_list a {
     display: block;
     padding: 5px 24px 5px 5px;
 }
 
-.quicklinks_widget .link_list a:hover {
+.quicklinks_widget .quicklinks_link_list a:hover {
     background: no-repeat 10px 3px;
     text-decoration: none;
 }
 
-.quicklinks_widget .link_list li .edit_buttons {
+.quicklinks_widget .quicklinks_link_list li .quicklinks_edit_buttons {
     display: none;
     position: absolute;
     top: 0;
@@ -121,31 +123,31 @@
     border-radius: 3px;
 }
 
-.quicklinks_widget .link_list li:hover .edit_buttons {
+.quicklinks_widget .quicklinks_link_list li:hover .quicklinks_edit_buttons {
     display: block;
 }
 
-.quicklinks_widget .icon_button:hover {
+.quicklinks_widget .quicklinks_icon_button:hover {
     border: 1px solid #2683BC;
     background-color: #FFFFFF;
 }
 
-.quicklinks_widget .delete_icon {
+.quicklinks_widget .quicklinks_delete_icon {
     background-position: 0 0;
 }
 
-.quicklinks_widget .edit_icon {
+.quicklinks_widget .quicklinks_edit_icon {
     background-position: -20px 0;
     margin-right: 3px;
 }
 
 /* Edit mode */
 
-.quicklinks_widget .link_list #quicklinks_accordion a {
+.quicklinks_widget .quicklinks_link_list #quicklinks_accordion a {
     text-decoration: none;
 }
 
-.quicklinks_widget .link_list #quicklinks_accordion a:hover {
+.quicklinks_widget .quicklinks_link_list #quicklinks_accordion a:hover {
     text-decoration: underline;
 }
 
@@ -174,12 +176,12 @@
     padding: 0.6em 0 0.3em;
 }
 
-.quicklinks_widget .quicklinks_addedit_link_panel .link-form input {
+.quicklinks_widget .quicklinks_addedit_link_panel .quicklinks-link-form input {
     width: 98%;
     padding: 0.2em;
 }
 
-.quicklinks_widget .quicklinks_addedit_link_panel .button-list {
+.quicklinks_widget .quicklinks_addedit_link_panel .quicklinks-button-list {
     float: right;
     padding: 9px 10px;
 }
@@ -190,7 +192,7 @@
 
 .quicklinks_widget label.error {
     text-align: center;
-    color:#CC0000;
+    color: #CC0000;
 }
 
 .quicklinks_widget .quicklinks_addedit_link_panel h2.s3d-addlink-header {
@@ -200,7 +202,7 @@
     margin: 9px 10px 2px;
 }
 
-.quicklinks_widget .quicklinks_addedit_link_panel .link-form-element {
+.quicklinks_widget .quicklinks_addedit_link_panel .quicklinks-link-form-element {
     padding: 0 10px;
 }
 

@@ -1,5 +1,31 @@
 {
     "enabled": true,
+    "defaultConfiguration": {
+        "roleAware": true,
+        "roleLookupScheme" : "default", //reset this to default = sakai, or use your own custome one
+        "roleMappings" : {
+        "Faculty" : [
+            "academic_related_staff",
+            "academic_staff",
+            "assistant_staff"
+        ],
+        "Students" : [
+            "graduate_student",
+            "undergraduate_student",
+            "postgraduate_student"
+        ],
+        "Staff" : [
+            "non_academic_staff",
+            "research_staff"
+        ],
+        "Guests" : [
+            "other"
+        ],
+        "ALL" : [
+            "ALL"
+        ]
+    },
+    },
     "hasSettings": false,
     "i18n": {
         "default": {
