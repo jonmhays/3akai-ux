@@ -1,0 +1,23 @@
+{
+    "id":                 "slideshow",
+    "name":               "Slideshow",
+    "description":        "",
+    "type":               "contrib",
+    "enabled":            true,
+    "hasSettings":        true,
+    "url":                "/devwidgets/slideshow/slideshow.html",
+    "i18n": {
+        "default": {
+            "bundle":        "/devwidgets/slideshow/bundles/default.properties",
+            "name":           "Slideshow",
+            "description":    ""
+        }
+    },
+    "personalportal":     true,
+    "sakaidocs":          true,
+    "showinsakaigoodies": true,
+    "groupdashboard":     false,
+    "grouppages":         false,
+    "userdashboard":      false,
+    "userpages":          false
+}

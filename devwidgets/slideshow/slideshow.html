@@ -1,0 +1,70 @@
+<!-- CSS -->
+<link rel="stylesheet" type="text/css" href="/devwidgets/slideshow/css/camera.css" />
+<link rel="stylesheet" type="text/css" href="/devwidgets/slideshow/css/slideshow.css" />
+
+<!-- WIDGET CONTENT CONTAINER -->
+<div class="slideshow_widget">
+    <!-- MAIN VIEW -->
+    <div id="slideshow_main" style="display:none;">
+		<div id="slideshow_main_container"><!-- --></div>
+		<div id="slideshow_main_template" style="display:none"><!--
+				{for image in images}
+					{if image._path}
+						<div data-thumb="/p/${image._path}" data-src="/p/${image._path}">
+							<div class="camera_caption fadeIn">
+								<h4>${image['sakai:pooled-content-file-name']}</h4>
+								<p>${image['sakai:description']}</p>
+							</div>
+						</div>
+					{/if}
+				{/for}
+		--></div>
+    </div>
+    <!-- SETTINGS VIEW -->
+    <div id="slideshow_settings" style="display:none;">
+        <form id="slideshow_settings_form" action="#">
+            <!-- loading the list of collections into a dropdown -->
+	        <div id="slideshow_settings_container"><!-- --></div>
+            <div id="slideshow_settings_template" style="display:none"><!--
+            <p>__MSG__COLLECTION_TO_USE__:</p>
+                <select id="slideshow_collection_list">
+					{for collection in collections}
+						{if collection._path}
+							<option value="${collection._path}">${collection['sakai:pooled-content-file-name']}</option>
+						{/if}
+					{/for}
+                </select>
+ 	        <p>__MSG__ADVANCE_SLIDES__:</p>
+			<p>settings.autoAdvance</p>
+	        <ul id="slideshow_auto_advance">
+	            <li>
+	                <input type="radio" id="slideshow_auto_advance_yes" name="slideshow_auto_advance" value="true" {if settings.autoAdvance === true}checked{/if}/>
+	                <label for="slideshow_auto_advance_yes">
+	                    Yes
+	                </label>
+	            </li>
+	            <li>
+	                <input type="radio" id="slideshow_auto_advance_no" name="slideshow_auto_advance" value="false" {if settings.autoAdvance === false}checked{/if}/>
+	                <label for="slideshow_auto_advance_no">
+	                    No
+	                </label>
+	            </li>
+	        </ul>
+	        {if settings.autoAdvance == false}
+	        <p>false</p>
+			{else}
+			<p>widgetSettings['autoAdvance']</p>
+	        {/if}
+			--></div>
+
+            <div class="fl-force-right">
+                <button type="button" class="s3d-button s3d-link-button" id="slideshow_cancel_settings">__MSG__CANCEL__</button>
+                <button type="submit" class="s3d-button s3d-overlay-button">__MSG__SAVE__</button>
+            </div>
+            <hr class="fl-hidden fl-push"/>
+        </form>
+    </div>
+</div>
+
+<!-- JAVASCRIPT -->
+<script type="text/javascript" src="/devwidgets/slideshow/javascript/slideshow.js"></script>
