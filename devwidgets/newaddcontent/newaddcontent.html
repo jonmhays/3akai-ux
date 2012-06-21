@@ -36,7 +36,6 @@
     </ul>
 
     <div id="newaddcontent_container_newitem">
-        <div id="newaddcontent_container_newitem_raquo_right"></div>
         <div id="newaddcontent_container_newitem_fields">
 
             <div id="newaddcontent_upload_content_template" class="newaddcontent_newitem_container" style="display:none;">
@@ -62,11 +61,11 @@
                     <select id="newaddcontent_upload_content_permissions">
                         <option value="public">__MSG__PUBLIC__</option>
                         <option value="everyone">__MSG__LOGGED_IN_USERS__</option>
-                        <option value="private">__MSG__ONLY_ME__</option>
+                        <option value="private">__MSG__PRIVATE_TO_LIBRARY__</option>
                     </select>
 
                     <div id="newaddcontent_upload_content_copyright_container"></div>
-                    <button type="button" class="s3d-button s3d-header-button newaddcontent_container_newitem_add_to_list" disabled="disabled">__MSG__ADD__</button>
+                    <button type="button" class="s3d-button s3d-header-button newaddcontent_container_newitem_add_to_list newaddcontent_container_newitem_add_to_list_upload_new_content" disabled="disabled">__MSG__ADD__</button>
                 </div>
             </div>
 
@@ -94,7 +93,7 @@
                         <select id="newaddcontent_add_document_permissions">
                             <option value="public">__MSG__PUBLIC__</option>
                             <option value="everyone">__MSG__LOGGED_IN_USERS__</option>
-                            <option value="private">__MSG__PRIVATE__</option>
+                            <option value="private">__MSG__PRIVATE_TO_LIBRARY__</option>
                         </select>
                     </div>
                     <button type="button" class="s3d-button s3d-header-button newaddcontent_container_newitem_add_to_list" disabled="disabled">__MSG__ADD__</button>
@@ -152,10 +151,11 @@
             </div>
 
         </div>
+        <button type="button" id="newaddcontent_container_newitem_raquo_right" class="s3d-button newaddcontent_container_newitem_add_to_list" disabled="disabled" title="__MSG__ADD__"></button>
     </div>
 
     <div id="newaddcontent_container_selecteditems">
-        <div id="newaddcontent_container_selecteditems_header" class="s3d-bold">__MSG__COLLECTED_ITEMS__</div>
+        <h2 id="newaddcontent_container_selecteditems_header" class="s3d-bold">__MSG__COLLECTED_ITEMS__</h2>
         <div id="newaddcontent_container_selecteditems_container"><!-- --></div>
     </div>
 
@@ -204,14 +204,14 @@
         <form class="newaddcontent_form">
             <label for="newaddcontent_selecteditems_edit_permissions_permissions">__MSG__WHO_CAN_SEE_IT__:</label>
             <select id="newaddcontent_selecteditems_edit_permissions_permissions">
-                <option value="public" {if "public" == item["sakai:permissions"]} selected="selected"{/if}>__MSG__PUBLIC__</option>
-                <option value="everyone" {if "everyone" == item["sakai:permissions"]} selected="selected"{/if}>__MSG__LOGGED_IN_USERS__</option>
-                <option value="private" {if "private" == item["sakai:permissions"]} selected="selected"{/if}>__MSG__ONLY_ME__</option>
+                <option value="public" {if item["sakai:permissions"] === "public"} selected="selected"{/if}>__MSG__PUBLIC__</option>
+                <option value="everyone" {if item["sakai:permissions"] === "everyone"} selected="selected"{/if}>__MSG__LOGGED_IN_USERS__</option>
+                <option value="private" {if item["sakai:permissions"] === "private"} selected="selected"{/if}>__MSG__PRIVATE_TO_LIBRARY__</option>
             </select>
             <label for="newaddcontent_selecteditems_edit_permissions_copyright">__MSG__COPYRIGHT__:</label>
             <select id="newaddcontent_selecteditems_edit_permissions_copyright">
             {for cr in copyright.types}
-                <option value="${cr_index}" {if cr_index == item["sakai:copyright"]} selected="selected"{/if}>${sakai.api.i18n.getValueForKey(cr.title, "newaddcontent")}</option>
+                <option value="${cr_index}" {if item["sakai:copyright"] === cr_index} selected="selected"{/if}>${sakai.api.i18n.getValueForKey(cr.title, "newaddcontent")}</option>
             {/for}
             </select>
         </form>
@@ -250,9 +250,11 @@
                     </span>
                 {else}
                     {if $.inArray(currentSelectedLibrary, item["sakai:pooled-content-viewer"]) !== -1 || $.inArray(currentSelectedLibrary, item["sakai:pooled-content-manager"]) !== -1}
-                        <span class="newaddcontent_selecteditems_title newaddcontent_selecteditems_title_gotit">${sakai.api.Util.applyThreeDots(item["sakai:pooled-content-file-name"], 100)} (got it)</span>
+                        <span class="newaddcontent_selecteditems_title newaddcontent_selecteditems_title_gotit">${sakai.api.Util.applyThreeDots(item["sakai:pooled-content-file-name"], 100)} (__MSG__GOT_IT__)</span>
                     {elseif sakai.api.Content.Collections.isCollection(item) && (sakai.api.Content.Collections.getCollectionGroupId(item) === currentSelectedLibrary || sakai.api.Content.Collections.isCollectionInMyLibrary(item))}
-                        <span class="newaddcontent_selecteditems_title newaddcontent_selecteditems_title_gotit">${sakai.api.Util.applyThreeDots(item["sakai:pooled-content-file-name"], 100)} (got it)</span>
+                        <span class="newaddcontent_selecteditems_title newaddcontent_selecteditems_title_gotit">${sakai.api.Util.applyThreeDots(item["sakai:pooled-content-file-name"], 100)} (__MSG__GOT_IT__)</span>
+                    {elseif item.canshare === 'false' && currentSelectedLibrary !== me.user.userid}
+                        <span class="newaddcontent_selecteditems_title newaddcontent_selecteditems_title_gotit">${sakai.api.Util.applyThreeDots(item["sakai:pooled-content-file-name"], 100)} (__MSG__SHARING_DISABLED__)</span>
                     {else}
                         <span class="newaddcontent_selecteditems_title">${sakai.api.Util.applyThreeDots(item["sakai:pooled-content-file-name"], 100)}</span>
                     {/if}
@@ -271,7 +273,8 @@
             {if data.results.length}
                 {for item in data.results}
                     <li {if item_index == data.results.length -1} id="newaddcontent_existingitems_list_lastitem"{/if} {if $.inArray(item["_path"], queue) >= 0} class="newaddcontent_existingitems_list_container_disabled_list_item"{/if}>
-                        <input type="checkbox" class="newaddcontent_existingitems_select_checkbox" id="${item["_path"]}" {if $.inArray(item["_path"], queue) >= 0} checked="checked"{/if} {if $.inArray(item["_path"], queue) >= 0} disabled{/if} {if item["sakai:pooled-content-manager"]}data-sakai-pooled-content-manager="${item["sakai:pooled-content-manager"].join(",")}"{/if} {if item["sakai:pooled-content-viewer"]}data-sakai-pooled-content-viewer="${item["sakai:pooled-content-viewer"].join(",")}"{/if} data-mimeType="${item["_mimeType"]}"/>
+                        {var canShare = sakai.api.Content.canCurrentUserShareContent(item)}
+                        <input type="checkbox" class="newaddcontent_existingitems_select_checkbox" id="${item["_path"]}" {if $.inArray(item["_path"], queue) >= 0} checked="checked"{/if} {if $.inArray(item["_path"], queue) >= 0} disabled{/if} {if item["sakai:pooled-content-manager"]}data-sakai-pooled-content-manager="${item["sakai:pooled-content-manager"].join(",")}"{/if} {if item["sakai:pooled-content-viewer"]}data-sakai-pooled-content-viewer="${item["sakai:pooled-content-viewer"].join(",")}"{/if} data-mimeType="${item["_mimeType"]}" data-canshare="${canShare}"/>
                         <label for="${item["_path"]}">
                             <span id="{if sakai.config.MimeTypes[item["_mimeType"]]}${sakai.config.MimeTypes[item["_mimeType"]].cssClass}{/if}" class="{if sakai.config.MimeTypes[item["_mimeType"]]} ${sakai.config.MimeTypes[item["_mimeType"]].cssClass}{else} icon-unknown-sprite{/if} newaddcontent_existingitems_list_container_list_item_icon"></span>
                             ${sakai.api.Util.applyThreeDots(item["sakai:pooled-content-file-name"], 300) || item["_path"]}

@@ -23,6 +23,7 @@ require(["jquery","sakai/sakai.api.core", "/dev/javascript/myb/myb.securepage.js
         var groupData = false;
         var groupId = false;
         var pubdata = false;
+        var defaultPageTitle = '';
 
         /**
          * Get the group id from the querystring
@@ -41,6 +42,7 @@ require(["jquery","sakai/sakai.api.core", "/dev/javascript/myb/myb.securepage.js
                             sakai.api.Util.include.css(groupData.authprofile["sakai:customStyle"]);
                         }
                     });
+                    defaultPageTitle = document.title;
                     document.title = document.title + " " + groupData.authprofile["sakai:group-title"];
                     loadGroupEntityWidget();
                     loadDocStructure();
@@ -158,6 +160,10 @@ require(["jquery","sakai/sakai.api.core", "/dev/javascript/myb/myb.securepage.js
         
         $(window).bind("rerender.group.sakai", function(ev, forceOpenPage){
             loadDocStructure(forceOpenPage);
+        });
+
+        $(window).on('updatedTitle.worldsettings.sakai', function(e, title) {
+            document.title = defaultPageTitle + ' ' + title;
         });
 
         /////////////////////

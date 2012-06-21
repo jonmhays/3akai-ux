@@ -52,6 +52,8 @@ require(["jquery", "sakai/sakai.api.core", "myb/myb.api.core"], function($, saka
         var navLinkDropdown = ".s3d-dropdown-container";
         var hasSubnav = ".hassubnav";
         var topnavExplore = ".topnavigation_explore";
+        var topnavExploreLeft = '#topnavigation_explore_left';
+        var topnavExploreRight = '#topnavigation_explore_right';
         var topnavUserOptions = ".topnavigation_user_options";
         var topnavUserDropdown = ".topnavigation_user_dropdown";
         var topnavigationlogin = "#topnavigation_user_options_login_wrapper";
@@ -155,6 +157,7 @@ require(["jquery", "sakai/sakai.api.core", "myb/myb.api.core"], function($, saka
             }
             var auth = {
                 "externalAuth": externalAuth,
+                "internalAndExternal": sakai.config.Authentication.internalAndExternal,
                 "Authentication": sakai.config.Authentication
             };
             
@@ -465,35 +468,57 @@ require(["jquery", "sakai/sakai.api.core", "myb/myb.api.core"], function($, saka
          */
         var renderMenu = function(){
             var obj = {};
-            var menulinks = [];
+            var leftMenulinks = [];
+            var rightMenuLinks = [];
+
+            $('#topnavigation_container .s3d-jump-link').each(function() {
+                if ($($(this).attr('href') + ':visible').length) {
+                    $(this).show();
+                }
+            });
+            $('#topnavigation_container .s3d-jump-link').on('click', function() {
+                $($(this).attr('href')).focus();
+                return false;
+            });
 
             for (var i in sakai.config.Navigation) {
                 if (sakai.config.Navigation.hasOwnProperty(i)) {
 
                     var temp = "";
-                    if (sakai.data.me.user.anon) {
-                        if (sakai.config.Navigation[i].anonymous) {
-                            if (sakai.config.Navigation[i].id !== "navigation_anon_signup_link") {
-                                temp = createMenuList(i);
-                                menulinks.push(temp);
-                            } else if (sakai.config.Authentication.allowInternalAccountCreation) {
-                                temp = createMenuList(i);
-                                menulinks.push(temp);
-                            }
-                        }
-                    } else {
-                        if (!sakai.config.Navigation[i].anonymous) {
-                            temp = createMenuList(i);
-                            menulinks.push(temp);
+                    /* Check that the user is anon, the nav link is for anon
+                     * users, and if the link is the account create link,
+                     * that internal account creation is allowed
+                     */
+                    var anonAndAllowed = sakai.data.me.user.anon &&
+                        sakai.config.Navigation[i].anonymous &&
+                        (
+                            sakai.config.Navigation[i].id !== 'navigation_anon_signup_link' ||
+                            (
+                                sakai.config.Navigation[i].id === 'navigation_anon_signup_link' &&
+                                sakai.config.Authentication.allowInternalAccountCreation
+                            )
+                        );
+                    var isNotAnon = !sakai.data.me.user.anon &&
+                        !sakai.config.Navigation[i].anonymous;
+                    var shouldPush = anonAndAllowed || isNotAnon;
+                    if (shouldPush) {
+                        temp = createMenuList(i);
+                        if (sakai.config.Navigation[i].rightLink) {
+                            rightMenuLinks.push(temp);
+                        } else {
+                            leftMenulinks.push(temp);
                         }
                     }
                 }
             }
-            obj.links = menulinks;
+            obj.links = leftMenulinks;
             obj.selectedpage = true;
             obj.sakai = sakai;
             // Get navigation and render menu template
-            $(topnavExplore).html(sakai.api.Util.TemplateRenderer(navTemplate, obj));
+            $(topnavExploreLeft).html(sakai.api.Util.TemplateRenderer(navTemplate, obj));
+
+            obj.links = rightMenuLinks;
+            $(topnavExploreRight).html(sakai.api.Util.TemplateRenderer(navTemplate, obj));
         };
 
 
@@ -594,6 +619,16 @@ require(["jquery", "sakai/sakai.api.core", "myb/myb.api.core"], function($, saka
                     $subnav.css("margin-left", margin + "px");
                 }
             };
+
+
+            var toggleInternalLogin = function() {
+                $(topnavUserOptionsLoginForm).toggle();
+            };
+
+            $('#topnavigation_container').on(
+                'click',
+                '#topnavigation_toggle_internal_login',
+                toggleInternalLogin);
 
             $(hasSubnav).hover(openMenu, function(){
                 closePopover();
@@ -849,7 +884,7 @@ require(["jquery", "sakai/sakai.api.core", "myb/myb.api.core"], function($, saka
                         $(topnavUserOptionsLoginButtonCancel).show();
                         $(topnavuserOptionsLoginButtonLogin).show();
                         $(topnavUseroptionsLoginFieldsPassword).val("");
-                        $(topnavUseroptionsLoginFieldsUsername).focus();
+                        $(topnavUseroptionsLoginFieldsPassword).focus();
                         $(topnavUseroptionsLoginFieldsUsername).addClass("failedloginusername");
                         $(topnavUseroptionsLoginFieldsPassword).addClass("failedloginpassword");
                         $(topnavUserOptionsLoginForm).valid();
@@ -932,7 +967,7 @@ require(["jquery", "sakai/sakai.api.core", "myb/myb.api.core"], function($, saka
                 }
             });
 
-            $("#topnavigation_message_reply").live("click", hideMessageInlay);
+            $("#topnavigation_message_showall").live("click", hideMessageInlay);
             $("#topnavigation_message_readfull").live("click", hideMessageInlay);
             $(".no_messages .s3d-no-results-container a").live("click", hideMessageInlay);
             $(".topnavigation_trigger_login").live("click", forceShowLogin);

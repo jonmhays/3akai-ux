@@ -85,7 +85,8 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
                 thumbnail: sakai.api.Content.getThumbnail(result),
                 totalcomment: sakai.api.Content.getCommentCount(result),
                 '_mimeType/page1-small': result['_mimeType/page1-small'],
-                '_path': result['_path']
+                '_path': result['_path'],
+                canShare: sakai.api.Content.canCurrentUserShareContent(result)
             };
 
             item.nameShort = sakai.api.Util.applyThreeDots(item.name, $('.recentchangedcontent').width() - 50, {max_rows: 1,whole_word: false}, 's3d-bold');
@@ -295,7 +296,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
 
             // get list of recentchangedcontent items
             $.ajax({
-                url: '/var/search/pool/manager-viewer.json',
+                url: sakai.config.URL.POOLED_CONTENT_SPECIFIC_USER,
                 cache: false,
                 data: {
                     userid: sakai.data.me.user.userid,

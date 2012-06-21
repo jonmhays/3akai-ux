@@ -82,6 +82,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
         var active_content_class = "tab_content_active";
         var tab_id_prefix = "embedcontent_tab_";
         var active_tab_class = "fl-tabs-active";
+        var defaultsSet = false;
 
         var embedConfig = {
             "name": "Page",
@@ -125,7 +126,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                 }
                 
                 if (value.fullresult) {
-                    var placement = "ecDocViewer" + tuid + value["_path"] + index;
+                    var placement = 'ecDocViewer' + tuid + value['_path'] + sakai.api.Util.generateWidgetId();
                     wData.items[index].placement = placement;
                     docData[placement] = {
                         data: value.fullresult,
@@ -231,8 +232,8 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
             var dataFn = function( query, add ) {
                 var q = sakai.api.Server.createSearchString(query);
                 var options = {"page": 0, "items": 15, "q": q, "userid": sakai.data.me.user.userid};
-                searchUrl = sakai.config.URL.POOLED_CONTENT_SPECIFIC_USER;
-                sakai.api.Server.loadJSON(searchUrl.replace(".json", ""), function(success, data){
+                searchUrl = sakai.config.URL.SEARCH_ALL_FILES.replace(".json", ".infinity.json");
+                sakai.api.Server.loadJSON(searchUrl, function(success, data){
                     if (success) {
                         var suggestions = [];
                         $.each(data.results, function(i) {
@@ -317,6 +318,37 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                     $(".embedcontent_include_" + val, $rootel).show();
                 }
             });
+        };
+
+        /**
+         * Sets the default options in the display settings
+         * @param {Object} options The object containing the default options to set
+         *                          embedmethod {String} original or thumbnail
+         *                          layout {String} vertical or horizontal
+         *                          showName {Boolean} true to show name by default
+         *                          showDetails {Boolean} true to show details by default
+         *                          showDownload {Boolean} true to show download link by default
+         */
+        var setDefaultOptions = function(options) {
+            if (options.embedmethod === 'thumbnail') {
+                $('.embedcontent_option #thumbnail', $rootel).click();
+            } else if (options.embedmethod === 'original') {
+                $('.embedcontent_option #original_size', $rootel).click();
+            }
+            if (options.layout === 'vertical') {
+                $('#embedcontent_layout_vertical', $rootel).click();
+            } else if (options.layout === 'horizontal') {
+                $('#embedcontent_layout_horizontal', $rootel).click();
+            }
+            if (options.showName) {
+                $('#embedcontent_name_checkbox', $rootel).click();
+            }
+            if (options.showDetails) {
+                $('#embedcontent_details_checkbox', $rootel).click();
+            }
+            if (options.showDownload) {
+                $('#embedcontent_download_checkbox', $rootel).click();
+            }
         };
 
         /**
@@ -513,6 +545,10 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                 return false;
             } else {
                 toggleTabs(e.target);
+            }
+            if (tab === 'display' && !defaultsSet && !wData && sakai.widgets.embedcontent.defaultOptions) {
+                setDefaultOptions(sakai.widgets.embedcontent.defaultOptions);
+                defaultsSet = true;
             }
             return false;
         });

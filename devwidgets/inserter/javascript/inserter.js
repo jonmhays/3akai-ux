@@ -40,8 +40,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
         /////////////////////////////
 
         var $rootel = $('#' + tuid);
-        var hasInitialised = false;
-        var libraryData = [];
+        var libraryData = {};
         var library = false;
         var infinityContentScroll = false;
         var infinityCollectionScroll = false;
@@ -63,6 +62,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
         // UI Elements
         var inserterToggle = '.inserter_toggle';
         var inserterCollectionContentSearch = '#inserter_collection_content_search';
+        var inserterCollectionContentSearchForm = '#inserter_collection_content_search_form';
         var $inserterMimetypeFilter = $('#inserter_mimetype_filter', $rootel);
         var inserterCreateCollectionInput = '#inserter_create_collection_input';
         var topnavToggle = '#topnavigation_container .inserter_toggle';
@@ -100,12 +100,6 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
         var toggleInserter = function() {
             $inserterWidget.fadeToggle(250);
             $(topnavToggle).toggleClass('inserter_toggle_active');
-            if (!hasInitialised) {
-                doInit();
-                hasInitialised = true;
-            } else if (focusCreateNew) {
-                $(inserterCreateCollectionInput).focus();
-            }
             refreshWidget();
         };
 
@@ -114,10 +108,11 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
          * @param {Object} ev Event object from search input field keyup action
          */
         var searchCollection = function(ev) {
-            if ((ev.keyCode === $.ui.keyCode.ENTER || $(ev.target).hasClass('s3d-search-button')) && prevQ !== $.trim($(inserterCollectionContentSearch, $rootel).val())) {
+            if (prevQ !== $.trim($(inserterCollectionContentSearch, $rootel).val())) {
                 prevQ = $.trim($(inserterCollectionContentSearch, $rootel).val());
                 showCollection(contentListDisplayed);
             }
+            return false;
         };
 
         /**
@@ -163,10 +158,6 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
                 infinityContentScroll.kill();
                 infinityContentScroll = false;
             }
-            if (infinityCollectionScroll) {
-                infinityCollectionScroll.kill();
-                infinityCollectionScroll = false;
-            }
         };
 
         /**
@@ -180,7 +171,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
             library = false;
             $(inserterCollectionContentSearch, $rootel).val('');
             $inserterMimetypeFilter.val($('options:first', $inserterMimetypeFilter).val());
-            animateUIElements('reset');
+            showUIElements('reset');
             doInit();
         };
 
@@ -188,29 +179,15 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
          * Animate different UI elements according to the context of the widget
          * @param {String} context Context the widget is in
          */
-        var animateUIElements = function(context) {
+        var showUIElements = function(context) {
             switch (context) {
                 case 'reset':
-                    $inserterCollectionContentContainer.animate({
-                        'opacity': 0
-                    }, 400, function() {
-                        $inserterCollectionContentContainer.hide();
-                        $inserterInitContainer.show();
-                        $inserterInitContainer.animate({
-                            'opacity': 1
-                        }, 400);
-                    });
+                    $inserterCollectionContentContainer.hide();
+                    $inserterInitContainer.show();
                     break;
                 case 'results':
-                    $inserterInitContainer.animate({
-                        'opacity': 0
-                    }, 400, function() {
-                        $inserterInitContainer.hide();
-                        $inserterCollectionContentContainer.show();
-                        $inserterCollectionContentContainer.animate({
-                            'opacity': 1
-                        }, 400);
-                    });
+                    $inserterInitContainer.hide();
+                    $inserterCollectionContentContainer.show();
                     break;
             }
         };
@@ -228,7 +205,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
                             item.counts = {
                                 contentCount: group.counts.contentCount
                             };
-                            libraryData.push(item);
+                            libraryData[item._path] = item;
                         }
                     });
                 });
@@ -277,24 +254,21 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
                 $.each(sakai.data.me.groups, function(index, group) {
                     if (group['sakai:category'] === 'collection' && group.groupid === 'c-' + collectionId) {
                         // Display the collection counts in the UI
-                        updateCollectionCount(false, collectionId, group.counts.contentCount);
+                        updateCollectionCount(false, collectionId, group.counts.contentCount += amount);
                         // Update the header of a collection if necessary
                         if (inCollection) {
                             $('#inserter_header_itemcount > #inserter_header_itemcount_count', $rootel).text(
                                 group.counts.contentCount);
                         }
-                        $.each(libraryData, function(i, item) {
-                            if (item._path === collectionId) {
-                                item.counts.contentCount = group.counts.contentCount;
-                            }
-                        });
+                        libraryData[collectionId].counts.contentCount = group.counts.contentCount;
                     }
                 });
             } else {
+                var currentCount = parseInt($('#inserter_header_itemcount > #inserter_header_itemcount_count', $rootel).text(), 10);
                 // Update the header of the library if necessary
                 if (inCollection) {
                     $('#inserter_header_itemcount > #inserter_header_itemcount_count', $rootel).text(
-                        sakai.data.me.user.properties.contentCount);
+                        currentCount + amount);
                 }
             }
         };
@@ -306,7 +280,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
         var createNewCollection = function(title) {
             sakai.api.Util.progressIndicator.showProgressIndicator(sakai.api.i18n.getValueForKey('CREATING_YOUR_COLLECTION', 'inserter'), sakai.api.i18n.getValueForKey('WONT_BE_LONG', 'inserter'));
             title = title || sakai.api.i18n.getValueForKey('UNTITLED_COLLECTION', 'inserter');
-            var permissions = 'public';
+            var permissions = sakai.config.Permissions.Collections.defaultaccess;
             sakai.api.Content.Collections.createCollection(title, '', permissions, [], contentToAdd, [], function(success, path) {
                 sakai.api.Server.loadJSON('/p/' + path + '.json', function(success, collection) {
                     if (success) {
@@ -350,18 +324,15 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
          */
         var collectionClicked = function(ev) {
             if (!inCollection) {
-                animateUIElements('results');
+                showUIElements('results');
                 var idToShow = $(this).attr('data-collection-id');
                 if (idToShow === 'library') {
                     renderHeader('items', idToShow);
                     showCollection(idToShow);
                 } else {
-                    $.each(libraryData, function(i, item) {
-                        if (item._path === idToShow) {
-                            renderHeader('items', item);
-                            showCollection(item);
-                        }
-                    });
+                    var item = libraryData[idToShow];
+                    renderHeader('items', item);
+                    showCollection(item);
                 }
             }
         };
@@ -383,7 +354,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
                 // Share the collections that were dropped
                 sakai.api.Content.Collections.shareCollection(collectedCollections,
                     sakai.api.Content.Collections.getCollectionGroupId(collectionId), false, function() {
-                    addToCollectionCount(collectionId, 0, true);
+                    addToCollectionCount(collectionId, collectedCollections.length, true);
                     sakai.api.Util.progressIndicator.hideProgressIndicator();
                     if (inCollection) {
                         $.each(sakai.data.me.groups, function(index, item) {
@@ -396,7 +367,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
                         });
                         showCollection(contentListDisplayed);
                     } else {
-                        animateUIElements('reset');
+                        showUIElements('reset');
                     }
                 });
             });
@@ -435,11 +406,23 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
             var collectionId = target.attr('data-collection-id');
             var collectedContent = [];
             var collectedCollections = [];
+            var isCollection = (collectionId !== 'library' && collectionId !== sakai.data.me.user.userid);
             $.each(data, function(index, item) {
-                if (item.collection) {
-                    collectedCollections.push(item.entityid);
-                } else {
-                    collectedContent.push(item.entityid);
+                if (!isCollection || item.canshare) {
+                    if (item.collection) {
+                        // We don't need to send an extra POST since we can't add a collection to itself
+                        if (collectionId !== item.entityid) {
+                            collectedCollections.push(item.entityid);
+                        } else {
+                            sakai.api.Util.notification.show(
+                                sakai.api.i18n.getValueForKey('ADD_COLLECTION', 'inserter'),
+                                sakai.api.i18n.getValueForKey('CANT_ADD_A_COLLECTION_TO_ITSELF', 'inserter'),
+                                sakai.api.Util.notification.type.ERROR);
+                        }
+                    }
+                    else {
+                        collectedContent.push(item.entityid);
+                    }
                 }
             });
             if (collectedContent.length + collectedCollections.length > 0) {
@@ -449,11 +432,16 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
                 // If the collection the content was added to is not the user's library
                 // share the content with that collection
                 // If it is the library execute different API functions
-                if (collectionId !== 'library' && collectionId !== sakai.data.me.user.userid) {
+                if (isCollection) {
                     addDroppedToIndependentCollection(collectionId, collectedCollections, collectedContent);
                 } else {
                     addDroppedToMyLibrary(collectionId, collectedCollections, collectedContent);
                 }
+            } else {
+                sakai.api.Util.notification.show(
+                    sakai.api.i18n.getValueForKey('ADD_CONTENT'),
+                    sakai.api.i18n.getValueForKey('COULDNT_ADD_CONTENT', 'inserter'),
+                    sakai.api.Util.notification.type.ERROR);
             }
         };
 
@@ -610,7 +598,6 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
                 scope: 'content'
             }, $inserterContentInfiniteScrollContainerList);
             addDnDToElements();
-            animateUIElements('results');
         };
 
         /**
@@ -682,7 +669,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
                 // empty list processor
             }, sakai.config.URL.INFINITE_LOADING_ICON, handleLibraryItems, function() {
                 // post renderer
-                animateUIElements('reset');
+                showUIElements('reset');
                 sakai.api.Util.Draggable.setupDraggable({
                     connectToSortable: '.contentauthoring_cell_content'
                 }, $inserterInitContainer);
@@ -709,7 +696,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
                 toggleInserter();
             } else {
                 renderHeader('init');
-                animateUIElements('reset');
+                showUIElements('reset');
                 inCollection = false;
                 $(inserterCreateCollectionInput).focus();
             }
@@ -735,7 +722,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
          * Add binding to various elements of the widget
          */
         var addBinding = function() {
-            $(window).on('click', '#subnavigation_add_collection_link', openAddNewCollection);
+            $('#subnavigation_add_collection_link').on('click', openAddNewCollection);
             $(window).on('create.collections.sakai', openAddNewCollection);
             $(window).on('done.deletecontent.sakai', removeFromLibraryCount);
             $(window).on('done.newaddcontent.sakai', function() {
@@ -751,11 +738,10 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
                     toggleInserter();
                 }
             });
-            $(document).on('click', inserterToggle, toggleInserter);
+            $(window).on('click', inserterToggle, toggleInserter);
             $inserterCollectionInfiniteScrollContainer.on('click', 'li', collectionClicked);
             $inserterCollectionContentContainer.on('click', inserterAllCollectionsButton, refreshWidget);
-            $inserterCollectionContentContainer.on('keyup', inserterCollectionContentSearch, searchCollection);
-            $inserterCollectionContentContainer.on('click', '.s3d-search-button', searchCollection);
+            $inserterCollectionContentContainer.on('submit', inserterCollectionContentSearchForm, searchCollection);
             $inserterCollectionContentContainer.on('change', inserterMimetypeFilter, function() {
                 showCollection(contentListDisplayed);
             });
