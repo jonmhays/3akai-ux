@@ -157,12 +157,13 @@ require(["jquery", "sakai/sakai.api.core", "myb/myb.api.core"], function($, saka
             }
             var auth = {
                 "externalAuth": externalAuth,
+                "internal": sakai.config.Authentication.internal,
                 "internalAndExternal": sakai.config.Authentication.internalAndExternal,
                 "Authentication": sakai.config.Authentication
             };
-            
+
             auth['CalCentralCASSignIn'] = (sakai.config.Authentication.external.length === 1); // CalCentralSpecific
-            
+
             $(topnavUserContainer).html(sakai.api.Util.TemplateRenderer(topnavUserTemplate, {
                 "anon" : sakai.data.me.user.anon,
                 "auth": auth,
@@ -483,7 +484,6 @@ require(["jquery", "sakai/sakai.api.core", "myb/myb.api.core"], function($, saka
 
             for (var i in sakai.config.Navigation) {
                 if (sakai.config.Navigation.hasOwnProperty(i)) {
-
                     var temp = "";
                     /* Check that the user is anon, the nav link is for anon
                      * users, and if the link is the account create link,
@@ -1093,14 +1093,14 @@ require(["jquery", "sakai/sakai.api.core", "myb/myb.api.core"], function($, saka
             addBinding();
             renderOverlays();
             forceShowLoginUrl();
-            
+
             /* begin CalCentral custom: sign in is link to CAS login */
-            
+
             var $loginLink = $("#topnavigation_user_options_login");
             $loginLink.click(function (){
                 location.href = sakai.config.Authentication.external[0].url;
             });
-            
+
             /* end CalCentral custom */
 
         };
