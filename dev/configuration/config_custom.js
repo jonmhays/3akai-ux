@@ -36,7 +36,7 @@ define(["config/config", "config/env"], function(config) {
     ];
     config.allowPasswordChange = false;
 
-    // Extend the set of enabled dashboard widgets(they're undeletable without this)
+    // Extend the set of enabled dashboard widgets(so they can be re-added after user removal)
     // This may go away in 1.4 - duplicative with existing widget configs
     config.enabledDashboardWidgets.push("walktime","quicklinks");
 
