@@ -207,22 +207,13 @@
         </form>
     {/macro}
     {if anon}
-        <div class="s3d-dropdown-menu{if auth.internalAndExternal} topnavigation_dual_login{/if}" id="topnavigation_user_options_login_wrapper">
-			{if auth.CalCentralCASSignIn}
-            <div class="s3d-dropdown-menu" id="topnavigation_user_options_login_wrapper">
-                <a href="#" id="topnavigation_user_options_login" class="s3d-bold">__MSG__SIGN_IN__</a>
-            </div>
-            {else}
+        <div class="s3d-dropdown-menu{if auth.internal} topnavigation_dual_login{/if}" id="topnavigation_user_options_login_wrapper">
             <button id="topnavigation_user_options_login">__MSG__SIGN_IN__</button>
-            {/if}
+            {if auth.internal}
             <div id="topnavigation_user_options_login_fields" class="s3d-dropdown-container" style="display:none;">
-            {if auth.externalAuth || auth.internalAndExternal}
-                ${externalAuthMenu(auth)}
-            {/if}
-            {if !auth.externalAuth || auth.internalAndExternal}
                 ${internalAuthMenu(auth)}
-            {/if}
             </div>
+            {/if}
         </div>
     {else}
         <ul id="topnavigation_user_options_list" role="menu">
