@@ -49,7 +49,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
             $help_dont_show = $(".help_dont_show", $rootel);
 
 
-        sakai.api.Util.Modal.setup($help_widget, {
+        $help_widget.jqm({
             modal: true,
             overlay: 20,
             toTop: true
@@ -69,13 +69,14 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                     } else {
                         $help_dont_show.removeAttr("checked");
                     }
-                    sakai.api.Util.Modal.open($help_widget);
+                    sakai.api.Util.bindDialogFocus($help_widget);
+                    $help_widget.jqmShow();
                 }
             }
         };
 
         var hideHelp = function() {
-            sakai.api.Util.Modal.close($help_widget);
+            $help_widget.jqmHide();
             $(window).trigger("done.help.sakai");
         };
 

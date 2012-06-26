@@ -161,7 +161,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
 
             // get list of content items
             $.ajax({
-                url: sakai.config.URL.POOLED_CONTENT_SPECIFIC_USER,
+                url: "/var/search/pool/manager-viewer.json",
                 cache: false,
                 data: {
                     userid: sakai.data.me.user.userid,

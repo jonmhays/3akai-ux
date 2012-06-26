@@ -100,7 +100,6 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                         });
                     });
                     renderSelected();
-                    $assignlocationSaveButton.removeAttr('disabled');
                 }
             });
         };
@@ -109,7 +108,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
             if ( saveCallback ) {
                 saveCallback( initiallyRendered );
             }
-            sakai.api.Util.Modal.close($assignlocationContainer);
+            $assignlocationContainer.jqmHide();
         };
 
         var addWidgetBinding = function(){
@@ -123,6 +122,8 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
             initTree();
             addTreeBinding();
             addWidgetBinding();
+            // position dialog box at users scroll position
+            sakai.api.Util.positionDialogBox($assignlocationContainer);
             hash.w.show();
             renderSelected(true);
         };
@@ -197,15 +198,15 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                 if ( $target.parents( ".s3d-dialog" ).length ) {
                     zIndex = 5000;
                 }
-                sakai.api.Util.Modal.setup($assignlocationContainer, {
+                $assignlocationContainer.jqm({
                     modal: true,
                     toTop: true,
                     onShow: showContainer,
                     onClose: closeContainer,
                     zIndex: zIndex
                 });
-                sakai.api.Util.Modal.open($assignlocationContainer);
-                $assignlocationSaveButton.attr('disabled', 'disabled');
+                sakai.api.Util.bindDialogFocus($assignlocationContainer);
+                $assignlocationContainer.jqmShow();
             });
         };
         doInit();

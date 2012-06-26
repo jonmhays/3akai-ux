@@ -191,7 +191,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                         $(this).remove();
                         numJoinrequests -= 1;
                         if (numJoinrequests === 0) {
-                            sakai.api.Util.Modal.close($joinrequests_container);
+                            $joinrequests_container.jqmHide();
                         }
                     });
                 } else {
@@ -261,7 +261,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
          * Initialize the modal dialog
          */
         var initializeJQM = function(){
-            sakai.api.Util.Modal.setup($joinrequests_container, {
+            $joinrequests_container.jqm({
                 modal: true,
                 overlay: 20,
                 toTop: true,
@@ -296,7 +296,8 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                     }
                     // get join request data
                     getJoinRequestsData(joinGroupID);
-                    sakai.api.Util.Modal.open($joinrequests_container);
+                    sakai.api.Util.bindDialogFocus($joinrequests_container);
+                    $joinrequests_container.jqmShow();
                 } else {
                     debug.warn("The group's authprofile node wasn't passed in to init.joinrequests.sakai");
                 }

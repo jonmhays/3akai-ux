@@ -468,7 +468,7 @@ require(["jquery", "sakai/sakai.api.core", "jquery-ui"], function($, sakai) {
                   $(document).click(function(e) {
                       var $clicked = $(e.target);
 
-                      // Check if the clicked target is not the settings menu
+                      // Check if one of the parents is the chatstatuscontainer
                       if (!$clicked.is(".settings", $rootel)) {
                           $("#widget_settings_menu", $rootel).hide();
                           $("#" + currentSettingsOpen + "_settings", $rootel).hide();
@@ -719,13 +719,13 @@ require(["jquery", "sakai/sakai.api.core", "jquery-ui"], function($, sakai) {
 
         var beforeFinishAddWidgets = function() {
             showDashboard();
-            sakai.api.Util.Modal.close(changeLayoutDialog + rootelClass);
+            $(changeLayoutDialog + rootelClass).jqmHide();
         };
 
         $("#select-layout-finished", $rootel).bind("click",
         function(ev) {
             if (currentlySelectedLayout === settings.layout) {
-                sakai.api.Util.Modal.close(changeLayoutDialog + rootelClass);
+                $(changeLayoutDialog + rootelClass).jqmHide();
             } else {
 
                 var selectedlayout = currentlySelectedLayout;
@@ -803,7 +803,7 @@ require(["jquery", "sakai/sakai.api.core", "jquery-ui"], function($, sakai) {
             hash.w.show();
         };
 
-        sakai.api.Util.Modal.setup($(changeLayoutDialog, $rootel), {
+        $(changeLayoutDialog, $rootel).jqm({
             modal: true,
             overlay: 20,
             toTop: true,
@@ -814,7 +814,8 @@ require(["jquery", "sakai/sakai.api.core", "jquery-ui"], function($, sakai) {
             if (title) {
                 $("#paget_title_only", $rootel).html(" " + title);
             }
-            sakai.api.Util.Modal.open($(changeLayoutDialog, $rootel));
+            sakai.api.Util.bindDialogFocus(changeLayoutDialog);
+            $(changeLayoutDialog, $rootel).jqmShow();
         };
 
         /**
@@ -888,7 +889,7 @@ require(["jquery", "sakai/sakai.api.core", "jquery-ui"], function($, sakai) {
 
             $(".close_goodies_dialog", $rootelClass).unbind("click");
             $(".close_goodies_dialog", $rootelClass).bind("click", function(e) {
-                sakai.api.Util.Modal.close(addGoodiesDialog + rootelClass);
+                $(addGoodiesDialog + rootelClass).jqmHide();
             });
 
         };
@@ -900,30 +901,28 @@ require(["jquery", "sakai/sakai.api.core", "jquery-ui"], function($, sakai) {
 
             $(addGoodiesListContainer, $rootelClass).html("");
 
-            $.each(sakai.config.enabledDashboardWidgets,
-                function addWidgetToList(i) {
-
-                var widgetName = sakai.config.enabledDashboardWidgets[i];
-                var widget = sakai.widgets[widgetName];
-                var alreadyIn = false;
-                // Run through the list of widgets that are already on my dashboard and decide
-                // whether the current widget is already on the dashboard (so show the Remove row),
-                // or whether the current widget is not on the dashboard (and thus show the Add row)
-                $.each(settings.columns, function checkAlreadyIn(c) {
-                    if (c.indexOf('column') > -1) {
-                        for (var i = 0, l = settings.columns[c].length; i < l; i++) {
-                            if (settings.columns[c][i].name === widgetName) {
-                                alreadyIn = true;
+            for (var l in sakai.widgets) {
+                if (sakai.widgets.hasOwnProperty(l)) {
+                    var alreadyIn = false;
+                    // Run through the list of widgets that are already on my dashboard and decide
+                    // whether the current widget is already on the dashboard (so show the Remove row),
+                    // or whether the current widget is not on the dashboard (and thus show the Add row)
+                    for (var c in settings.columns) {
+                        if (settings.columns.hasOwnProperty(c) && c.indexOf("column") > -1) {
+                            for (var ii = 0; ii < settings.columns[c].length; ii++) {
+                                if (settings.columns[c][ii].name === l) {
+                                    alreadyIn = true;
+                                }
                             }
                         }
                     }
-                });
-                if (widget && widget[widgetPropertyName]) {
-                    var index = addingPossible.items.length;
-                    addingPossible.items[index] = widget;
-                    addingPossible.items[index].alreadyIn = alreadyIn;
+                    if (sakai.widgets[l][widgetPropertyName]) {
+                        var index = addingPossible.items.length;
+                        addingPossible.items[index] = sakai.widgets[l];
+                        addingPossible.items[index].alreadyIn = alreadyIn;
+                    }
                 }
-            });
+            }
 
             // Render the list of widgets. The template will render a remove and add row for each widget, but will
             // only show one based on whether that widget is already on my dashboard
@@ -942,7 +941,7 @@ require(["jquery", "sakai/sakai.api.core", "jquery-ui"], function($, sakai) {
         * to my dashboard. Before it shows on the screen, we'll render the list of
         * widgets through a TrimPath template
         */
-        sakai.api.Util.Modal.setup($(addGoodiesDialog, $rootel), {
+        $(addGoodiesDialog, $rootel).jqm({
             modal: true,
             overlay: 20,
             toTop: true,
@@ -961,7 +960,8 @@ require(["jquery", "sakai/sakai.api.core", "jquery-ui"], function($, sakai) {
         
         var showAddWidgetDialog = function(iTuid){
             if (iTuid === tuid) {
-                sakai.api.Util.Modal.open($(addGoodiesDialog, $rootel));
+                sakai.api.Util.bindDialogFocus(addGoodiesDialog);
+                $(addGoodiesDialog, $rootel).jqmShow();
             }
         };
 

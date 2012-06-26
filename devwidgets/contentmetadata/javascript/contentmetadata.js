@@ -370,8 +370,7 @@ require(["jquery", "sakai/sakai.api.core", "/dev/javascript/content_profile.js"]
          * Add binding/events to the elements in the widget
          */
         var addBinding = function(){
-            $(".contentmetadata_editable_for_maintainers").toggleClass("contentmetadata_editable",
-                (sakai_global.content_profile.content_data.isManager || sakai_global.content_profile.content_data.isEditor));
+            $(".contentmetadata_editable_for_maintainers").toggleClass("contentmetadata_editable", sakai_global.content_profile.content_data.isManager);
 
             $contentmetadataShowMore.die("click").live("click", animateData);
 

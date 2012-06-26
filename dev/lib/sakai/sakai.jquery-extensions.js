@@ -30,8 +30,6 @@
  */
 require(["jquery", "jquery-plugins/jquery.validate"], function(jQuery) {
 
-var msie = $.browser.msie;
-
 (function($){
 
     /**
@@ -122,17 +120,6 @@ var msie = $.browser.msie;
                     o.url += "&";
                 }
                 o.url += "_charset_=utf-8";
-            }
-            if (msie) {
-                var str = "" + o.url;
-                o.url = "";
-                for (var i = 0; i < str.length; i++) {
-                    if (str.charCodeAt(i) > 127) {
-                        o.url += encodeURIComponent(str[i]);
-                    } else {
-                        o.url += str[i];
-                    }
-                }
             }
             return _ajax.call(this, o);
         }

@@ -59,6 +59,10 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _){
         var selected = "selected";
         var addAreaSubnavButtonClass = "subnav_button";
 
+        var $autoSuggestElt = false,
+            $autoSuggestListCatElt = false,
+            autoSuggestElts = {};
+
         ///////////
         // UTILS //
         ///////////
@@ -81,6 +85,8 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _){
          * Centers the overlay on the screen and handles with variable widths of the overlay
          */
         var centerOverlay = function(){
+            sakai.api.Util.positionDialogBox($addAreaContainer);
+
             $addAreaContainer.animate({
                 'margin-left': -1 * ($addAreaContainer.width() / 2 + 20)
             }, 400);
@@ -93,12 +99,14 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _){
             $("#addarea_new_name").val("");
             $("#addarea_new_permissions").val("");
             $("#addarea_new_numberofpages").val("");
+            $("#addarea_new_tagsandcategories").val("");
         };
 
         /*
          * Reset the UI for existing content
          */
         var resetExisting = function(){
+            sakai.api.Util.AutoSuggest.reset( $autoSuggestElt );
             $(".addarea_existing_name").val("");
             $(".addarea_existing_permissions").val("");
             $(".addarea_existing_bottom").html("");
@@ -110,6 +118,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _){
         var resetContentList = function(){
             $("#addarea_contentlist_name").val(sakai.api.i18n.getValueForKey("LIBRARY"));
             $("#addarea_contentlist_permissions").val("");
+            $("#addarea_contentlist_tagsandcategories").val("");
         };
 
         /*
@@ -118,6 +127,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _){
         var resetParticipantsList = function(){
             $("#addarea_participants_name").val(sakai.api.i18n.getValueForKey("PARTICIPANTS", "addarea"));
             $("#addarea_participants_permissions").val("");
+            $("#addarea_participants_tagsandcategories").val("");
         };
 
         /*
@@ -127,13 +137,14 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _){
             $("#addarea_widgets_name").val("");
             $("#addarea_widgets_permissions").val("");
             $("#addarea_widgets_numberofpages").val("");
+            $("#addarea_widgets_tagsandcategories").val("");
         };
 
         var resetNavigation = function(){
             $("#addarea_content_menu .addarea_content_menu_item").removeClass("selected");
             $("#addarea_content_menu .addarea_content_menu_item:first").addClass("selected");
             $("#addarea_content_container > div").hide();
-            // Do a click so it runs through switchNavigation
+            // Do a click so it runs through switchNavigation so it can set up the AutoSuggest
             $( "button[data-containertoshow='addarea_new_container']" ).click();
         };
 
@@ -202,6 +213,14 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _){
                 getCurrentlyViewingDocs();
             }
             checkTitleProvided();
+
+            // Setup AutoSuggest
+            if ( !autoSuggestElts[ containerToShow ] ) {
+                autoSuggestElts[ containerToShow ] = $( "#" + containerToShow ).find( ".addarea_autosuggest_tags_cats" );
+            }
+            $autoSuggestElt = autoSuggestElts[ containerToShow ];
+            $autoSuggestListCatElt = $( "#" + containerToShow ).find( ".list_categories" );
+            sakai.api.Util.AutoSuggest.setupTagAndCategoryAutosuggest( $autoSuggestElt, null, $autoSuggestListCatElt );
         };
 
         /*
@@ -341,11 +360,14 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _){
                             }
                         });
                     });
-                    sakai.api.Server.saveJSON('/p/' + poolId, toCreate, function(success2, data2) {
-                        sakai.api.Server.batch(batchRequests, function(success3, data3) {
-                            if (success3) {
-                                callback(poolId, itemURLName);
-                            }
+                    var tags = sakai.api.Util.AutoSuggest.getTagsAndCategories($autoSuggestElt, true);
+                    sakai.api.Util.tagEntity('/p/' + poolId, tags, [], function() {
+                        sakai.api.Server.saveJSON('/p/' + poolId, toCreate, function(success2, data2) {
+                            sakai.api.Server.batch(batchRequests, function(success3, data3) {
+                                if (success3) {
+                                    callback(poolId, itemURLName);
+                                }
+                            });
                         });
                     });
                 }
@@ -516,7 +538,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _){
          * Selects a Sakai Doc in the world to show and triggers the permissions overlay if necessary
          */
         var selectPageAndShowPermissions = function(poolId, path, docPermission){
-            sakai.api.Util.Modal.close($addAreaContainer);
+            $addAreaContainer.jqmHide();
             if (docPermission === "advanced"){
                 $(window).trigger("permissions.area.trigger", [{
                     isManager: true,
@@ -748,7 +770,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _){
 
             if (library) {
                 json["userid"] = sakai.data.me.user.userid;
-                url = sakai.config.URL.POOLED_CONTENT_SPECIFIC_USER;
+                url = "/var/search/pool/manager-viewer.json";
             }
             sakai.api.Server.loadJSON( url, function(success, data) {
                 var sortOrder = $(".addarea_existing_container:visible").find(".addarea_existing_sort").val();
@@ -803,14 +825,15 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _){
          * Shows the jqModal overlay for adding areas
          */
         var initializeJQM = function(){
-            sakai.api.Util.Modal.setup($addAreaContainer, {
+            $addAreaContainer.jqm({
                 modal: true,
                 overlay: 20,
                 toTop: true,
                 onClose: resetWidget
             });
             centerOverlay();
-            sakai.api.Util.Modal.open($addAreaContainer);
+            sakai.api.Util.bindDialogFocus($addAreaContainer);
+            $addAreaContainer.jqmShow();
         };
 
         /*

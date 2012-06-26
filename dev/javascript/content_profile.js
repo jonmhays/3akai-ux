@@ -102,8 +102,6 @@ require(["jquery","sakai/sakai.api.core", "/dev/javascript/myb/myb.securepage.js
                     type = "content_anon";
                 } else if (sakai_global.content_profile.content_data.isManager) {
                     type = "content_managed";
-                } else if (sakai_global.content_profile.content_data.isEditor) {
-                    type = 'content_edited';
                 } else if (sakai_global.content_profile.content_data.isViewer) {
                     type = "content_shared";
                 } else {
@@ -127,7 +125,6 @@ require(["jquery","sakai/sakai.api.core", "/dev/javascript/myb/myb.securepage.js
             content_path = "/p/" + content_path[0];
 
             if (content_path != previous_content_path) {
-                $('#contentauthoring_widget').html('');
                 previous_content_path = content_path;
                 globalPageStructure = false;
                 loadContentProfile(function(){
@@ -262,11 +259,11 @@ require(["jquery","sakai/sakai.api.core", "/dev/javascript/myb/myb.securepage.js
             setColumnLayout(true, false);
         });
 
-        var setEditProperty = function(structure, manager, editor) {
-            for (var i in structure) {
-                if (structure.hasOwnProperty(i)) {
-                    structure[i]._canEdit = manager || editor;
-                    structure[i]._canSubedit = manager || editor;
+        var setManagerProperty = function(structure, value){
+            for (var i in structure){
+                if (structure.hasOwnProperty(i)){
+                    structure[i]._canEdit = value;
+                    structure[i]._canSubedit = value;
                 }
             }
             return structure;
@@ -274,7 +271,7 @@ require(["jquery","sakai/sakai.api.core", "/dev/javascript/myb/myb.securepage.js
 
         var renderSakaiDoc = function(pagestructure) {
             pagestructure = sakai.api.Server.cleanUpSakaiDocObject(pagestructure);
-            pagestructure.structure0 = setEditProperty(pagestructure.structure0, sakai_global.content_profile.content_data.isManager, sakai_global.content_profile.content_data.isEditor);
+            pagestructure.structure0 = setManagerProperty(pagestructure.structure0, sakai_global.content_profile.content_data.isManager);
             if (getPageCount(pagestructure) >= 3) {
                 setColumnLayout(true, true);
             } else {

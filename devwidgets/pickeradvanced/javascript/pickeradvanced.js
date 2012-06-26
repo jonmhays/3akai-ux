@@ -274,7 +274,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
             });
         };
 
-        sakai.api.Util.Modal.setup($pickeradvanced_container, {
+        $pickeradvanced_container.jqm({
             modal: true,
             overlay: 20,
             zIndex: 5000,
@@ -282,10 +282,10 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
         });
 
         var addPeople = function() {
-            // this value is a comma-delimited list
-            // split it and get rid of any empty values in the array
-            sakai.api.Util.Modal.close($pickeradvanced_container);
-            $(window).trigger("finished.pickeradvanced.sakai", {"toAdd":pickerData["selected"]});
+          // this value is a comma-delimited list
+          // split it and get rid of any empty values in the array
+          $pickeradvanced_container.jqmHide();
+          $(window).trigger("finished.pickeradvanced.sakai", {"toAdd":pickerData["selected"]});
         };
 
 
@@ -295,20 +295,24 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
 
         $(window).unbind("init.pickeradvanced.sakai");
         $(window).bind("init.pickeradvanced.sakai", function(e, config) {
+            // position dialog box at users scroll position
+            sakai.api.Util.positionDialogBox($pickeradvanced_container);
+
             firstTime = true;
             render(config.config);
-            sakai.api.Util.Modal.open($pickeradvanced_container);
+            sakai.api.Util.bindDialogFocus($pickeradvanced_container);
+            $pickeradvanced_container.jqmShow();
             pickerlist = config.list;
         });
 
         $pickeradvanced_close_dialog.unbind("click");
         $pickeradvanced_close_dialog.bind("click", function() {
-            sakai.api.Util.Modal.close($pickeradvanced_container);
+            $pickeradvanced_container.jqmHide();
         });
 
         $pickeradvanced_close_button.unbind("click");
         $pickeradvanced_close_button.bind("click", function() {
-            sakai.api.Util.Modal.close($pickeradvanced_container);
+            $pickeradvanced_container.jqmHide();
         });
 
         $pickeradvanced_search_filter.die("click");

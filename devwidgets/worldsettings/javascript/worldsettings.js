@@ -58,17 +58,16 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
         var showWarning = function(){
             var newVisibility = $(worldsettingsCanBeFoundIn);
             var newVisibilityVal = $.trim(newVisibility.val());
-            var oldVisibilityVal = sakai_global.group.groupData['sakai:group-visible'];
             var oldVisibilityIndex = parseInt(newVisibility.find("option[value='" + sakai_global.group.groupData["sakai:group-visible"] + "']").attr("index"), 10);
-            if (sakai_global.group.groupData['sakai:group-visible'] === newVisibilityVal || parseInt(newVisibility.attr('selectedIndex'), 10) > oldVisibilityIndex || newVisibilityVal === 'members-only' || oldVisibilityVal === 'public') {
+            if (sakai_global.group.groupData["sakai:group-visible"] === newVisibilityVal || parseInt(newVisibility.attr("selectedIndex"), 10) > oldVisibilityIndex || newVisibilityVal === "members-only"){
                 $worldsettingsForm.submit();
             } else {
                 $("#worldsettings_warning_container_text").html(sakai.api.Util.TemplateRenderer("worldsettings_warning_container_text_template", {
                     "visibility": newVisibilityVal,
                     "group": sakai_global.group.groupData['sakai:group-title']
                 }));
-
-                sakai.api.Util.Modal.open('#worldsettings_warning_container');
+                sakai.api.Util.bindDialogFocus($("#worldsettings_warning_container"));
+                $("#worldsettings_warning_container").jqmShow();
             }
         };
 
@@ -93,12 +92,12 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
             };
 
             sakai.api.Groups.updateGroupProfile(worldId, worldData, worldTags, sakai_global.group.groupData, function( success ) {
-                $worldsettingsContainer.find("select, input").removeAttr("disabled");
+                 $worldsettingsContainer.find("select, input").removeAttr("disabled");
 
-                $(window).trigger('updatedTitle.worldsettings.sakai', worldTitle);
-                sakai.api.Util.notification.show($("#worldsettings_success_title").html(), $("#worldsettings_success_body").html());
-                sakai.api.Util.Modal.close($worldsettingsDialog);
-                sakai.api.Util.Modal.close('#worldsettings_warning_container');
+                 $(window).trigger("sakai.entity.updateTitle", worldTitle);
+                 sakai.api.Util.notification.show($("#worldsettings_success_title").html(), $("#worldsettings_success_body").html());
+                 $worldsettingsDialog.jqmHide();
+                 $("#worldsettings_warning_container").jqmHide();
             });
         };
 
@@ -142,19 +141,20 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
             worldId = _worldId;
             renderWorldSettings();
             bindEvents();
-            sakai.api.Util.Modal.setup($worldsettingsDialog, {
+            $worldsettingsDialog.jqm({
                 modal: true,
                 overlay: 20,
                 toTop: true,
                 zIndex: 3000
             });
-            sakai.api.Util.Modal.setup('#worldsettings_warning_container', {
+            $("#worldsettings_warning_container").jqm({
                 modal: true,
                 overlay: 20,
                 toTop: true,
                 zIndex: 4000
             });
-            sakai.api.Util.Modal.open($worldsettingsDialog);
+            sakai.api.Util.bindDialogFocus($worldsettingsDialog);
+            $worldsettingsDialog.jqmShow();
         };
 
         // run the initialization function when the widget object loads

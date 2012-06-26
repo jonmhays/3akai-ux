@@ -54,7 +54,6 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai){
         "contentpreview",
         "createpage",
         "dashboard",
-        "dashboardactivity",
         "deletecontent",
         "discussion",
         "displayprofilesection",

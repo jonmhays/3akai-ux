@@ -1,7 +1,7 @@
 /*
- *  /MathJax/jax/element/mml/optable/Latin1Supplement.js
+ *  ../SourceForge/trunk/mathjax/jax/element/mml/optable/Latin1Supplement.js
  *  
- *  Copyright (c) 2012 Design Science, Inc.
+ *  Copyright (c) 2010 Design Science, Inc.
  *
  *  Part of the MathJax library.
  *  See http://www.mathjax.org for details.
@@ -12,5 +12,7 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-(function(a){var c=a.mo.OPTYPES;var b=a.TEXCLASS;MathJax.Hub.Insert(a.mo.prototype,{OPTABLE:{postfix:{"\u00B0":c.ORD,"\u00B4":c.ACCENT,"\u00B8":c.ACCENT}}});MathJax.Ajax.loadComplete(a.optableDir+"/Latin1Supplement.js")})(MathJax.ElementJax.mml);
+MathJax.Unpack([
+  ['(function(a){var c=a.mo.OPTYPES;var b=a.TEXCLASS;MathJax.Hub.Insert(a.mo.prototype,{OPTABLE:{postfix:{"\\u00B0":c.ORD,"\\u00B4":c.ACCENT,"\\u00B8":c.ACCENT}}});MathJax.Ajax.loadComplete(a.optableDir+"/Latin1Supplement.js")})(MathJax.ElementJax.mml);']
+]);
 

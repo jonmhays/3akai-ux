@@ -118,8 +118,6 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                 "roles": currentTemplate.roles,
                 "sakai": sakai
             }));
-            $addpeopleSelectedContactsContainer.prop('scrollTop',
-                $addpeopleSelectedContactsContainer.prop('scrollHeight'));
             enableDisableControls(true);
         };
 
@@ -224,7 +222,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                         sakai.api.Util.notification.show(sakai.api.i18n.getValueForKey("MANAGE_PARTICIPANTS", "addpeople"), sakai.api.i18n.getValueForKey("NEW_SETTINGS_HAVE_BEEN_APPLIED", "addpeople"));
                     }
                 }
-                sakai.api.Util.Modal.close($addpeopleContainer);
+                $addpeopleContainer.jqmHide();
             } else {
                 var errorMsg = sakai.api.i18n.getValueForKey("SELECT_AT_LEAST_ONE_MANAGER", "addpeople");
                 if (existingGroup && sakai_global.group){
@@ -440,7 +438,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
          * Initialize the modal dialog
          */
         var initializeJQM = function(){
-            sakai.api.Util.Modal.setup($addpeopleContainer, {
+            $addpeopleContainer.jqm({
                 modal: true,
                 overlay: 20,
                 toTop: true,
@@ -449,7 +447,8 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
         };
 
         var showDialog = function(){
-            sakai.api.Util.Modal.open($addpeopleContainer);
+            $addpeopleContainer.jqmShow();
+            sakai.api.Util.bindDialogFocus($addpeopleContainer);
         };
 
         var addBinding = function(){

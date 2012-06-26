@@ -100,7 +100,6 @@
                     item = '#' + item;
                 }
                 $(item, $container).fadeOut(false, function() {
-                    $(this).remove();
                     isDoingExtraSearch = false;
                     toFadeOut++;
                     if (toFadeOut === items.length) {

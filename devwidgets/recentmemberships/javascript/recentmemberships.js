@@ -72,8 +72,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                 size: "",
                 _mimeType: sakai.api.Content.getMimeType(result),
                 "_mimeType/page1-small": result["_mimeType/page1-small"],
-                "_path": result["_path"],
-                canShare: sakai.api.Content.canCurrentUserShareContent(result)
+                "_path": result["_path"]
             };
             // set the mimetype and corresponding image
             if(item._mimeType && sakai.config.MimeTypes[item._mimeType]) {

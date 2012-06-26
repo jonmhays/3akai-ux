@@ -10,7 +10,7 @@
 </div>
 
 <div id="displayprofilesection_header_template" style="display:none"><!--
-    <h1 class="s3d-contentpage-title">${pageTitle}</h1>
+    <div class="s3d-contentpage-title">${section.label}</div>
 --></div>
 
 <div id="displayprofilesection_edit_template" style="display:none"><!--
@@ -111,12 +111,12 @@
     <div class="s3d-no-results-container">
         <div class="s3d-no-results-arrow-up"></div>
         <div class="s3d-no-results-icon s3d-no-results-contacts"></div>
-        <p>
+        <h1>
             <span id="displayprofilesection_no_results_text">${errorString}</span>
             <span id="displayprofilesection_no_results_message" {if !showMessage}style="display:none;"{/if}>
                 <button type="button" id="displayprofilesection_user_message" class="s3d-link-button sakai_sendmessage_overlay" sakai-entityid="${userid}" sakai-entityname="${displayName}" data-sakai-entitytype="user">__MSG__SEND_THEM_A_MESSAGE__</button> __MSG__TO_REMIND_THEM__
             </span>
-        </p>
+        </h1>
     </div>
 --></div>
 
@@ -141,13 +141,7 @@
             {var field_data = data && data[ field_key ] ? data[ field_key ] : false}
             {if field_data && field_data.value && ($.trim(field_data.value) !== "" || $.isArray(field_data.value))}
             <div class="displayprofilesection_field">
-                <span class="s3d-input-label">
-                    {if field.altLabel}
-                        ${field.altLabel}:
-                    {else}
-                        ${field.label}:
-                    {/if}
-                </span>
+                <span class="s3d-input-label">${field.label}:</span>
                 ${renderField(field, field_key, field_data)}
             </div>
             {/if}

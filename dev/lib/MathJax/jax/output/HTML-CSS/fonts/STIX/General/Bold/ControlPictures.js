@@ -1,7 +1,7 @@
 /*
- *  /MathJax/jax/output/HTML-CSS/fonts/STIX/General/Bold/ControlPictures.js
+ *  ../SourceForge/trunk/mathjax/jax/output/HTML-CSS/fonts/STIX/General/Bold/ControlPictures.js
  *  
- *  Copyright (c) 2012 Design Science, Inc.
+ *  Copyright (c) 2010 Design Science, Inc.
  *
  *  Part of the MathJax library.
  *  See http://www.mathjax.org for details.
@@ -12,5 +12,7 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-MathJax.Hub.Insert(MathJax.OutputJax["HTML-CSS"].FONTDATA.FONTS["STIXGeneral-bold"],{9251:[31,120,500,40,460]});MathJax.Ajax.loadComplete(MathJax.OutputJax["HTML-CSS"].fontDir+"/General/Bold/ControlPictures.js");
+MathJax.Unpack([
+  ['MathJax.Hub.Insert','(MathJax.OutputJax["HTML-CSS"].','FONTDATA.FONTS["STIXGeneral-bold"],{9251:[31,120,500,40,460]});MathJax.Ajax.loadComplete',1,'fontDir+"/General/Bold/ControlPictures.js");']
+]);
 

@@ -62,7 +62,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _){
         var permissionsSet = function(success, data){
             if (success) {
                 // Hide the dialog
-                sakai.api.Util.Modal.close('#userpermissions_container');
+                $("#userpermissions_container").jqmHide();
                 // Show gritter notification
                 sakai.api.Util.notification.show($("#userpermissions_notification_title").text(), $("#userpermissions_notification_body").text());
             }else{
@@ -105,10 +105,11 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _){
         /////////////////////////////////
 
         var initializeOverlay = function(){
-            sakai.api.Util.Modal.open('#userpermissions_container');
+            sakai.api.Util.bindDialogFocus($("#userpermissions_container"));
+            $("#userpermissions_container").jqmShow();
         };
 
-        sakai.api.Util.Modal.setup('#userpermissions_container', {
+        $("#userpermissions_container").jqm({
             modal: true,
             overlay: 20,
             toTop: true,

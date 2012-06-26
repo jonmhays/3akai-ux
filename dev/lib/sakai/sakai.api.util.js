@@ -49,19 +49,24 @@ define(
                 script.type = "text/javascript";
                 script.src = "/dev/lib/MathJax/MathJax.js";
 
-                var config =
-                    'MathJax.Hub.Config({' +
-                        'messageStyle: "none",' +
-                        'config: "default.js",' +
-                        'styles: {"#MathJax_Message": {display: "none !important"}}' +
-                    '}); ' +
-                    'MathJax.Hub.Startup.onload();';
+                var config = 'MathJax.Hub.Config({ messageStyle: "none" }); ' +
+                             'MathJax.Hub.Config({ config: "MathJax.js" }); ' +
+                             'MathJax.Hub.Startup.onload();';
 
                 if (window.opera) {script.innerHTML = config;}
                 else {script.text = config;}
 
                 $("head")[0].appendChild(script);
               })();
+              if (sakai_conf.enableChat) {
+                  // scroll more on focus if the focused element is obscrured by the chat bar
+                  $("input:not(.chat_with_txt), textarea, select, button:not(.chat_name_link), a:not(.chat_window_name)").live("focus", function(){
+                      if (($(this).offset().top + $(this).height()) - $(window).scrollTop() > $(window).height() - 40) {
+                          var scrollByAmt = 40 + $(this).height() + ($(this).offset().top - $(window).scrollTop()) - $(window).height();
+                          window.scrollBy(0, scrollByAmt);
+                      }
+                  });
+            }
 
             // Start polling to keep session alive when logged in
             if (meData.user.userid) {
@@ -88,12 +93,7 @@ define(
                 url: sakai_conf.URL.WORLD_INFO_URL,
                 async:false,
                 success: function(data) {
-                    data = sakai_serv.removeServerCreatedObjects(data, ["jcr:"]);
-                    $.each(data, function(key, value){
-                        if ($.isPlainObject(value) && value.id){
-                            templates.push(value);
-                        }
-                    });
+                    templates = _.toArray(sakai_serv.removeServerCreatedObjects(data, ["jcr:"]));
                 }
             });
             $.each(templates, function(i,temp) {
@@ -170,19 +170,6 @@ define(
                 str = date.getTime();
             }
             return str;
-        },
-
-        /**
-         * Takes a jquery selector or object, and returns the jquery object
-         * @param {String} selector A jquery selector or jquery object
-         * @return (Object) jQuery object
-         */
-        getJqueryObject : function(selector) {
-            var $object = selector;
-            if (!(selector instanceof jQuery)) {
-                $object = $(selector);
-            }
-            return $object;
         },
 
         /**
@@ -529,10 +516,8 @@ define(
             // if there is profile picture and userId
             // return the picture links
             var imgUrl = sakai_conf.URL.USER_DEFAULT_ICON_URL;
-            if (type === 'group' ||
-                profile['sakai:category'] === 'group' ||
-                profile['sakai:pseudoGroup']) {
-                    imgUrl = sakai_conf.URL.GROUP_DEFAULT_ICON_URL;
+            if (type === "group"){
+                imgUrl = sakai_conf.URL.GROUP_DEFAULT_ICON_URL;
             }
             var id = null, picture_name = null;
             if (profile["rep:userId"] || profile["sakai:group-id"] || profile["uuid"] || profile["userid"]){
@@ -709,7 +694,9 @@ define(
                     htmlCode += '<div class="s3d-inset-shadow-container"><img src="/dev/images/progress_bar.gif"/></div></div>';
                     var notification = $(htmlCode);
                     $('body').append(notification);
-                    sakai_util.Modal.setup('#sakai_progressindicator', {
+                    // position progress indicator at users scroll position
+                    sakai_util.positionDialogBox($('#sakai_progressindicator'));
+                    $("#sakai_progressindicator").jqm({
                         modal: true,
                         overlay: 20,
                         zIndex: 40003,
@@ -720,14 +707,14 @@ define(
                 $("#sakai_progressindicator_title").html(title);
                 $("#sakai_progressindicator_body").html(body);
                 // Show the indicator
-                sakai_util.Modal.open('#sakai_progressindicator');
+                $("#sakai_progressindicator").jqmShow();
             },
 
             /**
              * Hide the existing progress indicator (if there is one)
              */
             hideProgressIndicator: function(){
-                sakai_util.Modal.close('#sakai_progressindicator');
+                $("#sakai_progressindicator").jqmHide();
             }            
 
         },
@@ -1734,7 +1721,7 @@ define(
                                         case html4.atype.STYLE:
                                             var accept = ["color", "display", "background-color", "font-weight", "font-family",
                                                           "padding", "padding-left", "padding-right", "text-align", "font-style",
-                                                          "text-decoration", "border", "visibility", "font-size", "width"];
+                                                          "text-decoration", "border", "visibility", "font-size"];
                                             var sanitizedValue = "";
                                             if (value){
                                                 var vals = value.split(";");
@@ -1946,140 +1933,75 @@ define(
             });
         },
 
-        Modal: {
-            /**
-             * Sets jqmodal options
-             *
-             * @param dialogContainer {String} a jquery selector or jquery object, that is the dialog container
-             * @param options {Object} object containing options to pass to the jqmodal plugin
-             * @param addClose {String} a jquery selector or jquery object used in the jqmAddClose function
-             */
-            setup : function(dialogContainer, options, addClose) {
-                var $dialogContainer = sakai_util.getJqueryObject(dialogContainer);
-
-                if (addClose) {
-                    $dialogContainer.jqm(options).jqmAddClose(addClose);
-                } else {
-                    $dialogContainer.jqm(options);
-                }
-            },
-
-            /**
-             * Opens the dialog box
-             *
-             * @param {String} dialogContainer a jquery selector or jquery object, that is the dialog container
-             * @param {Object} openOptions optional object containing options to apply when opening the dialog:
-             *                              positionDialog {Boolean} true to position the dialog at the scroll position
-             *                              positionOffset {Integer} dialog height position offset
-             *                              bindKeyboardFocus {Boolean} true to trap keyboard focus inside the dialog
-             *                              bindKeyboardFocusIgnoreElements {String} optional jquery selector for start/end elements to be ignored
-             *                              bindKeyboardCloseFunction {Function} optional function to be called when the user hits the escape key
-             */
-            open : function(dialogContainer, openOptions) {
-                var $dialogContainer = sakai_util.getJqueryObject(dialogContainer);
-
-                var positionDialog = true;
-                var positionOffset = false;
-                var bindKeyboardFocus = true;
-                var bindKeyboardFocusIgnoreElements = false;
-                var bindKeyboardCloseFunction = false;
-
-                if (openOptions) {
-                    if (openOptions.positionDialog) {
-                        positionDialog = openOptions.positionDialog;
-                    }
-                    positionOffset = openOptions.positionOffset;
-                    if (openOptions.bindKeyboardFocus) {
-                        bindKeyboardFocus = openOptions.bindKeyboardFocus;
-                    }
-                    bindKeyboardFocusIgnoreElements = openOptions.bindKeyboardFocusIgnoreElements;
-                    bindKeyboardCloseFunction = openOptions.bindKeyboardCloseFunction;
-                }
-
-                if (positionDialog) {
-                    sakai_util.Modal.positionDialogBox($dialogContainer, positionOffset);
-                }
-                if (bindKeyboardFocus) {
-                    sakai_util.Modal.bindDialogFocus($dialogContainer, bindKeyboardFocusIgnoreElements, bindKeyboardCloseFunction);
-                }
-
-                $dialogContainer.jqmShow();
-            },
-
-            /**
-             * Closes the dialog box
-             *
-             * @param {String} dialogContainer a jquery selector or jquery object, that is the dialog container
-             */
-            close : function(dialogContainer) {
-                var $dialogContainer = sakai_util.getJqueryObject(dialogContainer);
-                $dialogContainer.jqmHide();
-            },
-
-            /**
-             * Positions the dialog box at the users scroll position
-             *
-             * @param {String} el a jquery selector or jquery object, to position
-             * @param {Integer} offset optional numeric value to add to the dialog position offset
-             */
-            positionDialogBox : function(el, offset) {
-                var $el = sakai_util.getJqueryObject(el);
-
-                var dialogOffset = 50;
-                if (offset && _.isNumber(offset)) {
-                    dialogOffset = parseInt(offset, 10);
-                }
-
-                var htmlScrollPos = parseInt($('html').scrollTop(), 10);
-                var docScrollPos = parseInt($(document).scrollTop(), 10);
-                if (htmlScrollPos > 0) {
-                    $el.css({'top': htmlScrollPos + dialogOffset + 'px'});
-                } else if (docScrollPos >= 0) {
-                    $el.css({'top': docScrollPos + dialogOffset + 'px'});
-                }
-            },
-
-            /**
-             * Sets up events to keep keyboard focus within the dialog box and close it when the escape key is pressed
-             *
-             * @param {String} dialogContainer a jquery selector or jquery object which is the dialog container
-             * @param {String} ignoreElements an optional jquery selector for start/end elements to be ignored
-             * @param {Function} closeFunction an optional function to be called when the user hits the escape key
-             */
-            bindDialogFocus : function(dialogContainer, ignoreElements, closeFunction) {
-                var origFocus = $(':focus');
-                var $dialogContainer = sakai_util.getJqueryObject(dialogContainer);
-
-                var bindFunction = function(e) {
-                    if ($dialogContainer.is(':visible') && $dialogContainer.has(':focus').length && e.which === $.ui.keyCode.ESCAPE) {
-                        if ($.isFunction(closeFunction)) {
-                            closeFunction();
-                        } else {
-                            $dialogContainer.jqmHide();
-                        }
-                        origFocus.focus();
-                    } else if ($dialogContainer.is(':visible') && e.which === $.ui.keyCode.TAB) {
-                        // determine which elements are keyboard navigable
-                        var $focusable = $('a:visible, input:visible, button:visible:not(:disabled), textarea:visible', $dialogContainer);
-                        if (ignoreElements) {
-                            $focusable = $focusable.not(ignoreElements);
-                        }
-                        var $focused = $(':focus');
-                        var index = $focusable.index($focused);
-                        if (e.shiftKey && $focusable.length && (index === 0)) {
-                            // if shift tabbing from the start of the dialog box, shift focus to the last element
-                            $focusable.last().focus();
-                            return false;
-                        } else if (!e.shiftKey && $focusable.length && (index === $focusable.length - 1)) {
-                            // if tabbing from the end of the dialog box, shift focus to the first element
-                            $focusable.first().focus();
-                            return false;
-                        }
-                    }
-                };
-                $(dialogContainer).off('keydown');
-                $(dialogContainer).keydown(bindFunction);
+        /**
+         * Positions the dialog box at the users scroll position
+         *
+         * @param el {String} a jquery selector or jquery object, to position
+         * @param offset {Integer} optional numeric value to add to the dialog position offset
+         */
+        positionDialogBox : function(el, offset) {
+            var $el = el;
+            if (!(el instanceof jQuery)){
+                $el = $(el);
             }
+
+            var dialogOffset = 50;
+            if (offset && _.isNumber(offset)){
+                dialogOffset = offset;
+            }
+
+            var htmlScrollPos = $("html").scrollTop();
+            var docScrollPos = $(document).scrollTop();
+            if (htmlScrollPos >= 0) {
+                $el.css({"top": htmlScrollPos + dialogOffset + "px"});
+            } else if (docScrollPos >= 0) {
+                $el.css({"top": docScrollPos + dialogOffset + "px"});
+            }
+        },
+
+        /**
+         * Sets up events to keep keyboard focus within the dialog box and close it when the escape key is pressed
+         *
+         * @param dialogContainer {String} a jquery selector or jquery object which is the dialog container
+         * @param ignoreElements {String} an optional jquery selector for start/end elements to be ignored
+         * @param closeFunction {function} an optional function to be called when the user hits the escape key
+         */
+        bindDialogFocus : function(dialogContainer, ignoreElements, closeFunction) {
+            var origFocus = $(":focus");
+            var $dialogContainer = dialogContainer;
+            if (!(dialogContainer instanceof jQuery)){
+                $dialogContainer = $(dialogContainer);
+            }
+
+            var bindFunction = function(e) {
+                if ($dialogContainer.is(":visible") && $dialogContainer.has(":focus").length && e.which === $.ui.keyCode.ESCAPE) {
+                    if ($.isFunction(closeFunction)){
+                        closeFunction();
+                    } else {
+                        $dialogContainer.jqmHide();
+                    }
+                    origFocus.focus();
+                } else if ($dialogContainer.is(":visible") && e.which === $.ui.keyCode.TAB) {
+                    // determine which elements are keyboard navigable
+                    var $focusable = $("a:visible, input:visible, button:visible:not(:disabled), textarea:visible", $dialogContainer);
+                    if (ignoreElements){
+                        $focusable = $focusable.not(ignoreElements);
+                    }
+                    var $focused = $(":focus");
+                    var index = $focusable.index($focused);
+                    if (e.shiftKey && $focusable.length && (index === 0)) {
+                        // if shift tabbing from the start of the dialog box, shift focus to the last element
+                        $focusable.get($focusable.length - 1).focus();
+                        return false;
+                    } else if (!e.shiftKey && $focusable.length && (index === $focusable.length - 1)) {
+                        // if tabbing from the end of the dialog box, shift focus to the first element
+                        $focusable.get(0).focus();
+                        return false;
+                    }
+                }
+            };
+            $(dialogContainer).unbind("keydown");
+            $(dialogContainer).keydown(bindFunction);
         },
 
         /**

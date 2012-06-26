@@ -938,22 +938,6 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', 'jquery-ui'], function(
         };
 
         /**
-         * SAKIII-5647 When you're using world templates, sometimes the
-         * items within rows are strings when they should be objects.
-         * This makes versions work again
-         * @param {Object} rows The rows object that you want to convert
-         */
-        var convertRows = function(rows) {
-            if (rows && $.isArray(rows)) {
-                for (var i = 0; i < rows.length; i++) {
-                    if (typeof rows[i] === 'string') {
-                        rows[i] = $.parseJSON(rows[i]);
-                    }
-                }
-            }
-        };
-
-        /**
          * Render a page, including its full layout and all of the widgets that live inside of it
          * @param {Object} currentPageShown     Object representing the current page
          * @param {Boolean} requiresRefresh     Whether or not the page should be fully reloaded (if it
@@ -989,7 +973,6 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', 'jquery-ui'], function(
                 $pageRootEl = $('<div />').attr('id', currentPageShown.ref);
                 // Add element to the DOM
                 $('#contentauthoring_widget', $rootel).append($pageRootEl);
-                convertRows(currentPageShown.content.rows);
                 var pageStructure = $.extend(true, {}, currentPageShown.content);
                 pageStructure.template = 'all';
                 pageStructure.sakai = sakai;
@@ -1436,7 +1419,7 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', 'jquery-ui'], function(
         /**
          * Initialize the autosave dialog
          */
-        sakai.api.Util.Modal.setup('#autosave_dialog', {
+        $('#autosave_dialog').jqm({
             modal: true,
             overlay: 20,
             toTop: true
@@ -1486,7 +1469,8 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', 'jquery-ui'], function(
          * @param {Object} autoSaveData     Object containing the autosaved page
          */
         var showRestoreAutoSaveDialog = function(pageData, autoSaveData) {
-            sakai.api.Util.Modal.open($('#autosave_dialog'));
+            sakai.api.Util.bindDialogFocus($('#autosave_dialog'));
+            $('#autosave_dialog').jqmShow();
             $('#autosave_keep').off('click').on('click', function() {
                 cancelRestoreAutoSave(pageData);
             });
@@ -1502,7 +1486,7 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', 'jquery-ui'], function(
          */
         var cancelRestoreAutoSave = function(pageData) {
             makeTempCopy(pageData);
-            sakai.api.Util.Modal.close('#autosave_dialog');
+            $('#autosave_dialog').jqmHide();
         };
 
         /**
@@ -1518,7 +1502,7 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', 'jquery-ui'], function(
             sakai.api.Widgets.widgetLoader.insertWidgets(currentPageShown.ref, false, storePath + '/', autoSaveData);
             setPageEditActions();
             updateColumnHandles();
-            sakai.api.Util.Modal.close('#autosave_dialog');
+            $('#autosave_dialog').jqmHide();
         };
 
         /**
@@ -1528,15 +1512,21 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', 'jquery-ui'], function(
          */
         var makeTempCopy = function(data) {
 
-            // Make temporary copy
-            sakai.api.Server.copy({
-                destination: currentPageShown.pageSavePath + '/tmp_' + currentPageShown.saveRef,
-                source: currentPageShown.pageSavePath + '/' + currentPageShown.saveRef,
-                replace: true
-            }, function() {
-                sakai.api.Util.progressIndicator.hideProgressIndicator();
-            });
+            // SAKIII-5393 When you're using world templates, sometimes the
+            // items within rows are strings when they should be objects
+            // This makes versions work again
+            if (data.rows && _.isArray(data.rows)) {
+                for (var i = 0; i < data.rows.length; i++) {
+                    if (_.isString(data.rows[i])) {
+                        data.rows[i] = $.parseJSON(data.rows[i]);
+                    }
+                }
+            }
 
+            // Make temporary copy 
+            sakai.api.Server.saveJSON(storePath, data, function(){
+                sakai.api.Util.progressIndicator.hideProgressIndicator();
+            }, true);
             // Get the widgets in this page and change their save URL
             updateWidgetURLs();
         };

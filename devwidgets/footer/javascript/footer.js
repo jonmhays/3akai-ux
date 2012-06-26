@@ -172,13 +172,8 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
 
             }
             
-            if (!sakai.data.me.user.anon && (sakai.config.displayTimezone || sakai.config.displayLanguage)) {
-                if (sakai.config.displayTimezone) {
-                    $("#footer_langdoc_loc").show();
-                }
-                if (sakai.config.displayLanguage) {
-                    $("#footer_langdoc_lang").show();
-                }
+            if (!sakai.data.me.user.anon){
+                $(".footer_langloc").show();
             }
 
             // Set the end year of the copyright notice
