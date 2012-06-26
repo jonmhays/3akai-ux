@@ -2,7 +2,7 @@
     "enabled": true,
     "defaultConfiguration": {
         "roleAware": true,
-        "roleLookupScheme" : "default", //reset this to default = sakai, or use your own custome one
+        "roleLookupScheme" : "berkeley", //reset this to default = sakai, or use your own custome one
         "roleMappings" : {
         "Faculty" : [
             "academic_related_staff",
