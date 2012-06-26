@@ -19,7 +19,7 @@ define(["config/config", "config/env"], function(config) {
 
     // Insert custom configuration here
     // CalCentral custom begin
-    
+
     // This is our custom CAS log in information.
     config.Authentication.internal = config.isDev;
     config.Authentication.external = [
@@ -35,21 +35,26 @@ define(["config/config", "config/env"], function(config) {
         "/dev/create_new_account.html"
     ];
     config.allowPasswordChange = false;
-    
+
+    // Extend the set of enabled dashboard widgets(they're undeletable without this)
+    // This may go away in 1.4 - duplicative with existing widget configs
+    config.enabledDashboardWidgets.push("walktime","quicklinks");
+
     // Show mylinks dashboard widget by default for new users
     config.defaultprivstructure["${refid}0"]["${refid}5"].dashboard.columns.column3.push({
         "uid": "id63754673110789",
         "visible": "block",
         "name": "quicklinks"
     });
-    
-    
+
     // Show walktime dashboard widget by default for new users
     config.defaultprivstructure["${refid}0"]["${refid}5"].dashboard.columns.column1.push({
         "uid": "id46750934593210789",
         "visible": "block",
-        "name": "walktime"
-    });    
+        "name": "walktime",
+        "personalportal": true,
+        "deletable":true
+    });
 
     /*
     Temporarily using this approach to disabling the carousel - may change in future.
@@ -214,23 +219,23 @@ define(["config/config", "config/env"], function(config) {
         //    "newWindow": true
         }
     ];
-    
-    // Add My Notification and My Dynamic Lists to TOP Navigation 
-    config.Navigation[0].subnav.splice(2,0, 
-        { 
-            "url": "/me#l=notifications/drafts", 
-            "id": "subnavigation_notifications_link", 
-            "label": "MY_NOTIFICATIONS", 
-            "requiresAdviserMembership": true 
-        } 
-    ); 
-        config.Navigation[0].subnav.splice(3,0, 
-        { 
-            "url": "/me#l=dynlists", 
-            "id": "subnavigation_dynlists_link", 
-            "label": "MY_DYNAMIC_LISTS", 
-            "requiresAdviserMembership": true 
-        } 
+
+    // Add My Notification and My Dynamic Lists to TOP Navigation
+    config.Navigation[0].subnav.splice(2,0,
+        {
+            "url": "/me#l=notifications/drafts",
+            "id": "subnavigation_notifications_link",
+            "label": "MY_NOTIFICATIONS",
+            "requiresAdviserMembership": true
+        }
+    );
+        config.Navigation[0].subnav.splice(3,0,
+        {
+            "url": "/me#l=dynlists",
+            "id": "subnavigation_dynlists_link",
+            "label": "MY_DYNAMIC_LISTS",
+            "requiresAdviserMembership": true
+        }
     );
 
     config.Directory = {
@@ -678,7 +683,7 @@ define(["config/config", "config/env"], function(config) {
             }
         }
     };
-    
+
     // Custom CSS Files to load in
     // config.skinCSS = ["/dev/skins/default/skin.css"];
     config.skinCSS = ["/dev/skins/myb/skin.css"];
@@ -721,12 +726,12 @@ define(["config/config", "config/env"], function(config) {
             "selected": false
         }]
     };
-    
+
     // Hybrid
-    
+
     config.showSakai2=false;
     config.useLiveSakai2Feeds=false;
-    
+
     // adds the Sakai 2 Sites item to the left hand nav
     //config.defaultprivstructure["${refid}5"].dashboard.columns.column1.push({
     //    "uid": "${refid}1234",
