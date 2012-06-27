@@ -202,6 +202,11 @@ define(["config/config", "config/env"], function(config) {
 
     config.Navigation[0].label = "ME";
 
+    // Override default access permissions for new collections
+    config.Permissions.Collections = {
+        'defaultaccess': 'private' // public, everyone or private
+    };
+
     /* CalCentral specific footer links */
     config.Footer.leftLinks = [
         {
