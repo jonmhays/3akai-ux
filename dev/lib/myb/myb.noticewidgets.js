@@ -68,7 +68,7 @@ define(["jquery","sakai/sakai.api.core"], function($, sakai) {
         var loadingIndicator = $(".noticewidget_listing_loading", config.rootContainer);
         var listingTable = $("table.noticewidget_listing", config.rootContainer);
         var listingTableWrapper = $(".noticewidget_listing_wrapper", config.rootContainer);
-        
+
         var taskArchiveButton = $(".noticewidget_archive_tasks_button", config.rootContainer);
 
 
@@ -150,7 +150,7 @@ define(["jquery","sakai/sakai.api.core"], function($, sakai) {
                         // Notify the subscriber about model change
                         onModelChange(model);
                     } else {
-                        announceError();
+                        // Report missing data to the console, but don't throw a Gritter - TMI for the user
                         window.debug.error("There are no results in the returned data. Data dump:", data);
                     }
                 },
@@ -267,9 +267,9 @@ define(["jquery","sakai/sakai.api.core"], function($, sakai) {
                     var savedScroll = listingTableWrapper.scrollTop(); // save the scroll to restore after the table has been rerendered
                     var rowIndex = this.id.replace(/\w+_/gi, "");
                     var rowData = model.data.results[rowIndex];
-                    
+
                     var updateDataModelCallback = {};
-                    
+
                     // if sort is not by completed, refresh the local model from server data and resort
                     if (model.filterSettings.sortOn !== "COMPLETED") {
                         updateDataModelCallback = function() {
@@ -278,7 +278,7 @@ define(["jquery","sakai/sakai.api.core"], function($, sakai) {
                         };
                     } else {
                         // updateDataModelCallback is already empty
-                        
+
                         // if this the first time calling this as indicated by the sort class still in place
                         // then reverse the sort order so that the next time it is called it get set the right way
                         if ($("#mytasks_sortOn_COMPLETED", config.rootContainer).is(".DESC, .ASC")) {
@@ -287,7 +287,7 @@ define(["jquery","sakai/sakai.api.core"], function($, sakai) {
                         // remove the sort arrow so that the UI indicates that the sort is invalid
                         removeSortIndicators();
                     }
-                    
+
                     rowData.isCompleted = !rowData.isCompleted;
                     renderTemplateAndUpdateUI();
                     postNotice(
@@ -303,7 +303,7 @@ define(["jquery","sakai/sakai.api.core"], function($, sakai) {
                             updateDataModelCallback
                     );
                     // restore the scroll
-                    listingTableWrapper.scrollTop(savedScroll); 
+                    listingTableWrapper.scrollTop(savedScroll);
                 });
             };
 
@@ -537,7 +537,7 @@ define(["jquery","sakai/sakai.api.core"], function($, sakai) {
             filterStatus();
             subjectLines();
         };
-        
+
         var removeSortIndicators = function () {
             // remove sort arrows from all table header columns
             $(".noticewidget_listing." + config.widgetName + "_listing thead th", config.rootContainer).each(function() {
