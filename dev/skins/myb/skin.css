@@ -24,23 +24,23 @@
 /** CalCentral Button customization **/
 .s3d-button.s3d-header-button.s3d-header-smaller-button {
     padding: 0 8px;
-} 
+}
 
 /* Asterisks for required fields */
 span.required {
     font-size:1.3em;
     font-weight:bold;
-    color:#CC0000; 
-}    
+    color:#CC0000;
+}
 
 /* Instructional legends/text beneath forms */
-.form_legend { 
+.form_legend {
     clear:both;
     color:#666;
     font-size: 11.5px;
     margin:20px 0 10px 137px;
     padding:10px 3px 3px 3px;
-} 
+}
 
 /* Override horizontal rules (gold, not gray) */
 .s3d-contentpage-title {
@@ -56,7 +56,24 @@ span.required {
   color: #fff;
 }
 
-/* Blue topnav for CalCentral */
+/* Blue topnav for CalCentral - override from sakai.corev1.css */
 .s3d-navigation-container {
-    background: url("/devwidgets/topnavigation/images/topnav_cc_bg.png") repeat-x scroll left top transparent;
+    background: #194270;
+    background: -moz-linear-gradient(top, #194270 0%, #194270 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#194270), color-stop(100%,#194270));
+    background: -webkit-linear-gradient(top, #194270 0%,#194270 100%);
+    background: -o-linear-gradient(top, #194270 0%,#194270 100%);
+    background: -ms-linear-gradient(top, #194270 0%,#194270 100%);
+    background: linear-gradient(top, #194270 0%,#194270 100%);
+    -moz-box-shadow: 0 -5px 9px 6px #194270;
+    -webkit-box-shadow: 0 -5px 9px 6px #194270;
+    box-shadow: 0 -5px 9px 6px #194270;
+    height: 40px;
+    margin-left: auto;
+    margin-right: auto;
+    position: absolute;
+    width: 100%;
+    z-index: 999;
 }
+
+
