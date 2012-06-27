@@ -118,7 +118,13 @@ h1.myb-cat-by-org {
 }
 
 .myb-cat-by-org .allcategories_item .allcategories_item_header {
-  background: none repeat scroll 0 0 #1c3e76;
+    background: #012955 !important;
+    background: -webkit-linear-gradient(top, #3b5d86, #012955) !important;
+    background: -moz-linear-gradient(top, #3b5d86, #012955) !important;
+    background: -o-linear-gradient(top, #3b5d86, #012955) !important;
+    background: -ms-linear-gradient(top, #3b5d86, #012955) !important;
+    background: linear-gradient(top, #3b5d86, #012955) !important;
+    color:#fff;
 }
 
 /* End CalCentral Customization */
