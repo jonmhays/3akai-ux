@@ -10,7 +10,7 @@ define(function() {
                         "name": "Academic Calendar",
                         "url": "http://registrar.berkeley.edu/CalendarDisp.aspx?terms=current",
                         "popup_description": "Academic Calendars.",
-                        "roles" : [ "Faculty", "Students" ]
+                        "roles" : [ "ALL" ]
                     },
                     {
                         "id"   : "bspace",
@@ -24,7 +24,14 @@ define(function() {
                         "name" : "Campus Bookstore",
                         "url"  : "http://www.bkstr.com/webapp/wcs/stores/servlet/StoreCatalogDisplay?storeId=10433",
                         "popup_description": "Textbooks and more.",
-                        "roles" : [ "Students" ]
+                        "roles" : [ "Faculty", "Students" ]
+                    },
+                    {
+                        "id": "classroom_tech",
+                        "name": "Classroom Technology",
+                        "url": "http://ets.berkeley.edu/classroom-technology/",
+                        "popup_description": "Classroom technology, help and resources.",
+                        "roles" : [ "Faculty" ]
                     },
                     {
                         "id": "course_catalog",
@@ -59,7 +66,7 @@ define(function() {
                         "name": "Schedule of Classes",
                         "url": "http://schedule.berkeley.edu",
                         "popup_description": "Classes offerings by semester.",
-                        "roles" : [ "Faculty", "Students" ]
+                        "roles" : [ "ALL" ]
                     },
                     {
                         "id": "schedule_planning",
@@ -69,11 +76,25 @@ define(function() {
                         "roles" : [ "ALL" ]
                     },
                     {
+                        "id": "teaching_resources",
+                        "name": "Teaching Resources",
+                        "url": "http://teaching.berkeley.edu/teaching.html",
+                        "popup_description": "Planning your class and thinking about teaching.",
+                        "roles" : [ "Faculty" ]
+                    },
+                    {
                         "id": "tele_bears",
                         "name": "Tele-BEARS",
                         "url": "http://telebears.berkeley.edu",
                         "popup_description": "Register for classes.",
                         "roles" : [ "Students" ]
+                    },
+                    {
+                        "id": "uc_extension",
+                        "name": "UC Extension",
+                        "url": "http://extension.berkeley.edu/",
+                        "popup_description": "Professional and Continuing Education.",
+                        "roles" : [ "ALL" ]
                     }
                 ]
             },
@@ -88,10 +109,10 @@ define(function() {
                         "roles" : [ "ALL" ]
                     },
                     {
-                        "id": "bmail",
-                        "name": "bMail",
+                        "id": "calmail",
+                        "name": "CalMail",
                         "url": "http://calmail.berkeley.edu",
-                        "popup_description": "Email.",
+                        "popup_description": "Campus email system.",
                         "roles" : [ "ALL" ]
                     },
                     {
@@ -102,7 +123,21 @@ define(function() {
                         "roles" : [ "Students" ]
                     },
                     {
-                        "id": "eveents_berkeley",
+                        "id": "directory",
+                        "name": "Directory",
+                        "url": "https://calnet.berkeley.edu/directory/",
+                        "popup_description": "Search For People at UC Berkeley.",
+                        "roles" : [ "ALL" ]
+                    },
+                    {
+                        "id": "emp_benefits",
+                        "name": "Employee Benefits - At Your Service",
+                        "url": "http://atyourservice.ucop.edu",
+                        "popup_description": "Search For People at UC Berkeley.",
+                        "roles" : [ "ALL" ]
+                    },
+                    {
+                        "id": "events_berkeley",
                         "name": "Events Berkeley",
                         "url": "http://events.berkeley.edu",
                         "popup_description": "Campus events calendar.",
@@ -113,6 +148,41 @@ define(function() {
                         "name": "Financial Aid",
                         "url": "http://students.berkeley.edu/finaid",
                         "popup_description": "Student financial aid options and select scholarships.",
+                        "roles" : [ "Students" ]
+                    },
+                    {
+                        "id": "human_resources",
+                        "name": "Human Resources",
+                        "url": "http://hrweb.berkeley.edu/",
+                        "popup_description": "Human Resources.",
+                        "roles" : [ "ALL" ]
+                    },
+                    {
+                        "id": "jobs",
+                        "name": "Job Listings",
+                        "url": "http://jobs.berkeley.edu/",
+                        "popup_description": "Job Listings for student, staff and academic positions.",
+                        "roles" : [ "ALL" ]
+                    },
+                    {
+                        "id": "payroll",
+                        "name": "Payroll Services",
+                        "url": "http://controller.berkeley.edu/payroll/",
+                        "popup_description": "Campus payroll office: earnings statements, payroll forms, online reporting and resources.",
+                        "roles" : [ "ALL" ]
+                    },
+                    {
+                        "id": "staff_ombuds",
+                        "name": "Staff Ombuds",
+                        "url": "http://staffombuds.berkeley.edu/",
+                        "popup_description": "The Staff Ombuds Office is an independent department that provides strictly confidential and informal conflict resolution and problem-solving services for all Staff, Non-Senate Academics, and Faculty who perform management functions.",
+                        "roles" : [ "Faculty", "Staff" ]
+                    },
+                    {
+                        "id": "student_ombuds",
+                        "name": "Student Ombuds",
+                        "url": "http://campuslife.berkeley.edu/ombuds",
+                        "popup_description": "Assistance sorting through a campus-related conflict or concern.",
                         "roles" : [ "Students" ]
                     }
                 ]
@@ -156,6 +226,20 @@ define(function() {
                         "roles" : [ "ALL" ]
                     },
                     {
+                        "id": "care_services",
+                        "name": "CARE Services",
+                        "url": "http://uhs.berkeley.edu/facstaff/care/",
+                        "popup_description": "CARE Services is the campus faculty and staff assistance program providing free, confidential problem assessment and referral for UC Berkeley faculty and staff.",
+                        "roles" : [ "Faculty", "Staff" ]
+                    },
+                    {
+                        "id": "emergency_information",
+                        "name": "Emergency information",
+                        "url": " https://emergency.berkeley.edu/",
+                        "popup_description": "Go-to site for emergency response information.",
+                        "roles" : [ "Faculty", "Staff" ]
+                    },
+                    {
                         "id": "graduate_assembly",
                         "name": "Graduate Assembly",
                         "url": "http://ga.berkeley.edu",
@@ -163,10 +247,24 @@ define(function() {
                         "roles" : [ "Students" ]
                     },
                     {
+                        "id": "uhs",
+                        "name": "Health Services - Tang Center",
+                        "url": "http://uhs.berkeley.edu",
+                        "popup_description": "Campus healthcare.",
+                        "roles" : [ "ALL" ]
+                    },
+                    {
                         "id": "parking_and_transportation",
                         "name": "Parking & Transportation",
                         "url": "http://pt.berkeley.edu/park",
                         "popup_description": "Parking lots, transportation, car sharing, etc.",
+                        "roles" : [ "ALL" ]
+                    },
+                    {
+                        "id": "police_and_safety",
+                        "name": "Police & Safety",
+                        "url": "http://police.berkeley.edu",
+                        "popup_description": "Police programs and services, forms, safety information, comments and questions.",
                         "roles" : [ "ALL" ]
                     },
                     {
@@ -212,13 +310,6 @@ define(function() {
                         "url": "http://www.berkeley.edu/students",
                         "popup_description": "Student services and programs.",
                         "roles" : [ "Students" ]
-                    },
-                    {
-                        "id": "uhs",
-                        "name": "UHS - Tang Center",
-                        "url": "http://uhs.berkeley.edu",
-                        "popup_description": "Campus healthcare.",
-                        "roles" : [ "ALL" ]
                     }
                 ]
             },
