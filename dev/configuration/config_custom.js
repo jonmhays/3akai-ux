@@ -62,6 +62,10 @@ define(["config/config", "config/env"], function(config) {
      */
     enabledCarousel: false;
 
+    /**
+     * Remove googlemaps from the set of inserterbar widgets (restore in 1.4)
+     */
+    config.exposedSakaiDocWidgets.splice(2,1);
 
     /*
     Inject DynamicLists and Notifications into menus;
