@@ -241,29 +241,49 @@ require(
          */
         var loadUserList = function() {
             sakai.api.Widgets.loadWidgetData(tuid, function (success, data) {
-                if (success) {
+                var renderAllLinks = function (userData) {
                     // merge the user's links with the default links
-                    userLinkData = data;
+                    $.extend(userLinkData, userData, {"label": "My Links"});
                     // if userLinkData is not an array then load it with an empty array
                     if (!$.isArray(userLinkData.links)) {
                         userLinkData.links = [];
                     }
-
                     defaultLinks.sections[defaultLinks.userSectionIndex] = userLinkData;
+                    defaultLinks.activeSection = parseInt(userLinkData.activeSection || 0, 10);
+                    renderLinkList(defaultLinks);
+                };
 
+                if (success) {
+                    renderAllLinks(data);
                 } else {
-                    userLinkData.activeSection = 0;
-                    //attempting to initialize user object for subsequent loads.
-                    sakai.api.Widgets.saveWidgetData(tuid, userLinkData, function (success) {
-                        if (!success) {
-                            sakai.api.Util.notification.show('',
-                                sakai.api.i18n.getValueForKey('SERVER_ERROR_INITIALIZE_USER_OBJECT', 'quicklinks'),
-                                sakai.api.Util.notification.type.ERROR, false);
+                    //-- START - REMOVE THIS AFTER A YEAR --//
+                    var oldLinksPath = "/~" + sakai.data.me.user.userid + "/private/my_links";
+                    sakai.api.Server.loadJSON(oldLinksPath, function(success, oldData) {
+                        //check oldData to see if it can be used to extend current widget data.
+                        if (oldData && oldData.links && $.isArray(oldData.links)) {
+                            renderAllLinks(oldData);
+                        } else {
+                            renderAllLinks({"links": []});
                         }
+                        //-- END - REMOVE THIS AFTER A YEAR --//
+
+                        //-- START - EXTRACT THIS OUTSIDE THE loadJSON THIS AFTER A YEAR --//
+                        //
+                        //attempting to initialize user object for subsequent loads.
+                        sakai.api.Widgets.saveWidgetData(tuid, userLinkData, function (success) {
+                            if (!success) {
+                                sakai.api.Util.notification.show('',
+                                    sakai.api.i18n.getValueForKey('SERVER_ERROR_INITIALIZE_USER_OBJECT', 'quicklinks'),
+                                    sakai.api.Util.notification.type.ERROR, false);
+                            }
+                        });
+                        //-- END - EXTRACT THIS OUTSIDE THE loadJSON THIS AFTER A YEAR --//
+
+                        //-- START - REMOVE THIS AFTER A YEAR --//
+                        sakai.api.Server.removeJSON(oldLinksPath);
+                        //-- END - REMOVE THIS AFTER A YEAR --//
                     });
                 }
-                defaultLinks.activeSection = userLinkData.activeSection;
-                renderLinkList(defaultLinks);
             });
         };
 
