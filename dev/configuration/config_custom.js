@@ -594,14 +594,15 @@ define(["config/config", "config/env"], function(config) {
                     "label": "__MSG__PROFILE_ABOUTME_HOBBIES_LABEL__",
                     "required": false,
                     "display": true
-                },
-                "tags": {
-                    "label": "__MSG__TAGS_AND_CATEGORIES__",
-                    "required": false,
-                    "display": true,
-                    "type": "tags",
-                    "tagField": true
                 }
+                // Tags temporarily removed in 1.3 due to OAE bug. Restore in 1.4?
+                // "tags": {
+                //     "label": "__MSG__TAGS_AND_CATEGORIES__",
+                //     "required": false,
+                //     "display": true,
+                //     "type": "tags",
+                //     "tagField": true
+                // }
             }
         },
         "publications": {
