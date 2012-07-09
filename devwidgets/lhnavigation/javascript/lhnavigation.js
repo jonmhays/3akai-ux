@@ -391,7 +391,7 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
                     }
                 }
                 finishProcessData(structure, data, callback);
-            }, false);
+            });
         };
 
         ///////////////////
@@ -531,6 +531,33 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
             return structureFoundIn;
         };
 
+        /**
+         * Check if a user can view the specific page.
+         * If the page has no _canView property than the user can view the page.
+         *
+         * @param {Object} structure The structure containing the page
+         * @param {String} selected The path to the page, ie. 'syllabus/week1'
+         */
+        var canViewPage = function(structure, selected) {
+            if (structure) {
+                var pageSelected = selected;
+                var subPage = false;
+
+                // Check if this is a subpage
+                if (selected.indexOf('/') !== -1) {
+                    pageSelected = selected.split('/')[0];
+                    subPage = selected.split('/')[1];
+                }
+
+                // Check if the page has a _canView property and it's set to false, if it is undefined the user should still be able to see the page
+                if ((structure.items[pageSelected] && structure.items[pageSelected]._canView === false) ||
+                    (subPage && structure.items[pageSelected][subPage] && structure.items[pageSelected][subPage]._canView === false)) {
+                    return false;
+                }
+            }
+            return true;
+        };
+
         var selectPage = function(newPageMode) {
             if (contextData.forceOpenPage) {
                 $.bbq.pushState({
@@ -541,10 +568,10 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
                 var state = $.bbq.getState('l');
                 var selected = state || false;
                 var structureFoundIn = false;
-                // Check whether this page exist
+                // Check whether this page exist and if we have permission to view
                 if (selected) {
                     structureFoundIn = checkPageExists(privstructure, selected) || checkPageExists(pubstructure, selected);
-                    if (!structureFoundIn) {
+                    if (!structureFoundIn || !canViewPage(structureFoundIn, selected)) {
                         selected = false;
                     }
                 }
