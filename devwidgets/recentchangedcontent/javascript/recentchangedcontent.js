@@ -85,7 +85,8 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
                 thumbnail: sakai.api.Content.getThumbnail(result),
                 totalcomment: sakai.api.Content.getCommentCount(result),
                 '_mimeType/page1-small': result['_mimeType/page1-small'],
-                '_path': result['_path']
+                '_path': result['_path'],
+                canShare: sakai.api.Content.canCurrentUserShareContent(result)
             };
 
             item.nameShort = sakai.api.Util.applyThreeDots(item.name, $('.recentchangedcontent').width() - 50, {max_rows: 1,whole_word: false}, 's3d-bold');
@@ -198,11 +199,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
          * Bind Events
          */
         var addBinding = function () {
-            $('.add_recentchangedcontent_button', rootel).click(function (ev) {
-                $(window).trigger('init.newaddcontent.sakai');
-                return false;
-            });
-            $(window).bind('done.newaddcontent.sakai', function(e, newContent) {
+            $(document).on('done.newaddcontent.sakai', function(e, newContent) {
                 if (newContent && newContent.length) {
                     handleRecentChangedContentData(true, {results:newContent});
                 }
@@ -241,7 +238,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
         /**
          * Fetches the related content
          */
-        var getRelatedContent = function(contentData) {
+        var getRelatedContent = function(contentData){
             var searchterm = contentData["sakai:pooled-content-file-name"].substring(0,400);
             searchquery = prepSearchTermForURL(searchterm);
 
@@ -250,7 +247,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
             var params = {
                 'items' : '2'
             };
-            var url = sakai.config.URL.SEARCH_ALL_FILES.replace('.json', '.infinity.json');
+            var url = sakai.config.URL.SEARCH_ALL_FILES.replace('.json', '.0.json');
             if (searchquery === '*' || searchquery === '**') {
                 url = sakai.config.URL.SEARCH_ALL_FILES_ALL;
             } else {
@@ -295,7 +292,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
 
             // get list of recentchangedcontent items
             $.ajax({
-                url: '/var/search/pool/manager-viewer.json',
+                url: sakai.config.URL.POOLED_CONTENT_SPECIFIC_USER,
                 cache: false,
                 data: {
                     userid: sakai.data.me.user.userid,

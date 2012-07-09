@@ -143,10 +143,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
         // Event Handlers //
         ////////////////////
 
-        $(window).bind("done.newaddcontent.sakai", function(e, data) {
-            init();
-        });
-
+        $(document).on('done.newaddcontent.sakai', init);
 
         /////////////////////////////
         // Initialization function //
@@ -161,7 +158,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
 
             // get list of content items
             $.ajax({
-                url: "/var/search/pool/manager-viewer.json",
+                url: sakai.config.URL.POOLED_CONTENT_SPECIFIC_USER,
                 cache: false,
                 data: {
                     userid: sakai.data.me.user.userid,

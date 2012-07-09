@@ -38,16 +38,16 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
      */
     sakai_global.savecontent = function(tuid, showSettings) {
 
-        var $rootel = $("#" + tuid);
-        var $savecontent_widget = $("#savecontent_widget", $rootel),
-            $savecontent_container = $("#savecontent_container", $rootel),
-            $savecontent_template = $("#savecontent_template", $rootel),
-            $savecontent_close = $(".savecontent_close", $rootel),
-            $savecontent_save = $("#savecontent_save", $rootel);
-        var newlyShared = {},
-            allNewlyShared = [],
-            contentObj = {},
-            clickedEl = null;
+        var $rootel = $('#' + tuid);
+        var $savecontent_widget = $('#savecontent_widget', $rootel);
+        var $savecontent_container = $('#savecontent_container', $rootel);
+        var $savecontent_template = $('#savecontent_template', $rootel);
+        var $savecontent_close = $('.savecontent_close', $rootel);
+        var $savecontent_save = $('#savecontent_save', $rootel);
+        var newlyShared = {};
+        var allNewlyShared = [];
+        var contentObj = {};
+        var clickedEl = null;
 
         $savecontent_widget.jqm({
             modal: false,
@@ -84,7 +84,8 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                 });
             }
         };
-        $(window).bind("done.deletecontent.sakai", deleteContent);
+
+        $(document).on('done.deletecontent.sakai', deleteContent);
 
         /**
          * toggleSavecontent
@@ -94,12 +95,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
 
             $savecontent_save.removeAttr("disabled");
 
-            var adjustHeight = 0;
-            if (sakai.config.enableBranding && $('.branding_widget').is(':visible')) {
-                adjustHeight = parseInt($('.branding_widget').height(), 10) * -1;
-            }
-
-            var savecontentTop = clickedEl.offset().top + clickedEl.height() - 3 + adjustHeight;
+            var savecontentTop = clickedEl.offset().top + clickedEl.height() - 3;
             var savecontentLeft = clickedEl.offset().left + clickedEl.width() / 2 - 122;
 
             $savecontent_widget.css({
@@ -107,16 +103,23 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                 left: savecontentLeft
             });
 
-            var json = {
-                "files": contentObj.data,
-                "context": contentObj.context,
-                "libraryHasIt": contentObj.libraryHasIt,
-                "groups": contentObj.memberOfGroups,
-                "sakai": sakai
-            };
-            $savecontent_container.html(sakai.api.Util.TemplateRenderer("#savecontent_template", json));
-            enableDisableAddButton();
-            $savecontent_widget.jqmShow();
+            sakai.api.Util.getTemplates(function(success, templates) {
+                if (success) {
+                    var json = {
+                        'files': contentObj.data,
+                        'context': contentObj.context,
+                        'libraryHasIt': contentObj.libraryHasIt,
+                        'groups': contentObj.memberOfGroups,
+                        'sakai': sakai,
+                        'templates': templates
+                    };
+                    $savecontent_container.html(sakai.api.Util.TemplateRenderer("#savecontent_template", json));
+                    enableDisableAddButton();
+                    $savecontent_widget.jqmShow();
+                } else {
+                    debug.error('Could not get the group templates');
+                }
+            });
         };
 
         var getFileIDs = function(){
@@ -136,6 +139,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                 if(!sakai.api.Content.isContentInLibrary(content.body, sakai.data.me.user.userid) && !sakai.api.Content.Collections.isCollectionInMyLibrary(content.body)){
                     contentObj.libraryHasIt = false;
                 }
+                content.body.canShare = sakai.api.Content.canCurrentUserShareContent(content.body);
             });
             toggleSavecontent();
         };
@@ -225,7 +229,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                         sakai.api.Content.addToLibrary(content.body["_path"], id, false, finishSaveContent);
                     }
                 });
-                $(window).trigger("done.newaddcontent.sakai");
+                $(document).trigger('done.newaddcontent.sakai');
                 var notificationBody = false;
                 var notificationTitle = false;
                 if (sakai.api.Content.Collections.isCollection(id)){
@@ -282,7 +286,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                     contentToAdd.push(item.body);
                 });
                 hideSavecontent();
-                $(window).trigger("create.collections.sakai", [contentToAdd]);
+                $(document).trigger('create.collections.sakai', [contentToAdd]);
             } else if (!dropdownSelection.is(":disabled") && dropdownSelection.val()) {
                 saveContent(dropdownSelection.val());
             }
@@ -294,32 +298,32 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
 
         sakai.api.Util.hideOnClickOut(".savecontent_dialog", ".savecontent_trigger", hideSavecontent);
 
-        $(".savecontent_trigger").live("click", function(el){
+        $(document).on('click', '.savecontent_trigger', function(el) {
             clickedEl = $(this);
-            idArr = clickedEl.attr("data-entityid");
-            if(idArr.length > 1 && !$.isArray(idArr)){
-                idArr = idArr.split(",");
+            idArr = clickedEl.attr('data-entityid');
+            if (idArr.length > 1 && !$.isArray(idArr)) {
+                idArr = idArr.split(',');
             }
 
             contentObj.memberOfGroups = $.extend(true, {}, sakai.api.Groups.getMemberships(sakai.data.me.groups, true));
-            contentObj.context = $(el.currentTarget).attr("data-entitycontext") || false;
+            contentObj.context = $(el.currentTarget).attr('data-entitycontext') || false;
 
             var batchRequests = [];
-            $.each(idArr, function(i, id){
+            $.each(idArr, function(i, id) {
                 batchRequests.push({
-                    "url": "/p/" + id + ".2.json",
-                    "method": "GET"
+                    'url': '/p/' + id + '.2.json',
+                    'method': 'GET'
                 });
             });
             sakai.api.Server.batch(batchRequests, function(success, data) {
                 if (success) {
-                    $.each(data.results, function(i, content){
+                    $.each(data.results, function(i, content) {
                         data.results[i].body = $.parseJSON(data.results[i].body);
                     });
                     contentObj.data = data.results;
                     selectAlreadyInGroup();
                 }
-            });
+            }, false);
         });
     };
 

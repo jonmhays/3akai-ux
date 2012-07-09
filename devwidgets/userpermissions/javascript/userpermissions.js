@@ -62,7 +62,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _){
         var permissionsSet = function(success, data){
             if (success) {
                 // Hide the dialog
-                $("#userpermissions_container").jqmHide();
+                sakai.api.Util.Modal.close('#userpermissions_container');
                 // Show gritter notification
                 sakai.api.Util.notification.show($("#userpermissions_notification_title").text(), $("#userpermissions_notification_body").text());
             }else{
@@ -90,7 +90,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _){
             page._view = permission;
 
             sakai.api.Server.saveJSON("/~" + sakai.data.me.user.userid + "/public/pubspace", {
-                "structure0": $.toJSON(sakai_global.user.pubdata.structure0)
+                "structure0": JSON.stringify(sakai_global.user.pubdata.structure0)
             });
 
             if (_.indexOf(["library", "memberships", "contacts"], currentPath) === -1) {
@@ -105,11 +105,10 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _){
         /////////////////////////////////
 
         var initializeOverlay = function(){
-            sakai.api.Util.bindDialogFocus($("#userpermissions_container"));
-            $("#userpermissions_container").jqmShow();
+            sakai.api.Util.Modal.open('#userpermissions_container');
         };
 
-        $("#userpermissions_container").jqm({
+        sakai.api.Util.Modal.setup('#userpermissions_container', {
             modal: true,
             overlay: 20,
             toTop: true,

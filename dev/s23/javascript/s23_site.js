@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations under the License.
  */
 
-/*global sakai, Config, $, QueryString */
-require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
+/*global sakai, Config, $ */
+require(['jquery', 'sakai/sakai.api.core', 'jquery-plugins/jquery.cookie'], function($, sakai) {
 
 sakai_global.s23_site = function(){
 
@@ -25,7 +25,6 @@ sakai_global.s23_site = function(){
     // Configuration variables //
     /////////////////////////////
 
-    var qs = new Querystring(); // Get the current query string
     var completeJSON;
     var entityReady = false;
 
@@ -118,11 +117,10 @@ sakai_global.s23_site = function(){
         if (pageid) {
 
             // Remove the active class from the previous selected item
-            $(s23SiteMenuItems).removeClass(s23SiteMenuActive);
+            $(s23SiteMenuItems).closest('li').removeClass(s23SiteMenuActive);
             
             // Set the active class to the item you just clicked on
-            $('#' + s23SiteMenuItemTag + pageid).addClass(s23SiteMenuActive);
-            
+            $('#' + s23SiteMenuItemTag + pageid.replace(/([~!])/g, '_')).closest('li').addClass(s23SiteMenuActive);
             // Get the page info for a certain page and store it in a variable
             var page = getPageInfo(pageid);
             
@@ -133,7 +131,7 @@ sakai_global.s23_site = function(){
                 $(s23SitePageContainerClass, s23SiteIframeContainer).hide();
                 
                 // Get the complete id for a page container
-                var completexid = s23SitePageContainerTag + page.xid;
+                var completexid = s23SitePageContainerTag + page.xid.replace(/([~!])/g, '_');
                 
                 // Check if the page was already loaded before
                 if ($("#" + completexid).length > 0) {
@@ -221,7 +219,7 @@ sakai_global.s23_site = function(){
                         }
                         // The 'reset' tool <a> link, is overridden with the below event to reload the 
                         // sites iframe with the fresh tool state URL generated in the template. 
-                        $("#reset-Main" + page.tools[tool].xid).click(handleResetClick);
+                        $("#reset-Main" + page.tools[tool].xid).on('click', handleResetClick);
                     }
                     firstFrame.load(function(){
                         for (var j = 0; j < otherframes.length; j++) {
@@ -377,22 +375,19 @@ sakai_global.s23_site = function(){
             // If we haven't saved the prefs yet, or if we did and the noti isn't turned off show the notifcation area.
             if (success === false || (success === true && data.sakai2notification !== false)) { 
                 sakai.api.Util.notification.show($(s23GritterNotificationTitle).html(), $(s23GritterNotificationMessage).html(), sakai.api.Util.notification.type.INFORMATION, false);
-                $(".s23_gritter_notification_cancel").click(hideNotification);
+                $(".s23_gritter_notification_cancel").on('click', hideNotification);
             }
         });
 
 
         // Check if the query string contains the parameter id
-        if (qs.contains("id")) {
-
+        if ($.deparam.querystring().id) {
             // Get the value for the id parameter
-            var siteid = qs.get("id");
-
+            var siteid = $.deparam.querystring().id;
             // Send an ajax request to the user
             getSakai2SiteInfo(siteid);
         }
         else {
-
             // Log an error message for the user
             debug.error("s23site: This site needs to have an id parameter for a sakai2 site");
         }
@@ -403,6 +398,11 @@ sakai_global.s23_site = function(){
             $(window).trigger("sakai.entity.init", ["s23site", "", {
                 "title": sakai.api.Security.saneHTML(completeJSON.site.title)
             }]);
+            $('.icon-sakai-help').on('click', function(ev) {
+                ev.preventDefault();
+                var helpWindow = window.open('/portal/help/main', 'help','resizable=yes,toolbar=no,scrollbars=yes,menubar=yes,width=800,height=600');
+                helpWindow.focus();
+            });
         }
     };
 

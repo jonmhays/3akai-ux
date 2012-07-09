@@ -28,7 +28,9 @@
  * to the login page with the current URL encoded in the url. This will cause the system to
  * redirect to the page we used to be on once logged in.
  */
-require(["jquery", "jquery-plugins/jquery.validate"], function(jQuery) {
+require(['jquery'], function(jQuery) {
+
+var msie = jQuery.browser.msie;
 
 (function($){
 
@@ -68,7 +70,6 @@ require(["jquery", "jquery-plugins/jquery.validate"], function(jQuery) {
 
                 $.ajax({
                     url: '/system/me',
-                    cache: false,
                     success: function(data){
                         decideLoggedIn(data, true);
                     }
@@ -121,6 +122,17 @@ require(["jquery", "jquery-plugins/jquery.validate"], function(jQuery) {
                 }
                 o.url += "_charset_=utf-8";
             }
+            if (msie) {
+                var str = "" + o.url;
+                o.url = "";
+                for (var i = 0; i < str.length; i++) {
+                    if (str.charCodeAt(i) > 127) {
+                        o.url += encodeURIComponent(str[i]);
+                    } else {
+                        o.url += str[i];
+                    }
+                }
+            }
             return _ajax.call(this, o);
         }
     });
@@ -157,23 +169,10 @@ require(["jquery", "jquery-plugins/jquery.validate"], function(jQuery) {
 })(jQuery);
 
 /**
- * Add some jquery validate methods
+ * Make caching the default behavior for $.getScript
  */
-
-// Don't allow spaces in the field
-$.validator.addMethod("nospaces", function(value, element){
-    return this.optional(element) || (value.indexOf(" ") === -1);
-}, "* No spaces are allowed");
-
-// this method appends http:// or ftp:// or https://
-$.validator.addMethod("appendhttp", function(value, element) {
-    if(value.substring(0,7) !== "http://" &&
-    value.substring(0,6) !== "ftp://" &&
-    value.substring(0,8) !== "https://" &&
-    $.trim(value) !== "") {
-        $(element).val("http://" + value);
-    }
-    return true;
-}, "No error message, this is just an appender");
+jQuery.ajaxSetup({
+    'cache': true
+});
 
 });

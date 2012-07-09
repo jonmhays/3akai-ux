@@ -42,6 +42,8 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
         var URLsegment1 = window.location.pathname.split( '/' )[1];
         // End CalCentral customization            
 
+        var $rootel = $('#' + tuid);
+
         // Classes
         var navSelectedItemClass = 'lhnavigation_selected_item';
         var navHoverableItemClass = 'lhnavigation_hoverable_item';
@@ -49,9 +51,6 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
         // Elements
         var navSelectedItemArrow = '.lhnavigation_selected_item_arrow';
         var navSelectedItem = '.lhnavigation_selected_item';
-
-        var $lhnavigation_contentauthoring_declaration = $('#lhnavigation_contentauthoring_declaration'),
-            $lhnavigation_contentauthoring_declaration_template = $('#lhnavigation_contentauthoring_declaration_template');
 
         ////////////////
         // DATA CACHE //
@@ -65,8 +64,6 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
         var parametersToCarryOver = {};
         var sakaiDocsInStructure = {};
         var currentPageShown = {};
-
-        var doNotRenderSakaiDocsOnPaths = ['/content'];
 
 
         //////////////////////////////
@@ -159,7 +156,7 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
 
         var storeStructure = function(structure, savepath) {
             sakai.api.Server.saveJSON(savepath, {
-                'structure0': $.toJSON(structure)
+                'structure0': JSON.stringify(structure)
             });
         };
 
@@ -394,7 +391,7 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
                     }
                 }
                 finishProcessData(structure, data, callback);
-            });
+            }, false);
         };
 
         ///////////////////
@@ -451,6 +448,41 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
         //////////////////////////////
         // Rendering a content page //
         //////////////////////////////
+
+        /**
+         * Displays a page unavailable error message
+         */
+        var renderPageUnavailable = function() {
+            unavailablePage = {
+                'ref': false,
+                'path': false,
+                'content': {
+                    'unavailablePage1': {
+                        'htmlblock': {
+                            'content': sakai.config.pageUnavailableContent
+                        }
+                    },
+                    'rows': [{
+                        'columns': [{
+                            'elements': [{
+                                'id': 'unavailablePage1',
+                                'type': 'htmlblock'
+                            }],
+                            width: 1
+                        }]
+                    }]
+                },
+                'savePath': false,
+                'pageSavePath': false,
+                'saveRef': false,
+                'canEdit': false,
+                'nonEditable': false,
+                '_lastModified': false,
+                'autosave': false,
+                'title': false
+            };
+            $(window).trigger('showpage.contentauthoring.sakai', [unavailablePage]);
+        };
 
         var getFirstSelectablePage = function(structure) {
             var selected = false;
@@ -526,27 +558,31 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
                 if (!selected) {
                     selected = getFirstSelectablePage(privstructure) || getFirstSelectablePage(pubstructure);
                 }
-                // update links in all menus with subnav with the selected page, so they wont trigger handleHashChange and cause weirdness
-                $('#lhnavigation_container').find('a.lhnavigation_toplevel_has_subnav').attr('href', '#l=' + selected);
-                // Select correct item
-                var menuitem = $('li[data-sakai-path=\'' + selected + '\']');
-                if (menuitem.length) {
-                    if (selected.split('/').length > 1) {
-                        var par = $('li[data-sakai-path=\'' + selected.split('/')[0] + '\']');
-                        showHideSubnav(par, true);
-                    }
-                    var ref = menuitem.data('sakai-ref');
-                    var savePath = menuitem.data('sakai-savepath') || false;
-                    var pageSavePath = menuitem.data('sakai-pagesavepath') || false;
-                    var canEdit = menuitem.data('sakai-submanage') || false;
-                    var nonEditable = menuitem.data('sakai-noneditable') || false;
-                    if (!menuitem.hasClass(navSelectedItemClass)) {
-                        selectNavItem(menuitem, $(navSelectedItem));
-                    }
+                if (selected) {
+                    // update links in all menus with subnav with the selected page, so they wont trigger handleHashChange and cause weirdness
+                    $('#lhnavigation_container').find('a.lhnavigation_toplevel_has_subnav').attr('href', '#l=' + selected);
+                    // Select correct item
+                    var menuitem = $('li[data-sakai-path=\'' + selected + '\']');
+                    if (menuitem.length) {
+                        if (selected.split('/').length > 1) {
+                            var par = $('li[data-sakai-path=\'' + selected.split('/')[0] + '\']');
+                            showHideSubnav(par, true);
+                        }
+                        var ref = menuitem.data('sakai-ref');
+                        var savePath = menuitem.data('sakai-savepath') || false;
+                        var pageSavePath = menuitem.data('sakai-pagesavepath') || false;
+                        var canEdit = menuitem.data('sakai-submanage') || false;
+                        var nonEditable = menuitem.data('sakai-noneditable') || false;
+                        if (!menuitem.hasClass(navSelectedItemClass)) {
+                            selectNavItem(menuitem, $(navSelectedItem));
+                        }
 
-                    getPageContent(ref, function() {
-                        preparePageRender(ref, selected, savePath, pageSavePath, nonEditable, canEdit, newPageMode);
-                    });
+                        getPageContent(ref, function() {
+                            preparePageRender(ref, selected, savePath, pageSavePath, nonEditable, canEdit, newPageMode === true);
+                        });
+                    }
+                } else {
+                    renderPageUnavailable();
                 }
             }
         };
@@ -584,7 +620,7 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
                     content: currentPageShown.content
                 };
                 editPageTitle();
-                $(window).on('click', '#inserterbar_action_add_page', addNewPage);
+                $(document).on('click', '#inserterbar_action_add_page', addNewPage);
             } else {
                 $(window).trigger('showpage.contentauthoring.sakai', [currentPageShown]);
             }
@@ -635,10 +671,14 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
             }
         };
 
-        var showContextMenu = function($clickedItem) {
+        var showContextMenu = function($clickedItem){
             var contextMenu = $('#lhnavigation_submenu');
             $clickedItem.children('.lhnavigation_selected_submenu_image').addClass('clicked');
-            contextMenu.css('left', $clickedItem.position().left + 130 - 50 + 'px');
+            var leftOffset = 68;
+            if ($clickedItem.parents('.lhnavigation_subnav_item').attr('data-sakai-addcontextoption') === 'user') {
+                leftOffset = 63;
+            }
+            contextMenu.css('left', $clickedItem.position().left + leftOffset + 'px');
             contextMenu.css('top', $clickedItem.position().top + 6 + 'px');
             toggleContextMenu();
         };
@@ -646,10 +686,14 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
         var toggleContextMenu = function(forceHide) {
             var contextMenu = $('#lhnavigation_submenu');
             if (forceHide) {
+                $('.lhnavigation_selected_submenu_image.clicked')
+                    .parents('.lhnavigation_item_content, .lhnavigation_subnav_item_content')
+                    .find('a:first').focus();
                 $('.lhnavigation_selected_submenu_image').removeClass('clicked');
                 contextMenu.hide();
             } else {
                 contextMenu.toggle();
+                contextMenu.find('a:visible:first').focus();
             }
         };
 
@@ -717,7 +761,7 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
         };
 
         var addNewPage = function() {
-            $(window).off('click', '#inserterbar_action_add_page', addNewPage);
+            $(document).off('click', '#inserterbar_action_add_page', addNewPage);
             if (contextData.addArea) {
                 addSubPage();
             } else {
@@ -989,7 +1033,7 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
                     'newPageMode': ''
                 }, 0);
             }
-            $('#lhnavigation_delete_dialog').jqmHide();
+            sakai.api.Util.Modal.close('#lhnavigation_delete_dialog');
         };
 
         /*
@@ -1051,13 +1095,12 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
 
         var confirmPageDelete = function() {
             pageToDelete = jQuery.extend(true, {}, contextMenuHover);
-            sakai.api.Util.bindDialogFocus($('#lhnavigation_delete_dialog'));
-            $('#lhnavigation_delete_dialog').jqmShow();
             toggleContextMenu(true);
+            sakai.api.Util.Modal.open('#lhnavigation_delete_dialog');
         };
 
         // Init delete dialog
-        $('#lhnavigation_delete_dialog').jqm({
+        sakai.api.Util.Modal.setup('#lhnavigation_delete_dialog', {
             modal: true,
             overlay: 20,
             toTop: true
@@ -1126,8 +1169,8 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
         ////////////////////////////
 
         var handleReorder = function(e, ui) {
-            var $target = $(e.target);
-            var savePath = $target.parents('.lhnavigation_menuitem:first').data('sakai-savepath');
+            var $target = $(ui.item);
+            var savePath = $target.data('sakai-savepath');
             var structure = sakaiDocsInStructure[savePath];
             var $list = $target.parents('ul div.lhnavigation_menu_list');
             if ($target.parents('ul.lhnavigation_subnav').length) {
@@ -1163,11 +1206,13 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
         var enableSorting = function() {
             $('#lhnavigation_container .lhnavigation_menu_list').sortable({
                 items: 'li.lhnavigation_outer[data-sakai-manage=true]',
-                update: handleReorder
+                update: handleReorder,
+                distance: 30
             });
             $('#lhnavigation_container .lhnavigation_subnav').sortable({
                 items: 'li.lhnavigation_subnav_item[data-sakai-manage=true]',
-                update: handleReorder
+                update: handleReorder,
+                distance: 30
             });
             $('.lhnavigation_menuitem[data-sakai-manage=true]').addClass('lhnavigation_move_cursor');
         };
@@ -1185,7 +1230,11 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
                 processData(pubdata, cData.puburl, function(processedPub) {
                     pubstructure = processedPub;
                     renderData();
-                    selectPage();
+                    if (sakai_global.contentauthoring && sakai_global.contentauthoring.ready) {
+                        selectPage();
+                    } else {
+                        $(window).bind('ready.contentauthoring.sakai', selectPage);
+                    }
                     enableSorting();
                     if (cData.parametersToCarryOver) {
                         parametersToCarryOver = cData.parametersToCarryOver;
@@ -1207,26 +1256,6 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
         // Initializing the Sakaidocs widget //
         ///////////////////////////////////////
 
-        var sakaiDocsInitialized = false;
-
-        var prepareRenderNavigation = function(pubdata, privdata, cData, mainPubUrl, mainPrivUrl) {
-            if (!sakaiDocsInitialized) {
-                sakaiDocsInitialized = true;
-                $('#s3d-page-main-content').append($('#lhnavigation_contentauthoring_declaration'));
-                $(window).bind('ready.contentauthoring.sakai', function() {
-                    renderNavigation(pubdata, privdata, cData, mainPubUrl, mainPrivUrl);
-                });
-                // Don't render sakaidocs on paths in the doNotRenderSakaiDocsOnPaths array
-                // so we don't double-render it on those that already include it
-                if ($.inArray(window.location.path, doNotRenderSakaiDocsOnPaths) === -1) {
-                    sakai.api.Util.TemplateRenderer($lhnavigation_contentauthoring_declaration_template, {}, $lhnavigation_contentauthoring_declaration);
-                }
-                sakai.api.Widgets.widgetLoader.insertWidgets('s3d-page-main-content', false);
-            } else {
-                renderNavigation(pubdata, privdata, cData, mainPubUrl, mainPrivUrl);
-            }
-        };
-
         sakai_global.lhnavigation.getCurrentPage = function() {
             return currentPageShown;
         };
@@ -1239,11 +1268,11 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
             showContextMenu($(this));
         });
 
-        $('.lhnavigation_item_content, .lhnavigation_subnav_item_content').live('mouseenter', function() {
+        $rootel.on('mouseenter focus', '.lhnavigation_item_content, .lhnavigation_subnav_item_content', function() {
             onContextMenuHover($(this), $(this).parent('li'));
         });
 
-        $(window).on('click', '#inserterbar_action_add_page', addNewPage);
+        $(document).on('click', '#inserterbar_action_add_page', addNewPage);
 
         $('#lhavigation_submenu_edittitle').live('click', function(ev) {
             editPageTitle();
@@ -1258,7 +1287,7 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
             showUserPermissions();
         });
 
-        $('.lhnavigation_change_title').live('keyup', function(ev) {
+        $rootel.on('keydown', '.lhnavigation_change_title', function(ev) {
             if (ev.keyCode === 13 && changingPageTitle) {
                 savePageTitle();
             }
@@ -1393,7 +1422,7 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
         $(window).bind('hashchanged.lhnavigation.sakai', handleHashChange);
 
         $(window).bind('lhnav.init', function(e, pubdata, privdata, cData, mainPubUrl, mainPrivUrl) {
-            prepareRenderNavigation(pubdata, privdata, cData, mainPubUrl, mainPrivUrl);
+            renderNavigation(pubdata, privdata, cData, mainPubUrl, mainPrivUrl);
         });
 
         $(window).bind('lhnav.updateCount', function(e, pageid, value, add) {
@@ -1405,6 +1434,7 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
                 $.bbq.removeState('newPageMode');
             }
         });
+
 
         ///////////////////////
         // Widget has loaded //

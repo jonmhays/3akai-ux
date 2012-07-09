@@ -160,9 +160,10 @@ require(["jquery", "sakai/sakai.api.core", "/dev/javascript/content_profile.js"]
             $contentmetadataTagsContainer.toggleClass("contentmetadata_editable", mode !== "edit");
             if (mode === "edit") {
                 $contentmetadataAutosuggestElt = $( "#contentmetadata_tags_tags" );
-                sakai.api.Util.AutoSuggest.setupTagAndCategoryAutosuggest($contentmetadataAutosuggestElt , null, $( ".list_categories", $contentmetadataTagsContainer ), sakai_global.content_profile.content_data.data["sakai:tags"] );
-                $( ".as-selections", $contentmetadataTagsContainer ).addClass( "contentmetadata_edit_input" );
-                $contentmetadataAutosuggestElt.focus();
+                sakai.api.Util.AutoSuggest.setupTagAndCategoryAutosuggest($contentmetadataAutosuggestElt , null, $( '.list_categories', $contentmetadataTagsContainer ), sakai_global.content_profile.content_data.data['sakai:tags'], function(){
+                    $('.as-selections', $contentmetadataTagsContainer ).addClass('contentmetadata_edit_input');
+                    $contentmetadataAutosuggestElt.focus();
+                });
             }
             addEditBinding( mode, true );
         };
@@ -370,7 +371,8 @@ require(["jquery", "sakai/sakai.api.core", "/dev/javascript/content_profile.js"]
          * Add binding/events to the elements in the widget
          */
         var addBinding = function(){
-            $(".contentmetadata_editable_for_maintainers").toggleClass("contentmetadata_editable", sakai_global.content_profile.content_data.isManager);
+            $(".contentmetadata_editable_for_maintainers").toggleClass("contentmetadata_editable",
+                (sakai_global.content_profile.content_data.isManager || sakai_global.content_profile.content_data.isEditor));
 
             $contentmetadataShowMore.die("click").live("click", animateData);
 

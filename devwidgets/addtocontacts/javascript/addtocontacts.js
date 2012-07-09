@@ -59,7 +59,6 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai, sakai_util) {
         // Form elements
         var addToContactsForm = addToContacts + "_form";
         var addToContactsFormButtonInvite = addToContactsForm + "_invite";
-        var addToContactsFormButtonCancel = addToContactsForm + "_cancel";
         var addToContactsFormPersonalNote = addToContactsForm + "_personalnote";
         var addToContactsFormPersonalNoteTemplate = addToContactsFormPersonalNote + "_template";
         var addToContactsFormType = addToContactsForm + "_type";
@@ -189,24 +188,12 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai, sakai_util) {
                     },
                     success: function(data){
                         enableDisableInviteButton(false);
-                        $(addToContactsDialog).jqmHide();
+                        sakai.api.Util.Modal.close(addToContactsDialog);
                         sakai.api.Communication.sendMessage(userid, sakai.data.me, title, message, "invitation", false,false,true,"contact_invitation");
                         $(window).trigger("sakai.addToContacts.requested", [contactToAdd]);
                         //reset the form to set original note
                         $(addToContactsForm)[0].reset();
                         sakai.api.Util.notification.show("", $(addToContactsDone, $rootel).html());
-                        // record that user made contact request
-                        sakai.api.User.addUserProgress("madeContactRequest");
-                        // display tooltip
-                        var tooltipData = {
-                            "tooltipSelector":"#search_button",
-                            "tooltipTitle":"TOOLTIP_ADD_CONTACTS",
-                            "tooltipDescription":"TOOLTIP_ADD_CONTACTS_P5",
-                            "tooltipTop":-175,
-                            "tooltipLeft":0,
-                            "tooltipAutoClose":true
-                        };
-                        $(window).trigger("update.tooltip.sakai", tooltipData);
                     },
                     error: function(xhr, textStatus, thrownError){
                         enableDisableInviteButton(false);
@@ -252,17 +239,23 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai, sakai_util) {
             // Render the templates
             renderTemplates();
 
-            // position dialog box at users scroll position
-            sakai.api.Util.positionDialogBox(addToContactsDialog);
-            sakai.api.Util.bindDialogFocus(addToContactsDialog);
-
             // Show the layover
-            $(addToContactsDialog).jqmShow();
+            sakai.api.Util.Modal.open(addToContactsDialog);
 
         };
 
-        $(window).bind("initialize.addToContacts.sakai", function(e, userObj) {
+        $(document).on('initialize.addToContacts.sakai', function(e, userObj) {
             initialize(userObj);
+        });
+        $(document).on('click', '.sakai_addtocontacts_overlay', function(ev, ui) {
+            var $el = $(this);
+            if ($el.attr('sakai-entityid') && $el.attr('sakai-entityname')) {
+                initialize({
+                    'uuid': $el.attr('sakai-entityid'),
+                    'displayName': $el.attr('sakai-entityname'),
+                    'pictureLink': $el.attr('sakai-entitypicture') || false
+                });
+            }
         });
 
         /////////////////////
@@ -276,35 +269,8 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai, sakai_util) {
             return false;
         });
 
-        // Bind the cancel button
-        $(addToContactsFormButtonCancel).click(function(){
-            $(addToContactsForm)[0].reset();
-
-            // display tooltip
-            var tooltipData = {
-                "tooltipSelector":"#search_button",
-                "tooltipTitle":"TOOLTIP_ADD_CONTACTS",
-                "tooltipDescription":"TOOLTIP_ADD_CONTACTS_P3",
-                "tooltipTop":-150,
-                "tooltipLeft":-200
-            };
-            $(window).trigger("update.tooltip.sakai", tooltipData);
-        });
-
-        $(".jqmClose").bind("click", function(){
-            // display tooltip
-            var tooltipData = {
-                "tooltipSelector":"#search_button",
-                "tooltipTitle":"TOOLTIP_ADD_CONTACTS",
-                "tooltipDescription":"TOOLTIP_ADD_CONTACTS_P3",
-                "tooltipTop":-150,
-                "tooltipLeft":-200
-            };
-            $(window).trigger("update.tooltip.sakai", tooltipData);
-        });
-
         // Bind the jqModal
-        $(addToContactsDialog).jqm({
+        sakai.api.Util.Modal.setup(addToContactsDialog, {
             modal: true,
             overlay: 20,
             toTop: true,

@@ -20,7 +20,6 @@
  * Dependencies
  *
  * /dev/lib/jquery/plugins/jqmodal.sakai-edited.js
- * /dev/lib/jquery/plugins/jquery.validate.sakai-edited.js (validate)
  */
 
 require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
@@ -44,6 +43,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
         var preferencesChanges = false;
         var privacyChanges = false;
         var passwordChanges = false;
+        var emailChanges = false;
         var pageReload = false;
 
 
@@ -60,14 +60,17 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
         var accountPreferencesPreferencesTab = "#accountpreferences_preferences_tab";
         var accountPreferencesPrivacyTab = "#accountpreferences_privacy_tab";
         var accountPasswordTab = "#accountpreferences_password_tab";
+        var accountEmailTab = "#accountpreferences_email_tab";
         var accountPreferencesContainer =  "#accountpreferences_container";
         var preferContainer = accountPreferencesID + "_preferContainer";
         var privacyContainer = accountPreferencesID + "_changePrivacyContainer";
         var passChangeContainer =  accountPreferencesID + "_changePassContainer";
+        var emailChangeContainer =  accountPreferencesID + "_changeEmailContainer";
 
         // Forms
         var accountPreferencesPasswordChange = accountPreferencesID + "_password_change";
         var accountPreferencesPreferencesForm = accountPreferencesID + "_preferences_form";
+        var accountPreferencesEmailChange = accountPreferencesID + "_email_change";
 
         // Textboxes
         var currentPassTxt = "#curr_pass";
@@ -97,6 +100,10 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
         var messageChangeLangTitle = accountPreferencesID + "_message_ChangeLang_title";
         var messageChangeLang = accountPreferencesID + "_message_ChangeLang";
         var errorPassSame = accountPreferencesID + "_error_passSame";
+        var errorFailChangeEmail = accountPreferencesID + "_error_failChangeEmail";
+        var errorFailChangeEmailBody = accountPreferencesID + "_error_failChangeEmailBody";
+        var messageEmailChanged = accountPreferencesID + "_message_emailChanged";
+        var messageEmailChangedBody = accountPreferencesID + "_message_emailChangedBody";
 
         // Comboboxes
         var timezonesContainer = "#time_zone";
@@ -104,6 +111,8 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
 
         // templates
         var languagesTemplate = accountPreferences + "_languagesTemplate";
+
+        var $accountpreferences_langloc_settings = $("#accountpreferences_langloc_settings");
 
         var myClose = function(hash) {
             hash.o.remove();
@@ -121,18 +130,14 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
         ///////////////////////
         /**
          * Public function that can be called from elsewhere
-         * (e.g. chat and sites widget)
+         * (e.g. sites widget)
          * It initializes the accountPreferencesContainer widget and shows the jqmodal (ligthbox)
          */
         var initialize = function(){
-            sakai.api.Util.positionDialogBox(accountPreferencesContainer);
-            sakai.api.Util.bindDialogFocus(accountPreferencesContainer);
-            $(accountPreferencesContainer).jqmShow();
+            sakai.api.Util.Modal.open(accountPreferencesContainer);
         };
 
-        $(window).bind("init.accountpreferences.sakai", function() {
-            initialize();
-        });
+        $(document).on('click', '.accountpreferences_trigger', initialize);
 
         /////////////////
         // Change pass //
@@ -225,7 +230,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
             privacyChanges = true;
         });
 
-        $("#accountpreferences_privacy_change").live("submit", function(ev){
+        $('#accountpreferences_privacy_change').on('submit', function(ev){
             var option = $(".accountpreferences_selectable input:radio[name='accountpreferences_privacy_radio']:checked").val();
             sakai.api.User.savePrivacySettings(option, function(success){
                 sakai.api.Util.notification.show(sakai.api.i18n.getValueForKey("PRIVACY_SETTINGS", "accountpreferences"), sakai.api.i18n.getValueForKey("PRIVACY_SETTINGS_UPDATED", "accountpreferences"));
@@ -350,6 +355,27 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
             });
         };
 
+        var saveEmail = function() {
+            var emailVal = $.trim($('#accountpreferences_email').val());
+            var data = {'email': emailVal};
+            sakai.api.User.updateUserProfile(
+                sakai.data.me.user.userid,
+                "basic", data, false, {}, false, function(success, data) {
+                    if (success) {
+                        emailChanges = false;
+                        sakai.api.Util.notification.show(
+                            $(messageEmailChanged).html(),
+                            $(messageEmailChangedBody).html());
+                        $(accountPreferencesContainer).jqmHide();
+                    } else {
+                        sakai.api.Util.notification.show(
+                            $(messageEmailChanged).html(),
+                            $(messageEmailChangedBody).html());
+                    }
+                }
+            );
+        };
+
         $(saveButton).bind("click", function(){
             if (preferencesChanges){
                 $(accountPreferencesPreferencesForm).submit();
@@ -363,6 +389,9 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                     $(accountPreferencesPasswordChange).submit();
                 }
             }
+            if (emailChanges) {
+                $("#accountpreferences_email_change").submit();
+            }
         });
 
         /**
@@ -370,7 +399,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
          */
         var finishSave = function(){
             if (!preferencesChanges && !privacyChanges && !passwordChanges){
-                $(accountPreferencesContainer).jqmHide();
+                sakai.api.Util.Modal.close(accountPreferencesContainer);
                 if (pageReload){
                     window.setTimeout(function(){
                         document.location.reload();
@@ -383,10 +412,6 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
          * Initialise form validation
          */
         var initValidation = function(){
-            $.validator.addMethod("newpw", function(value, element){
-                return this.optional(element) || (value !== $("#curr_pass").val());
-            }, $(errorPassSame).html());
-
             var validateOpts = {
                 rules: {
                     curr_pass: {
@@ -406,6 +431,14 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                         "equalTo": sakai.api.i18n.getValueForKey("PLEASE_ENTER_PASSWORD_TWICE", "accountpreferences")
                     }
                 },
+                'methods': {
+                    'newpw': {
+                        'method': function(value, element) {
+                            return this.optional(element) || (value !== $('#curr_pass').val());
+                        },
+                        'text': $(errorPassSame).html()
+                    }
+                },
                 submitHandler: changePass
             };
 
@@ -418,6 +451,13 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
 
             // Initialize the validate plug-in
             sakai.api.Util.Forms.validate($(accountPreferencesPreferencesForm), validatePreferencesOpts);
+
+            var validateEmailOpts = {
+                submitHandler: saveEmail
+            };
+
+            // Initialize the validate plug-in
+            sakai.api.Util.Forms.validate($(accountPreferencesEmailChange), validateEmailOpts);
         };
 
         /**
@@ -444,12 +484,17 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
          * This makes use of the jqModal (jQuery Modal) plugin that provides support
          * for lightboxes
          */
-        $(accountPreferencesContainer).jqm({
+        sakai.api.Util.Modal.setup(accountPreferencesContainer, {
             modal: true,
             overlay: 20,
             toTop: true,
             onShow: myShow,
             onHide: myClose
+        });
+
+        $('#accountpreferences_email').on('change', function() {
+            enableElements($(saveButton));
+            emailChanges = true;
         });
 
         /** Binds all the regional settings select box change **/
@@ -482,31 +527,39 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
             $(passChangeContainer).hide();
             $(preferContainer).hide();
             $(privacyContainer).hide();
+            $(emailChangeContainer).hide();
         };
 
-        $(accountPreferencesPreferencesTab).click(function(){
+        $(accountPreferencesPreferencesTab).on('click', function() {
             $(accountPreferencesTabsButtons).removeClass(tabSelected);
             $(accountPreferencesPreferencesTab).addClass(tabSelected);
             hideAllPanes();
             $(preferContainer).show();
         });
 
-        $(accountPreferencesPrivacyTab).click(function(){
+        $(accountPreferencesPrivacyTab).on('click', function() {
             $(accountPreferencesTabsButtons).removeClass(tabSelected);
             $(accountPreferencesPrivacyTab).addClass(tabSelected);
             hideAllPanes();
             $(privacyContainer).show();
         });
 
-        $(accountPasswordTab).click(function(){
+        $(accountPasswordTab).on('click', function() {
             $(accountPreferencesTabsButtons).removeClass(tabSelected);
             $(accountPasswordTab).addClass(tabSelected);
             hideAllPanes();
             $(passChangeContainer).show();
         });
 
-        $(accountPreferencesCancel).die("click").live("click", function() {
-            $(accountPreferencesContainer).jqmHide();
+        $(accountEmailTab).on('click', function() {
+            $(accountPreferencesTabsButtons).removeClass(tabSelected);
+            $(accountEmailTab).addClass(tabSelected);
+            hideAllPanes();
+            $(emailChangeContainer).show();
+        });
+
+        $(accountPreferencesCancel).die('click').live('click', function() {
+            sakai.api.Util.Modal.close(accountPreferencesContainer);
         });
 
         /////////////////////////////
@@ -529,6 +582,24 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                 if (!sakai.config.allowPasswordChange) {
                     $(accountPasswordTab).hide();
                     $(passChangeContainer).hide();
+                }
+                if (sakai.config.emailLocation !== 'accountpreferences') {
+                    $(accountEmailTab).hide();
+                    $(emailChangeContainer).hide();
+                } else {
+                    var emailVal = sakai.api.User.getProfileBasicElementValue(
+                        sakai.data.me.profile,
+                        'email');
+                    $('#accountpreferences_email').val(emailVal);
+                }
+                if (sakai.config.displayTimezone || sakai.config.displayLanguage) {
+                    $accountpreferences_langloc_settings.show();
+                    if (sakai.config.displayTimezone) {
+                        $('#accountpreferences_select_timezone').show();
+                    }
+                    if (sakai.config.displayLanguage) {
+                        $('#accountpreferences_select_language').show();
+                    }
                 }
             }
         };

@@ -21,7 +21,6 @@
  *
  * /dev/lib/jquery/plugins/imgareaselect/jquery.imgareaselect.js (imgAreaSelect)
  * /dev/lib/jquery/plugins/jqmodal.sakai-edited.js
- * /dev/lib/jquery/plugins/jquery.json.js (toJSON)
  */
 
 require(["jquery", "sakai/sakai.api.core", "/dev/lib/jquery/plugins/imgareaselect/jquery.imgareaselect.js"], function($, sakai) {
@@ -92,7 +91,7 @@ require(["jquery", "sakai/sakai.api.core", "/dev/lib/jquery/plugins/imgareaselec
         var existingPicture = false;
 
         // An array with selectors pointing to images that need to be changed.
-        var imagesToChange = ["#picture_holder img", "#entity_profile_picture", "#myprofile_pic", "#chat_available_me .chat_available_image img", "#profile_userinfo_picture"];
+        var imagesToChange = ['#picture_holder img', '#entity_profile_picture', '#myprofile_pic', '#profile_userinfo_picture'];
 
 
         ///////////////////
@@ -172,7 +171,7 @@ require(["jquery", "sakai/sakai.api.core", "/dev/lib/jquery/plugins/imgareaselec
          * Empty upload field by resetting the form
          */
         var resetUploadField = function(){
-            $(picForm).reset();
+            $(picForm)[0].reset();
             hideInputError();
             $(uploadProcessing).hide();
             $(uploadNewButtons).show();
@@ -183,8 +182,6 @@ require(["jquery", "sakai/sakai.api.core", "/dev/lib/jquery/plugins/imgareaselec
         // Since file upload form is reset every time overlay closes do this in init function
         $("#changepic_container .jqmClose").click(function(){
             resetUploadField();
-            // hide any tooltips if they are open
-            $(window).trigger("done.tooltip.sakai");
         });
 
         /**
@@ -368,15 +365,6 @@ require(["jquery", "sakai/sakai.api.core", "/dev/lib/jquery/plugins/imgareaselec
                             imageareaobject.setOptions({show: true, enable: true});
                             imageareaobject.update();
                             preview($("img" + fullPicture)[0], selectionObj);
-                            // display help tooltip
-                            var tooltipData = {
-                                "tooltipSelector":"#save_new_selection",
-                                "tooltipTitle":"TOOLTIP_ADD_MY_PHOTO",
-                                "tooltipDescription":"TOOLTIP_ADD_MY_PHOTO_P4",
-                                "tooltipArrow":"top",
-                                "tooltipLeft":50
-                            };
-                            $(window).trigger("update.tooltip.sakai", tooltipData);
                         },
                         onSelectChange: preview
                     });
@@ -394,14 +382,6 @@ require(["jquery", "sakai/sakai.api.core", "/dev/lib/jquery/plugins/imgareaselec
         $(picInput).bind("change", function(){
             hideInputError();
             $('#profile_upload').removeAttr('disabled');
-            // display help tooltip
-            var tooltipData = {
-                "tooltipSelector":"#profile_upload",
-                "tooltipTitle":"TOOLTIP_ADD_MY_PHOTO",
-                "tooltipDescription":"TOOLTIP_ADD_MY_PHOTO_P3",
-                "tooltipArrow":"bottom"
-            };
-            $(window).trigger("update.tooltip.sakai", tooltipData);
         });
 
         // This is the function that will be called when a user has cut out a selection
@@ -418,7 +398,7 @@ require(["jquery", "sakai/sakai.api.core", "/dev/lib/jquery/plugins/imgareaselec
                 userSelection.picture === originalPic.picture)){
                 // no need to save if picture hasn't changed, so just close the dialog
                 // Hide the layover.
-                $(container).jqmHide();
+                sakai.api.Util.Modal.close(container);
             } else {
                 savePicture();
             }
@@ -464,7 +444,7 @@ require(["jquery", "sakai/sakai.api.core", "/dev/lib/jquery/plugins/imgareaselec
                         "selectedy2" : userSelection.height + userSelection.y1
                     };
 
-                    var stringtosave = $.toJSON(tosave);
+                    var stringtosave = JSON.stringify(tosave);
 
                     sakai.data.me.profile.picture = stringtosave;
 
@@ -473,7 +453,7 @@ require(["jquery", "sakai/sakai.api.core", "/dev/lib/jquery/plugins/imgareaselec
                         url: "/~" + sakai.api.Util.safeURL(id) + "/public/authprofile.profile.json",
                         type : "POST",
                         data : {
-                            "picture" : $.toJSON(tosave),
+                            "picture" : JSON.stringify(tosave),
                             "_charset_":"utf-8"
                         },
                         success : function(data) {
@@ -483,26 +463,11 @@ require(["jquery", "sakai/sakai.api.core", "/dev/lib/jquery/plugins/imgareaselec
                                 $(imagesToChange[i]).attr("src", "/~" + id + "/public/profile/" + tosave.name + "?sid=" + Math.random());
                             }
 
-                            // display help tooltip
-                            var tooltipData = {
-                                "tooltipSelector":"#systemtour_add_photo",
-                                "tooltipTitle":"TOOLTIP_ADD_MY_PHOTO",
-                                "tooltipDescription":"TOOLTIP_ADD_MY_PHOTO_P5",
-                                "tooltipArrow":"top",
-                                "tooltipTop":25,
-                                "tooltipLeft":40,
-                                "tooltipAutoClose":true
-                            };
-                            $(window).trigger("update.tooltip.sakai", tooltipData);
-
                             // Hide the layover.
-                            $(container).jqmHide();
+                            sakai.api.Util.Modal.close(container);
 
-                            if (mode !== "group") {
-                                // record that user uploaded their profile picture
-                                sakai.api.User.addUserProgress("uploadedProfilePhoto");
-                            } else if (sakai.currentgroup && sakai.currentgroup.data && sakai.currentgroup.data.authprofile) {
-                                sakai.currentgroup.data.authprofile.picture = $.toJSON(tosave);
+                            if (sakai.currentgroup && sakai.currentgroup.data && sakai.currentgroup.data.authprofile) {
+                                sakai.currentgroup.data.authprofile.picture = JSON.stringify(tosave);
                             }
                         },
                         error: function(xhr, textStatus, thrownError) {
@@ -548,20 +513,9 @@ require(["jquery", "sakai/sakai.api.core", "/dev/lib/jquery/plugins/imgareaselec
         var showArea = function(hash){
             doInit();
             hash.w.show();
-            if (!existingPicture) {
-                // display help tooltip
-                var tooltipData = {
-                    "tooltipSelector": "#profilepicture",
-                    "tooltipTitle": "TOOLTIP_ADD_MY_PHOTO",
-                    "tooltipDescription": "TOOLTIP_ADD_MY_PHOTO_P2",
-                    "tooltipArrow": "top"
-                };
-                $(window).trigger("update.tooltip.sakai", tooltipData);
-            }
         };
 
-        // This will make the widget popup as a layover.
-        $(container).jqm({
+        sakai.api.Util.Modal.setup(container, {
             modal: true,
             overlay: 20,
             toTop: true,
@@ -569,14 +523,14 @@ require(["jquery", "sakai/sakai.api.core", "/dev/lib/jquery/plugins/imgareaselec
             onShow: showArea
         });
 
-        $(containerTrigger).live("click", function(){
-            sakai.api.Util.bindDialogFocus(container);
-            $(container).jqmShow();
-        });
-
         $(window).bind("setData.changepic.sakai", function(e, _mode, _id) {
             mode = _mode;
             id = _id;
+        });
+
+        $(document).on('click', containerTrigger, function() {
+            // This will make the widget popup as a layover.
+            sakai.api.Util.Modal.open(container);
         });
 
         $(window).trigger("ready.changepic.sakai");

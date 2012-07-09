@@ -40,11 +40,12 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
         // Configuration variables //
         /////////////////////////////
 
-        var editing = false,
-            userid = false,
-            multiple = false,
-            multipleSectionLength = 0,
-            sectionData = false;
+        var editing = false;
+        var userid = false;
+        var multiple = false;
+        var multipleSectionLength = 0;
+        var sectionData = false;
+        var allowUpdate = true;
 
         ///////////////////
         // CSS Selectors //
@@ -95,6 +96,15 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
             }
         };
 
+        /**
+         * Enables the 'Update Profile' button when the user has changed their profile information. 
+         */
+        var enableUpdate = function() {
+            if (allowUpdate) {
+                $('button.profile-section-save-button', $rootel).removeAttr('disabled');
+            }
+        };
+
         var saveValues = function() {
             // Serialize the data from the form for saving
             var values = $form.serializeObject( false );
@@ -115,6 +125,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                 tags = sakai.api.Util.AutoSuggest.getTagsAndCategories( $tagfield, true );
             }
             sakai.api.User.updateUserProfile(userid, widgetData.sectionid, values, tags, sectionData, multiple, handleSave);
+            $('button.profile-section-save-button', $rootel).attr('disabled', 'disabled');
             return false;
         };
 
@@ -247,9 +258,15 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                     if ( editing ) {
                         template = $displayprofilesection_edit_template;
                     }
+
                     // Render header
+                    var pageTitle = section.label;
+                    if (!editing && section.altLabel) {
+                        pageTitle = sakai.api.i18n.General.process(section.altLabel)
+                            .replace('${user}', sakai.api.User.getFirstName(sakai_global.profile.main.data));
+                    }
                     var headerHTML = sakai.api.Util.TemplateRenderer( $displayprofilesection_header_template, {
-                        section: section
+                        pageTitle: pageTitle
                     });
                     $displayprofilesection_header.html( sakai.api.i18n.General.process( headerHTML ) );
 
@@ -260,6 +277,12 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                         // data[widgetData.sectionid] won't exist when the user hasn't logged in before
                         if (editing || (data[widgetData.sectionid] && sectionHasElements(data[widgetData.sectionid].elements))) {
                             sectionData = data[ widgetData.sectionid ] && data[ widgetData.sectionid ].elements ? data[ widgetData.sectionid ].elements : false;
+                            $.each(section.elements, function(index, element) {
+                                if (element.altLabel) {
+                                    element.altLabel = sakai.api.i18n.General.process(section.altLabel)
+                                        .replace('${user}', sakai.api.User.getFirstName(sakai_global.profile.main.data));
+                                }
+                            });
                             var bodyHTML = sakai.api.Util.TemplateRenderer( template, {
                                 sectionid: widgetData.sectionid,
                                 section: section,
@@ -270,16 +293,31 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                             $displayprofilesection_body.html( sakai.api.i18n.General.process( bodyHTML ) );
                             var $tagfield = $displayprofilesection_body.find( "textarea[data-tag-field]" );
                             if ( $tagfield.length ) {
+                                allowUpdate = false;
                                 var autoSuggestOptions = {
-                                    scrollHeight: 120
+                                    scrollHeight: 120,
+                                    selectionAdded: function() {
+                                        enableUpdate();
+                                    },
+                                    selectionRemoved: function(elem) {
+                                        elem.remove();
+                                        enableUpdate();
+                                    }
                                 };
                                 var initialTagsValue = sectionData["sakai:tags"] && sectionData["sakai:tags"].value ? sectionData["sakai:tags"].value : false;
-                                sakai.api.Util.AutoSuggest.setupTagAndCategoryAutosuggest($tagfield, autoSuggestOptions, $(".list_categories", $rootel), initialTagsValue);
+                                sakai.api.Util.AutoSuggest.setupTagAndCategoryAutosuggest(
+                                    $tagfield,
+                                    autoSuggestOptions,
+                                    $('.list_categories', $rootel),
+                                    initialTagsValue,
+                                    function() {
+                                        allowUpdate = true;
+                                    }
+                                );
                             }
                         } else {
                             renderEmptySection( data, section );
                         }
-                        
                     }
 
                     if ( editing ) {
@@ -301,6 +339,10 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                 }
             }
         };
+
+        $rootel.on('change cut paste', function() {
+            enableUpdate();
+        });
 
         var getData = function(callback) {
             if (editing && sakai.data.me.profile && $.isFunction(callback) && sakai.data.me.profile._fullProfileLoaded) {

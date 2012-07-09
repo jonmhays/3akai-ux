@@ -35,45 +35,21 @@ define(
         "underscore",
         "misc/trimpath.template",
         "jquery-plugins/jquery.ba-bbq",
-        "jquery-plugins/jquery.validate",
         "jquery-ui"
     ],
     function($, sakai_serv, sakai_l10n, sakai_i18n, sakai_conf, _) {
 
     var sakai_util = {
+        data: {
+            worldTemplates: false
+        },
 
         startup : function(meData) {
-            // I know this is hideous
-            (function () {
-                var script = document.createElement("script");
-                script.type = "text/javascript";
-                script.src = "/dev/lib/MathJax/MathJax.js";
-
-                var config = 'MathJax.Hub.Config({ messageStyle: "none" }); ' +
-                             'MathJax.Hub.Config({ config: "MathJax.js" }); ' +
-                             'MathJax.Hub.Startup.onload();';
-
-                if (window.opera) {script.innerHTML = config;}
-                else {script.text = config;}
-
-                $("head")[0].appendChild(script);
-              })();
-              if (sakai_conf.enableChat) {
-                  // scroll more on focus if the focused element is obscrured by the chat bar
-                  $("input:not(.chat_with_txt), textarea, select, button:not(.chat_name_link), a:not(.chat_window_name)").live("focus", function(){
-                      if (($(this).offset().top + $(this).height()) - $(window).scrollTop() > $(window).height() - 40) {
-                          var scrollByAmt = 40 + $(this).height() + ($(this).offset().top - $(window).scrollTop()) - $(window).height();
-                          window.scrollBy(0, scrollByAmt);
-                      }
-                  });
-            }
-
             // Start polling to keep session alive when logged in
             if (meData.user.userid) {
                 setInterval(function() {
                     $.ajax({
-                        url: "/system/me",
-                        cache: false,
+                        url: sakai_conf.URL.ME_SERVICE,
                         success: function(data) {
                             if (!data.user.userid) {
                                 document.location = "/";
@@ -86,28 +62,48 @@ define(
 
         /**
          * Get the world templates from the server
+         * If the worldTemplates are already fetched they will just be returned from the variable
+         * @param {Function} callback Function executed after the templates have been fetched. 
+         *                            The templates are passed through to the function
          */
-        getTemplates: function() {
-            var templates = [];
-            $.ajax({
-                url: sakai_conf.URL.WORLD_INFO_URL,
-                async:false,
-                success: function(data) {
-                    templates = _.toArray(sakai_serv.removeServerCreatedObjects(data, ["jcr:"]));
-                }
-            });
-            $.each(templates, function(i,temp) {
-                $.each(temp, function(k,templ) {
-                    if ($.isPlainObject(temp[k])) {
-                        temp.templates = temp.templates || [];
-                        temp.templates.push(temp[k]);
+        getTemplates: function(callback) {
+            if (!sakai_util.data.worldTemplates) {
+                sakai_util.data.worldTemplates = [];
+                $.ajax({
+                    url: sakai_conf.URL.WORLD_INFO_URL,
+                    success: function(data) {
+                        data = sakai_serv.removeServerCreatedObjects(data, ['jcr:']);
+                        $.each(data, function(key, value) {
+                            if ($.isPlainObject(value) && value.id) {
+                                sakai_util.data.worldTemplates.push(value);
+                            }
+                        });
+                        $.each(sakai_util.data.worldTemplates, function(i, temp) {
+                            $.each(temp, function(k, templ) {
+                                if ($.isPlainObject(temp[k])) {
+                                    temp.templates = temp.templates || [];
+                                    temp.templates.push(temp[k]);
+                                }
+                            });
+                        });
+                        sakai_util.data.worldTemplates = _.sortBy(sakai_util.data.worldTemplates, function(templ) {
+                            return templ.order;
+                        });
+                        if ($.isFunction(callback)) {
+                            callback(true, sakai_util.data.worldTemplates);
+                        }
+                    }, error: function(xhr, textStatus, thrownError) {
+                        debug.error('Could not get the group templates');
+                        if ($.isFunction(callback)) {
+                            callback(false, xhr);
+                        }
                     }
                 });
-            });
-            templates = _.sortBy(templates, function(templ) {
-                return templ.order;
-            });
-            return templates;
+            } else {
+                if ($.isFunction(callback)) {
+                    callback(true, sakai_util.data.worldTemplates);
+                }
+            }
         },
 
         /**
@@ -481,7 +477,7 @@ define(
                             structure[i] = structure[i].replace(regex, replace);
                         } else if ($.isPlainObject(structure[i])) {
                             structure[i] = loopAndReplace(structure[i], variable, replace);
-                        } else if (_.isArray(structure[i])) {
+                        } else if ($.isArray(structure[i])) {
                             for (var j = 0; j < structure[i].length; j++){
                                 structure[i][j] = loopAndReplace(structure[i][j], variable, replace);
                             }
@@ -516,8 +512,10 @@ define(
             // if there is profile picture and userId
             // return the picture links
             var imgUrl = sakai_conf.URL.USER_DEFAULT_ICON_URL;
-            if (type === "group"){
-                imgUrl = sakai_conf.URL.GROUP_DEFAULT_ICON_URL;
+            if (type === 'group' ||
+                profile['sakai:category'] === 'group' ||
+                profile['sakai:pseudoGroup']) {
+                    imgUrl = sakai_conf.URL.GROUP_DEFAULT_ICON_URL;
             }
             var id = null, picture_name = null;
             if (profile["rep:userId"] || profile["sakai:group-id"] || profile["uuid"] || profile["userid"]){
@@ -694,9 +692,7 @@ define(
                     htmlCode += '<div class="s3d-inset-shadow-container"><img src="/dev/images/progress_bar.gif"/></div></div>';
                     var notification = $(htmlCode);
                     $('body').append(notification);
-                    // position progress indicator at users scroll position
-                    sakai_util.positionDialogBox($('#sakai_progressindicator'));
-                    $("#sakai_progressindicator").jqm({
+                    sakai_util.Modal.setup('#sakai_progressindicator', {
                         modal: true,
                         overlay: 20,
                         zIndex: 40003,
@@ -707,14 +703,14 @@ define(
                 $("#sakai_progressindicator_title").html(title);
                 $("#sakai_progressindicator_body").html(body);
                 // Show the indicator
-                $("#sakai_progressindicator").jqmShow();
+                sakai_util.Modal.open('#sakai_progressindicator');
             },
 
             /**
              * Hide the existing progress indicator (if there is one)
              */
             hideProgressIndicator: function(){
-                $("#sakai_progressindicator").jqmHide();
+                sakai_util.Modal.close('#sakai_progressindicator');
             }            
 
         },
@@ -1592,11 +1588,11 @@ define(
                 var newobj;
                 if ($.isPlainObject(data)) {
                     newobj = $.extend(true, {}, data);
-                } else if (_.isArray(data)) {
+                } else if ($.isArray(data)) {
                     newobj = $.merge([], data);
                 }
                 $.each(newobj, function(key,val) {
-                    if ($.isPlainObject(val) || _.isArray(val)) {
+                    if ($.isPlainObject(val) || $.isArray(val)) {
                         newobj[key] = sakai_util.Security.safeDataSave(newobj[key]);
                     } else {
                         newobj[key] = sakai_util.Security.safeOutput(val);
@@ -1695,7 +1691,32 @@ define(
                 html4.ATTRIBS["p::aria-hidden"] = 0;                
                 html4.ATTRIBS["input::aria-required"] = 0;                
                 html4.ATTRIBS["ul::role"] = 0;
-                html4.ATTRIBS['iframe::src'] = 0;
+
+                /**
+                 * Remove expressions from a CSS style (only an issue in IE)
+                 * @param {String} cssStyle The CSS style we want to remove expressions from
+                 * @return {String} A CSS style that doesn't contain an expression
+                 */
+                var removeExpression = function(cssStyle) {
+
+                    // Sometimes cssStyle will be undefined/null
+                    // if that is the case, we just return it
+                    if (!cssStyle) {
+                        return cssStyle;
+                    }
+
+                    // We first need to filter out all the comments
+                    // since we also need to catch expr/*XSS*/ession
+                    var regex = /\/\*.+?\*\//g;
+                    cssStyle = cssStyle.replace(regex, '');
+
+                    // If we encounter an expression, we remove the complete CSS style
+                    regex = /expression\(/g;
+                    if (cssStyle.search(regex) !== -1) {
+                        cssStyle = '';
+                    }
+                    return cssStyle;
+                };
 
                 // A slightly modified version of Caja's sanitize_html function to allow style="display:none;"
                 var sakaiHtmlSanitize = function(htmlText, opt_urlPolicy, opt_nmTokenPolicy) {
@@ -1721,14 +1742,14 @@ define(
                                         case html4.atype.STYLE:
                                             var accept = ["color", "display", "background-color", "font-weight", "font-family",
                                                           "padding", "padding-left", "padding-right", "text-align", "font-style",
-                                                          "text-decoration", "border", "visibility", "font-size"];
+                                                          "text-decoration", "border", "visibility", "font-size", "width"];
                                             var sanitizedValue = "";
                                             if (value){
                                                 var vals = value.split(";");
                                                 for (var attrid = 0; attrid < vals.length; attrid++){
                                                     var attrValue = $.trim(vals[attrid].split(":")[0]).toLowerCase();
                                                     if ($.inArray(attrValue, accept) !== -1){
-                                                        sanitizedValue += vals[i];
+                                                        sanitizedValue += removeExpression(vals[i]);
                                                     }
                                                 }
                                                 if (!sanitizedValue) {
@@ -1827,6 +1848,32 @@ define(
             }
         },
 
+        loadedMathJax: false,
+        loadMathJax: function() {
+            if (!sakai_util.loadedMathJax) {
+                sakai_util.loadedMathJax = true;
+                var script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = '/dev/lib/MathJax/MathJax.js';
+
+                var config =
+                    'MathJax.Hub.Config({' +
+                        'messageStyle: "none",' +
+                        'config: "default.js",' +
+                        'styles: {"#MathJax_Message": {display: "none !important"}}' +
+                    '}); ' +
+                    'MathJax.Hub.Startup.onload();';
+
+                if (window.opera) {
+                    script.innerHTML = config;
+                } else {
+                    script.text = config;
+                }
+
+                $('head')[0].appendChild(script);
+            }
+        },
+
         /**
         * Runs MathJax over an element replacing any math TeX with rendered
         * formulas
@@ -1834,11 +1881,26 @@ define(
         * @param element {String} The element (or it's id) that should be checked for math
         */
         renderMath : function(element) {
-            if (element instanceof jQuery && element[0])
-            {
+            if (element instanceof jQuery && element[0]) {
                 element = element[0];
             }
-            MathJax.Hub.Queue(["Typeset", MathJax.Hub, element]);
+            // Check whether a MathJax formula is available
+            var elementContent = $(element).html();
+            if (elementContent && elementContent.indexOf('$$') !== -1) {
+                // Check whether MathJax has already been loaded
+                if (!window['MathJax'] || !MathJax.Hub) {
+                    sakai_util.loadMathJax();
+                }
+                // Try to render the formula. This will fail if MathJax hasn't finished
+                // loading yet. If that's the case, the system will retry after 200ms
+                try {
+                    MathJax.Hub.Queue(['Typeset', MathJax.Hub, element]);
+                } catch (err) {
+                    setTimeout(function() {
+                        sakai_util.renderMath(element);
+                    }, 200);
+                }
+            }
         },
 
         // :?=&;\/?@+$<>#%'"''{}|\\^[]'
@@ -1933,75 +1995,140 @@ define(
             });
         },
 
-        /**
-         * Positions the dialog box at the users scroll position
-         *
-         * @param el {String} a jquery selector or jquery object, to position
-         * @param offset {Integer} optional numeric value to add to the dialog position offset
-         */
-        positionDialogBox : function(el, offset) {
-            var $el = el;
-            if (!(el instanceof jQuery)){
-                $el = $(el);
-            }
+        Modal: {
+            /**
+             * Sets jqmodal options
+             *
+             * @param dialogContainer {String} a jquery selector or jquery object, that is the dialog container
+             * @param options {Object} object containing options to pass to the jqmodal plugin
+             * @param addClose {String} a jquery selector or jquery object used in the jqmAddClose function
+             */
+            setup : function(dialogContainer, options, addClose) {
+                var $dialogContainer = $(dialogContainer);
 
-            var dialogOffset = 50;
-            if (offset && _.isNumber(offset)){
-                dialogOffset = offset;
-            }
-
-            var htmlScrollPos = $("html").scrollTop();
-            var docScrollPos = $(document).scrollTop();
-            if (htmlScrollPos >= 0) {
-                $el.css({"top": htmlScrollPos + dialogOffset + "px"});
-            } else if (docScrollPos >= 0) {
-                $el.css({"top": docScrollPos + dialogOffset + "px"});
-            }
-        },
-
-        /**
-         * Sets up events to keep keyboard focus within the dialog box and close it when the escape key is pressed
-         *
-         * @param dialogContainer {String} a jquery selector or jquery object which is the dialog container
-         * @param ignoreElements {String} an optional jquery selector for start/end elements to be ignored
-         * @param closeFunction {function} an optional function to be called when the user hits the escape key
-         */
-        bindDialogFocus : function(dialogContainer, ignoreElements, closeFunction) {
-            var origFocus = $(":focus");
-            var $dialogContainer = dialogContainer;
-            if (!(dialogContainer instanceof jQuery)){
-                $dialogContainer = $(dialogContainer);
-            }
-
-            var bindFunction = function(e) {
-                if ($dialogContainer.is(":visible") && $dialogContainer.has(":focus").length && e.which === $.ui.keyCode.ESCAPE) {
-                    if ($.isFunction(closeFunction)){
-                        closeFunction();
-                    } else {
-                        $dialogContainer.jqmHide();
-                    }
-                    origFocus.focus();
-                } else if ($dialogContainer.is(":visible") && e.which === $.ui.keyCode.TAB) {
-                    // determine which elements are keyboard navigable
-                    var $focusable = $("a:visible, input:visible, button:visible:not(:disabled), textarea:visible", $dialogContainer);
-                    if (ignoreElements){
-                        $focusable = $focusable.not(ignoreElements);
-                    }
-                    var $focused = $(":focus");
-                    var index = $focusable.index($focused);
-                    if (e.shiftKey && $focusable.length && (index === 0)) {
-                        // if shift tabbing from the start of the dialog box, shift focus to the last element
-                        $focusable.get($focusable.length - 1).focus();
-                        return false;
-                    } else if (!e.shiftKey && $focusable.length && (index === $focusable.length - 1)) {
-                        // if tabbing from the end of the dialog box, shift focus to the first element
-                        $focusable.get(0).focus();
-                        return false;
-                    }
+                if (addClose) {
+                    $dialogContainer.jqm(options).jqmAddClose(addClose);
+                } else {
+                    $dialogContainer.jqm(options);
                 }
-            };
-            $(dialogContainer).unbind("keydown");
-            $(dialogContainer).keydown(bindFunction);
+            },
+
+            /**
+             * Opens the dialog box
+             *
+             * @param {String} dialogContainer a jquery selector or jquery object, that is the dialog container
+             * @param {Object} openOptions optional object containing options to apply when opening the dialog:
+             *                              positionDialog {Boolean} true to position the dialog at the scroll position
+             *                              positionOffset {Integer} dialog height position offset
+             *                              bindKeyboardFocus {Boolean} true to trap keyboard focus inside the dialog
+             *                              bindKeyboardFocusIgnoreElements {String} optional jquery selector for start/end elements to be ignored
+             *                              bindKeyboardCloseFunction {Function} optional function to be called when the user hits the escape key
+             */
+            open : function(dialogContainer, openOptions) {
+                var $dialogContainer = $(dialogContainer);
+
+                var positionDialog = true;
+                var positionOffset = false;
+                var bindKeyboardFocus = true;
+                var bindKeyboardFocusIgnoreElements = false;
+                var bindKeyboardCloseFunction = false;
+
+                if (openOptions) {
+                    if (openOptions.positionDialog) {
+                        positionDialog = openOptions.positionDialog;
+                    }
+                    positionOffset = openOptions.positionOffset;
+                    if (openOptions.bindKeyboardFocus) {
+                        bindKeyboardFocus = openOptions.bindKeyboardFocus;
+                    }
+                    bindKeyboardFocusIgnoreElements = openOptions.bindKeyboardFocusIgnoreElements;
+                    bindKeyboardCloseFunction = openOptions.bindKeyboardCloseFunction;
+                }
+
+                if (positionDialog) {
+                    sakai_util.Modal.positionDialogBox($dialogContainer, positionOffset);
+                }
+                if (bindKeyboardFocus) {
+                    sakai_util.Modal.bindDialogFocus($dialogContainer, bindKeyboardFocusIgnoreElements, bindKeyboardCloseFunction);
+                }
+
+                $dialogContainer.jqmShow();
+            },
+
+            /**
+             * Closes the dialog box
+             *
+             * @param {String} dialogContainer a jquery selector or jquery object, that is the dialog container
+             */
+            close : function(dialogContainer) {
+                var $dialogContainer = $(dialogContainer);
+                $dialogContainer.jqmHide();
+            },
+
+            /**
+             * Positions the dialog box at the users scroll position
+             *
+             * @param {String} el a jquery selector or jquery object, to position
+             * @param {Integer} offset optional numeric value to add to the dialog position offset
+             */
+            positionDialogBox : function(el, offset) {
+                var $el = $(el);
+
+                var dialogOffset = 50;
+                if (offset && $.isNumeric(offset)) {
+                    dialogOffset = parseInt(offset, 10);
+                }
+
+                var htmlScrollPos = parseInt($('html').scrollTop(), 10);
+                var docScrollPos = parseInt($(document).scrollTop(), 10);
+                if (htmlScrollPos > 0) {
+                    $el.css({'top': htmlScrollPos + dialogOffset + 'px'});
+                } else if (docScrollPos >= 0) {
+                    $el.css({'top': docScrollPos + dialogOffset + 'px'});
+                }
+            },
+
+            /**
+             * Sets up events to keep keyboard focus within the dialog box and close it when the escape key is pressed
+             *
+             * @param {String} dialogContainer a jquery selector or jquery object which is the dialog container
+             * @param {String} ignoreElements an optional jquery selector for start/end elements to be ignored
+             * @param {Function} closeFunction an optional function to be called when the user hits the escape key
+             */
+            bindDialogFocus : function(dialogContainer, ignoreElements, closeFunction) {
+                var origFocus = $(':focus');
+                var $dialogContainer = $(dialogContainer);
+
+                var bindFunction = function(e) {
+                    if ($dialogContainer.is(':visible') && $dialogContainer.has(':focus').length && e.which === $.ui.keyCode.ESCAPE) {
+                        if ($.isFunction(closeFunction)) {
+                            closeFunction();
+                        } else {
+                            $dialogContainer.jqmHide();
+                        }
+                        origFocus.focus();
+                    } else if ($dialogContainer.is(':visible') && e.which === $.ui.keyCode.TAB) {
+                        // determine which elements are keyboard navigable
+                        var $focusable = $('a:visible, input:visible, button:visible:not(:disabled), textarea:visible', $dialogContainer);
+                        if (ignoreElements) {
+                            $focusable = $focusable.not(ignoreElements);
+                        }
+                        var $focused = $(':focus');
+                        var index = $focusable.index($focused);
+                        if (e.shiftKey && $focusable.length && (index === 0)) {
+                            // if shift tabbing from the start of the dialog box, shift focus to the last element
+                            $focusable.last().focus();
+                            return false;
+                        } else if (!e.shiftKey && $focusable.length && (index === $focusable.length - 1)) {
+                            // if tabbing from the end of the dialog box, shift focus to the first element
+                            $focusable.first().focus();
+                            return false;
+                        }
+                    }
+                };
+                $(dialogContainer).off('keydown');
+                $(dialogContainer).keydown(bindFunction);
+            }
         },
 
         /**
@@ -2042,75 +2169,79 @@ define(
             * @returns {Object} new jQuery object with autosuggest
             */
             setup: function( element, options, callback, _dataFn ) {
-                // Translate the jquery.autosuggest plugin
-                var sakaii18nAPI = require("sakai/sakai.api.i18n");
-                var user = require("sakai/sakai.api.user");
-                var dataFn = _dataFn || function( query, add ) {
-                    var q = sakai_serv.createSearchString(query);
-                    var searchoptions = {"page": 0, "items": 15};
-                    var searchUrl = sakai_conf.URL.SEARCH_USERS_GROUPS;
-                    if (q === '*' || q === '**') {
-                        searchUrl = sakai_conf.URL.SEARCH_USERS_GROUPS_ALL;
-                    } else {
-                        searchoptions['q'] = q;
-                    }
-                    sakai_serv.loadJSON(searchUrl.replace(".json", ""), function( success, data ){
-                        if ( success ) {
-                            var suggestions = [];
-                            $.each( data.results, function( i ) {
-                                if ( data.results[i]["rep:userId"] && data.results[i]["rep:userId"] !== user.data.me.user.userid ) {
-                                    if ( !options.filterUsersGroups || $.inArray( data.results[i]["rep:userId"], options.filterUsersGroups ) ===-1 ) {
-                                        suggestions.push({
-                                            "value": data.results[i]["rep:userId"],
-                                            "name": user.getDisplayName(data.results[i]),
-                                            "picture": sakai_util.constructProfilePicture(data.results[i], "user"),
-                                            "type": "user"
-                                        });
-                                    }
-                                } else if (data.results[i]["sakai:group-id"]) {
-                                    if ( !options.filterUsersGroups || $.inArray( data.results[i]["sakai:group-id"], options.filterUsersGroups ) ===-1 ) {
-                                        suggestions.push({
-                                            "value": data.results[i]["sakai:group-id"],
-                                            "name": sakai_util.Security.safeOutput(data.results[i]["sakai:group-title"]),
-                                            "picture": sakai_util.constructProfilePicture(data.results[i], "group"),
-                                            "type": "group"
-                                        });
-                                    }
-                                }
-                            });
-                            add( suggestions, query );
+                require(['jquery-plugins/jquery.autoSuggest.sakai-edited', 'sakai/sakai.api.i18n', 'sakai/sakai.api.user'], function(autoSuggest, sakaii18nAPI, user) {
+                    // Translate the jquery.autosuggest plugin
+                    var dataFn = _dataFn || function( query, add ) {
+                        var q = sakai_serv.createSearchString(query);
+                        var searchoptions = {
+                            'page': 0,
+                            'items': 15
+                        };
+                        var searchUrl = sakai_conf.URL.SEARCH_USERS_GROUPS;
+                        if (q === '*' || q === '**') {
+                            searchUrl = sakai_conf.URL.SEARCH_USERS_GROUPS_ALL;
+                        } else {
+                            searchoptions['q'] = q;
                         }
-                    }, searchoptions);
-                };
+                        sakai_serv.loadJSON(searchUrl.replace('.json', ''), function(success, data) {
+                            if (success) {
+                                var suggestions = [];
+                                $.each(data.results, function(i) {
+                                    if (data.results[i]['rep:userId'] && data.results[i]['rep:userId'] !== user.data.me.user.userid) {
+                                        if (!options.filterUsersGroups || $.inArray(data.results[i]['rep:userId'], options.filterUsersGroups) === -1) {
+                                            suggestions.push({
+                                                'value': data.results[i]['rep:userId'],
+                                                'name': user.getDisplayName(data.results[i]),
+                                                'picture': sakai_util.constructProfilePicture(data.results[i], 'user'),
+                                                'type': 'user'
+                                            });
+                                        }
+                                    } else if (data.results[i]['sakai:group-id']) {
+                                        if (!options.filterUsersGroups || $.inArray(data.results[i]['sakai:group-id'], options.filterUsersGroups) === -1) {
+                                            suggestions.push({
+                                                'value': data.results[i]['sakai:group-id'],
+                                                'name': sakai_util.Security.safeOutput(data.results[i]['sakai:group-title']),
+                                                'picture': sakai_util.constructProfilePicture(data.results[i], 'group'),
+                                                'type': 'group'
+                                            });
+                                        }
+                                    }
+                                });
+                                add(suggestions, query);
+                            }
+                        }, searchoptions);
+                    };
 
-                var defaults = {
-                    selectedItemProp: "name",
-                    searchObjProps: "name",
-                    startText: sakaii18nAPI.getValueForKey("ENTER_NAME_HERE"),
-                    emptyText: sakaii18nAPI.getValueForKey("NO_RESULTS_FOUND"),
-                    limitText: sakaii18nAPI.getValueForKey("NO_MORE_SELECTIONS_ALLOWED"),
-                    scroll: true,
-                    canGenerateNewSelections: false,
-                    usePlaceholder: true,
-                    showResultListWhenNoMatch: true
-                };
+                    var defaults = {
+                        selectedItemProp: 'name',
+                        searchObjProps: 'name',
+                        startText: sakaii18nAPI.getValueForKey('ENTER_NAME_HERE'),
+                        emptyText: sakaii18nAPI.getValueForKey('NO_RESULTS_FOUND'),
+                        limitText: sakaii18nAPI.getValueForKey('NO_MORE_SELECTIONS_ALLOWED'),
+                        scroll: true,
+                        canGenerateNewSelections: false,
+                        usePlaceholder: true,
+                        showResultListWhenNoMatch: true
+                    };
 
-                var opts = $.extend( defaults, options );
-                var namespace = opts.namespace || "api_util_autosuggest";
-                element = ( element instanceof jQuery ) ? element : $( element );
+                    var opts = $.extend(defaults, options);
+                    var namespace = opts.namespace || 'api_util_autosuggest';
+                    element = (element instanceof jQuery) ? element : $(element);
 
-                if ( element.data( namespace ) ) { // already an autosuggest so for now return element, could also call destroy and setup again
+                    // already an autosuggest so for now return element, could also call destroy and setup again
+                    if (element.data(namespace)) {
+                        return element;
+                    }
+
+                    var orig_element = element.clone(true);
+                    element.autoSuggest(dataFn, opts).data(namespace, orig_element);
+
+                    if ($.isFunction(callback)) {
+                        callback();
+                    }
+
                     return element;
-                }
-
-                var orig_element = element.clone( true );
-                element.autoSuggest( dataFn, opts ).data( namespace, orig_element );
-
-                if ( $.isFunction( callback ) ) {
-                    callback();
-                }
-
-                return element;
+                });
             },
             /**
             * Resets the autosuggest without destroying/creating. Use this
@@ -2163,122 +2294,123 @@ define(
              * @param {Function} callback Function to call after setup is complete
              */
             setupTagAndCategoryAutosuggest: function( $elt, options, $list_categories_button, initialSelections, callback ) {
-                var sakaii18nAPI = require( "sakai/sakai.api.i18n" );
-                var defaults = {
-                    selectedItemProp: "value",
-                    searchObjProps: "value",
-                    canGenerateNewSelections: true,
-                    scroll: true,
-                    showResultListWhenNoMatch: false,
-                    startText: sakaii18nAPI.getValueForKey( "ENTER_TAGS_OR_CATEGORIES" ),
-                    beforeRetrieve: function( userinput ) {
-                        return $.trim(userinput);
-                    },
-                    processNewSelection: function( userinput ) {
-                        return sakai_util.Security.safeOutput(sakai_util.makeSafeTag(userinput));
-                    }
-                };
+                require(['jquery-plugins/jquery.autoSuggest.sakai-edited', 'sakai/sakai.api.i18n'], function(autoSuggest, sakaii18nAPI) {
+                    var defaults = {
+                        selectedItemProp: 'value',
+                        searchObjProps: 'value',
+                        canGenerateNewSelections: true,
+                        scroll: true,
+                        showResultListWhenNoMatch: false,
+                        startText: sakaii18nAPI.getValueForKey('ENTER_TAGS_OR_CATEGORIES'),
+                        beforeRetrieve: function(userinput) {
+                            return $.trim(userinput);
+                        },
+                        processNewSelection: function(userinput) {
+                            return sakai_util.Security.safeOutput(sakai_util.makeSafeTag(userinput));
+                        }
+                    };
 
-                // Set up the directory structure for autoSuggesting
-                var getTranslatedCategories = function() {
-                    var ret = [];
-                    var directory = sakai_util.getDirectoryStructure();
-                    $.each( directory, function( i, dir ) {
-                        ret.push({
-                            value: dir.data.title,
-                            id: dir.attr.id,
-                            path: dir.attr.id,
-                            parent: true,
-                            category: true
-                        });
-                        $.each( dir.children, function( i, child ) {
+                    // Set up the directory structure for autoSuggesting
+                    var getTranslatedCategories = function() {
+                        var ret = [];
+                        var directory = sakai_util.getDirectoryStructure();
+                        $.each( directory, function(i, dir) {
                             ret.push({
-                                value: dir.data.title + " » " + child.data.title,
-                                path: dir.attr.id + "/" + child.attr.id,
-                                id: child.attr.id,
-                                parent: false,
+                                value: dir.data.title,
+                                id: dir.attr.id,
+                                path: dir.attr.id,
+                                parent: true,
                                 category: true
                             });
+                            $.each( dir.children, function(i, child) {
+                                ret.push({
+                                    value: dir.data.title + ' » ' + child.data.title,
+                                    path: dir.attr.id + '/' + child.attr.id,
+                                    id: child.attr.id,
+                                    parent: false,
+                                    category: true
+                                });
+                            });
                         });
-                    });
-                    return ret;
-                };
+                        return ret;
+                    };
 
-                // Set up the assignlocation widget
-                var setupAssignLocation = function() {
-                    if ( $( "#assignlocation_container" ).length === 0 ) {
-                        $( "<div id='assignlocation_container'>" ).appendTo( "body" );
-                        $( "<div id='widget_assignlocation' class='widget_inline'/>" ).appendTo( "#assignlocation_container" );
-                        require("sakai/sakai.api.widgets").widgetLoader.insertWidgets( "#assignlocation_container", false );
-                    }
-                    $list_categories_button.off( "click" ).on( "click", function( e ) {
-                        var currentlySelected = sakai_util.AutoSuggest.getTagsAndCategories( $elt, false, true ).categories;
-                        $( window ).trigger( "init.assignlocation.sakai", [ currentlySelected, e, function( categories ) {
-                            // add newly selected categories to the autoSuggest
-                            currentlySelected = sakai_util.AutoSuggest.getTagsAndCategories( $elt, false, true ).categories;
-                            var currentCatIDs = [],
-                                catsFromOverlay = [];
-                            // Get the current category IDs
-                            $.each( currentlySelected, function( i, currentCat ) {
-                                currentCatIDs.push( currentCat.id );
-                            });
-                            // Add new items
-                            $.each( categories, function( i, category ) {
-                                if ( $.inArray( category.id, currentCatIDs ) === -1 ) {
-                                    $elt.autoSuggest( "add_selected_item", category );
-                                }
-                                catsFromOverlay.push( category.id );
-                            });
-                            // Remove items removed in the dialog
-                            $.each( currentlySelected, function( i, currentCat ) {
-                                if ( $.inArray( currentCat.id, catsFromOverlay ) === -1 ) {
-                                    var elt = $elt.parents( ".as-selections" ).find( "li[data-value='" + currentCat.value + "']" );
-                                    $elt.autoSuggest( "remove_item", currentCat.value, elt, $( elt ).data( "data" ) );
-                                }
-                            });
-                        }]);
-                    });
-                };
-
-                // Parse the tags and set them up to be displayed in the autosuggest
-                var setInitialSelections = function() {
-                    var directory = sakai_util.getDirectoryStructure();
-                    var preFill = [];
-                    $.each( initialSelections, function ( idx, tag ) {
-                        var tagObj = {};
-                        if ( tag.indexOf( "directory/" ) === 0 ) {
-                            var tagValue = sakai_util.getValueForDirectoryTag( tag );
-                            var directoryItems = tag.split("/");
-                            tagObj = {
-                                value: tagValue,
-                                id: directoryItems[ directoryItems.length - 1 ],
-                                parent: directoryItems.length > 2,
-                                category: true,
-                                path: tag.replace("directory/", "")
-                            };
-                        } else {
-                            tagObj = {
-                                id: sakai_util.Security.safeOutput(sakai_util.makeSafeTag(tag)),
-                                value: sakai_util.Security.safeOutput(sakai_util.makeSafeTag(tag))
-                            };
+                    // Set up the assignlocation widget
+                    var setupAssignLocation = function() {
+                        if (!$('#assignlocation_container').length) {
+                            $('<div id="assignlocation_container">').appendTo('body');
+                            $('<div id="widget_assignlocation" class="widget_inline"/>').appendTo('#assignlocation_container');
+                            require('sakai/sakai.api.widgets').widgetLoader.insertWidgets('#assignlocation_container', false );
                         }
-                        preFill.push( tagObj );
-                    });
-                    return preFill;
-                };
+                        $list_categories_button.off('click').on('click', function(e) {
+                            var currentlySelected = sakai_util.AutoSuggest.getTagsAndCategories($elt, false, true).categories;
+                            $(window).trigger('init.assignlocation.sakai', [currentlySelected, e, function(categories) {
+                                // add newly selected categories to the autoSuggest
+                                currentlySelected = sakai_util.AutoSuggest.getTagsAndCategories($elt, false, true).categories;
+                                var currentCatIDs = [];
+                                var catsFromOverlay = [];
+                                // Get the current category IDs
+                                $.each(currentlySelected, function(i, currentCat) {
+                                    currentCatIDs.push(currentCat.id);
+                                });
+                                // Add new items
+                                $.each(categories, function(i, category) {
+                                    if ($.inArray(category.id, currentCatIDs) === -1) {
+                                        $elt.autoSuggest('add_selected_item', category);
+                                    }
+                                    catsFromOverlay.push(category.id);
+                                });
+                                // Remove items removed in the dialog
+                                $.each(currentlySelected, function(i, currentCat) {
+                                    if ($.inArray(currentCat.id, catsFromOverlay) === -1) {
+                                        var elt = $elt.parents('.as-selections').find('li[data-value="' + currentCat.value + '"]');
+                                        $elt.autoSuggest('remove_item', currentCat.value, elt, $(elt).data('data'));
+                                    }
+                                });
+                            }]);
+                        });
+                    };
 
-                if ( initialSelections ) {
-                    defaults.preFill = setInitialSelections();
-                }
+                    // Parse the tags and set them up to be displayed in the autosuggest
+                    var setInitialSelections = function() {
+                        var directory = sakai_util.getDirectoryStructure();
+                        var preFill = [];
+                        $.each(initialSelections, function (idx, tag) {
+                            var tagObj = {};
+                            if (!tag.indexOf('directory/')) {
+                                var tagValue = sakai_util.getValueForDirectoryTag(tag);
+                                var directoryItems = tag.split('/');
+                                tagObj = {
+                                    value: tagValue,
+                                    id: directoryItems[directoryItems.length - 1],
+                                    parent: directoryItems.length > 2,
+                                    category: true,
+                                    path: tag.replace('directory/', '')
+                                };
+                            } else {
+                                tagObj = {
+                                    id: sakai_util.Security.safeOutput(sakai_util.makeSafeTag(tag)),
+                                    value: sakai_util.Security.safeOutput(sakai_util.makeSafeTag(tag))
+                                };
+                            }
+                            preFill.push(tagObj);
+                        });
+                        return preFill;
+                    };
 
-                $.extend( defaults, options );
+                    if (initialSelections) {
+                        defaults.preFill = setInitialSelections();
+                    }
 
-                var data = getTranslatedCategories();
+                    $.extend(defaults, options);
 
-                sakai_util.AutoSuggest.destroy( $elt );
-                sakai_util.AutoSuggest.setup( $elt, defaults, callback, data );
+                    var data = getTranslatedCategories();
 
-                setupAssignLocation();
+                    sakai_util.AutoSuggest.destroy($elt);
+                    sakai_util.AutoSuggest.setup($elt, defaults, callback, data);
+
+                    setupAssignLocation();
+                });
             },
 
             /**
@@ -2332,104 +2464,133 @@ define(
              * @param {Boolean} [insertAfterLabel] Insert the error span after the label, not before
              */
             validate: function($form, opts, insertAfterLabel) {
-                var options = {
-                    onclick: false,
-                    onkeyup: false,
-                    onfocusout: false
-                };
-                // when you set onclick to true, you actually just don't set it
-                // to false, because onclick is a handler function, not a boolean
-                if (opts) {
-                    $.each(options, function(key,val) {
-                        if (opts.hasOwnProperty(key) && opts[key] === true) {
-                            delete opts[key];
-                            delete options[key];
-                        }
-                    });
-                }
-                options.errorElement = "span";
-                options.errorClass = insertAfterLabel ? "s3d-error-after" : "s3d-error";
 
-                // we need to handle success and invalid in the framework first
-                // then we can pass it to the caller
-                var successCallback = false,
-                    invalidCallback = false;
+                // Load the plug-in when necessary
+                require(['jquery-plugins/jquery.validate'], function() {
+                    var options = {
+                        onclick: false,
+                        onkeyup: false,
+                        onfocusout: false
+                    };
 
-                if (opts) {
-                    if (opts.hasOwnProperty("success") && $.isFunction(opts.success)) {
-                        successCallback = opts.success;
-                        delete opts.succss;
-                    }
-
-                    if (opts && opts.hasOwnProperty("invalidCallback") && $.isFunction(opts.invalidCallback)) {
-                        invalidCallback = opts.invalidCallback;
-                        delete opts.invalidCallback;
-                    }
-                }
-
-                // include the passed in options
-                $.extend(true, options, opts);
-
-                // Success is a callback on each individual field being successfully validated
-                options.success = function($label) {
-                    // For autosuggest clearing, since we have to put the error on the ul instead of the element
-                    if (insertAfterLabel && $label.next("ul.as-selections").length) {
-                        $label.next("ul.as-selections").removeClass("s3d-error");
-                    } else if ($label.prev("ul.as-selections").length) {
-                        $label.prev("ul.as-selections").removeClass("s3d-error");
-                    }
-                    $label.remove();
-                    if ($.isFunction(successCallback)) {
-                        successCallback($label);
-                    }
-                };
-
-                options.errorPlacement = function($error, $element) {
-                    if ($element.hasClass("s3d-error-calculate")) {
-                        // special element with variable left margin
-                        // calculate left margin and width, set it directly on the error element
-                        $error.css({
-                            "margin-left": $element.position().left,
-                            "width": $element.width()
+                    // When you set onclick to true, you actually just don't set it
+                    // to false, because onclick is a handler function, not a boolean
+                    if (opts) {
+                        $.each(options, function(key,val) {
+                            if (opts.hasOwnProperty(key) && opts[key] === true) {
+                                delete opts[key];
+                                delete options[key];
+                            }
                         });
                     }
-                    // Get the closest-previous label in the DOM
-                    var $prevLabel = $form.find("label[for='" + $element.attr("id") + "']");
-                    $error.attr("id", $element.attr("name") + "_error");
-                    $element.attr("aria-describedby", $element.attr("name") + "_error");
-                    if (insertAfterLabel) {
-                        $error.insertAfter($prevLabel);
-                    } else {
-                        $error.insertBefore($prevLabel);
-                    }
-                };
+                    options.errorElement = 'span';
+                    options.errorClass = insertAfterLabel ? 's3d-error-after' : 's3d-error';
 
-                options.invalidHandler = function($thisForm, validator) {
-                    $form.find(".s3d-error").attr("aria-invalid", "false");
-                    if ($.isFunction(invalidCallback)){
-                        invalidCallback($thisForm, validator);
-                    }
-                };
+                    // We need to handle success and invalid in the framework first
+                    // then we can pass it to the caller
+                    var successCallback = false;
+                    var invalidCallback = false;
 
-                options.showErrors = function(errorMap, errorList) {
-                    if (errorList.length !== 0 && $.isFunction(options.error)) {
-                        options.error();
-                    }
-                    $.each(errorList, function(i,error) {
-                        $(error.element).attr("aria-invalid", "true");
-                        // Handle errors on autosuggest
-                        if ($(error.element).hasClass("s3d-error-autosuggest")) {
-                            $(error.element).parents("ul.as-selections").addClass("s3d-error");
+                    if (opts) {
+                        if (opts.hasOwnProperty('success') && $.isFunction(opts.success)) {
+                            successCallback = opts.success;
+                            delete opts.success;
                         }
-                    });
-                    this.defaultShowErrors();
-                    if ($.isFunction(options.errorsShown)) {
-                        options.errorsShown();
-                    }
-                };
 
-                // Set up the form with these options in jquery.validate
-                $form.validate(options);
+                        if (opts && opts.hasOwnProperty('invalidCallback') && $.isFunction(opts.invalidCallback)) {
+                            invalidCallback = opts.invalidCallback;
+                            delete opts.invalidCallback;
+                        }
+                    }
+
+                    // Don't allow spaces in the field
+                    $.validator.addMethod('nospaces', function(value, element) {
+                        return this.optional(element) || (value.indexOf(' ') === -1);
+                    }, sakai_i18n.getValueForKey('NO_SPACES_ARE_ALLOWED'));
+
+                    // Appends http:// or ftp:// or https:// when necessary
+                    $.validator.addMethod('appendhttp', function(value, element) {
+                        if (value.substring(0,7) !== 'http://' &&
+                            value.substring(0,6) !== 'ftp://' &&
+                            value.substring(0,8) !== 'https://' &&
+                            $.trim(value) !== '') {
+                                $(element).val('http://' + value);
+                        }
+                        return true;
+                    });
+
+                    // Add the methods that were being passed in
+                    if (opts && opts.hasOwnProperty('methods')) {
+                        $.each(opts.methods, function(key, value) {
+                            $.validator.addMethod(key, value.method, value.text);
+                        });
+                        delete opts.methods;
+                    }
+
+                    // Include the passed in options
+                    $.extend(true, options, opts);
+
+                    // Success is a callback on each individual field being successfully validated
+                    options.success = function($label) {
+                        // For autosuggest clearing, since we have to put the error on the ul instead of the element
+                        if (insertAfterLabel && $label.next('ul.as-selections').length) {
+                            $label.next('ul.as-selections').removeClass('s3d-error');
+                        } else if ($label.prev('ul.as-selections').length) {
+                            $label.prev('ul.as-selections').removeClass('s3d-error');
+                        }
+                        $label.remove();
+                        if ($.isFunction(successCallback)) {
+                            successCallback($label);
+                        }
+                    };
+
+                    options.errorPlacement = function($error, $element) {
+                        if ($element.hasClass('s3d-error-calculate')) {
+                            // special element with variable left margin
+                            // calculate left margin and width, set it directly on the error element
+                            $error.css({
+                                'margin-left': $element.position().left,
+                                'width': $element.width()
+                            });
+                        }
+                        // Get the closest-previous label in the DOM
+                        var $prevLabel = $form.find('label[for="' + $element.attr('id') + '"]');
+                        $error.attr('id', $element.attr('name') + '_error');
+                        $element.attr('aria-describedby', $element.attr('name') + '_error');
+                        if (insertAfterLabel) {
+                            $error.insertAfter($prevLabel);
+                        } else {
+                            $error.insertBefore($prevLabel);
+                        }
+                    };
+
+                    options.invalidHandler = function($thisForm, validator) {
+                        $form.find('.s3d-error').attr('aria-invalid', 'false');
+                        if ($.isFunction(invalidCallback)) {
+                            invalidCallback($thisForm, validator);
+                        }
+                    };
+
+                    options.showErrors = function(errorMap, errorList) {
+                        if (errorList.length !== 0 && $.isFunction(options.error)) {
+                            options.error();
+                        }
+                        $.each(errorList, function(i,error) {
+                            $(error.element).attr('aria-invalid', 'true');
+                            // Handle errors on autosuggest
+                            if ($(error.element).hasClass('s3d-error-autosuggest')) {
+                                $(error.element).parents('ul.as-selections').addClass('s3d-error');
+                            }
+                        });
+                        this.defaultShowErrors();
+                        if ($.isFunction(options.errorsShown)) {
+                            options.errorsShown();
+                        }
+                    };
+
+                    // Set up the form with these options in jquery.validate
+                    $form.validate(options);
+                });
             },
 
             clearValidation: function($form) {
@@ -2485,7 +2646,7 @@ define(
                     stop: function(event, ui) {
                         sakai_util.Draggable.removeIFrameFix();
                         $('.s3d-draggable-draggingitems').remove();
-                        $(window).trigger('stop.drag.sakai');
+                        $(document).trigger('stop.drag.sakai');
                         if ($(this).data('stopdragevent')) {
                             $(window).trigger($(this).data('stopdragevent'), sakai_util.Draggable.getDraggableData(ui.helper));
                         }
@@ -2493,7 +2654,7 @@ define(
                     start: function(event, ui) {
                         sakai_util.Draggable.setIFrameFix();
                         $('body').append('<div class="s3d-draggable-draggingitems">' + sakai_util.Draggable.getDraggableMessage($(ui.helper).children().length) + '</div>');
-                        $(window).trigger('start.drag.sakai');
+                        $(document).trigger('start.drag.sakai');
                         if ($(this).data('startdragevent')) {
                             $(window).trigger($(this).data('startdragevent'), sakai_util.Draggable.getDraggableData(ui.helper));
                         }

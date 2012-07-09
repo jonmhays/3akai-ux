@@ -22,7 +22,7 @@
  * /dev/lib/jquery/plugins/jqmodal.sakai-edited.js
  */
 
-/*global, fluid, window, $ */
+/*global, window, $ */
 
 require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
 
@@ -92,7 +92,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                         callback(success);
                     }
                     $(window).trigger("done.deletegroup.sakai", [deletedata]);
-                    $deletegroup_dialog.jqmHide();
+                    sakai.api.Util.Modal.close($deletegroup_dialog);
                 });
 
                 return false;
@@ -114,12 +114,16 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
         var load = function(data, callback){
             deletedata = $.extend(true, {}, data);
             addBinding(callback);
-            currentTemplate = sakai.api.Groups.getTemplate(deletedata["sakai:category"], deletedata["sakai:templateid"]);
-            $deletegroup_category.html(sakai.api.i18n.getValueForKey(currentTemplate.title));
-            $deletegroup_title.html(sakai.api.Util.Security.safeOutput(data["sakai:group-title"]));
-            sakai.api.Util.positionDialogBox($deletegroup_dialog);
-            sakai.api.Util.bindDialogFocus($deletegroup_dialog);
-            $deletegroup_dialog.jqmShow();
+            sakai.api.Groups.getTemplate(deletedata['sakai:category'], deletedata['sakai:templateid'], function(success, template) {
+                if (success) {
+                    currentTemplate = template;
+                    $deletegroup_category.html(sakai.api.i18n.getValueForKey(currentTemplate.title));
+                    $deletegroup_title.html(sakai.api.Util.Security.safeOutput(data['sakai:group-title']));
+                    sakai.api.Util.Modal.open($deletegroup_dialog);
+                } else {
+                    debug.error('Could not get the group template');
+                }
+            });
         };
         $(window).bind("init.deletegroup.sakai", function (e, data, callback) {
             load(data, callback);
@@ -131,7 +135,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
          */
         var init = function(){
             // This will make the widget popup as a layover.
-            $deletegroup_dialog.jqm({
+            sakai.api.Util.Modal.setup($deletegroup_dialog, {
                 modal: true,
                 toTop: true
             });

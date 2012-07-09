@@ -26,7 +26,7 @@
 
 /*global, window, $ */
 
-require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
+require(['jquery', 'sakai/sakai.api.core', 'jquery-plugins/jquery.fileupload'], function($, sakai) {
 
     /**
      * @name sakai_global.uploadnewversion
@@ -48,65 +48,68 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
         /////////////////////////////
 
         // Containers
-        var $uploadnewversionContainer = $("#uploadnewversion_container");
-        var $uploadnewversionFormContainer = $("#uploadnewversion_form_container");
+        var $uploadnewversionContainer = $('#uploadnewversion_container');
+        var $uploadnewversionFormContainer = $('#uploadnewversion_form_container');
 
         // Templates
-        var uploadnewversionFormTemplate = "uploadnewversion_form_template";
+        var uploadnewversionFormTemplate = 'uploadnewversion_form_template';
 
         // Elements
-        var uploadnewversionUploadContentForm = "#uploadnewversion_upload_content_form";
-        var uploadnewversionDoUpload = ".uploadnewversion_doupload";
-        var $uploadnewversionUploading = $("#uploadnewversion_uploading");
+        var uploadnewversionDoUpload = '.uploadnewversion_doupload';
+        var $uploadnewversionUploading = $('#uploadnewversion_uploading');
 
+        var filesList = [];
 
         ////////////
         // UPLOAD //
         ////////////
 
         var doUploadVersion = function(){
-            $uploadnewversionUploading.jqmShow();
-            $(uploadnewversionUploadContentForm).attr("action", "/system/pool/createfile." + sakai_global.content_profile.content_data.data["_path"]);
-            $(uploadnewversionUploadContentForm).ajaxForm({
-                success: function(data){
+            sakai.api.Util.Modal.open($uploadnewversionUploading);
+            var jqXHR = $('#uploadnewversion_fileupload').fileupload('send', {
+                url: '/system/pool/createfile.' + sakai_global.content_profile.content_data.data['_path'],
+                files: filesList,
+                success: function(data) {
                     $.ajax({
-                       url: sakai_global.content_profile.content_data["content_path"] + ".json",
-                       type: "POST",
+                       url: sakai_global.content_profile.content_data['content_path'] + '.json',
+                       type: 'POST',
                        data: {
-                           "sakai:needsprocessing": true,
-                           "sakai:pagecount": 0,
-                           "sakai:hasPreview": false
+                           'sakai:needsprocessing': true,
+                           'sakai:pagecount': 0,
+                           'sakai:hasPreview': false
                        },
                        success: function(data){
                            $.ajax({
-                               url: sakai_global.content_profile.content_data["content_path"] + ".save.json",
-                               type: "POST",
+                               url: sakai_global.content_profile.content_data['content_path'] + '.save.json',
+                               type: 'POST',
                                success: function(data){
-                                   $uploadnewversionUploading.jqmHide();
-                                   $uploadnewversionContainer.jqmHide();
+                                   sakai.api.Util.Modal.close($uploadnewversionUploading);
+                                   sakai.api.Util.Modal.close($uploadnewversionContainer);
                                    sakai_global.content_profile.content_data.data = data;
-                                   $(window).trigger("updated.version.content.sakai");
-                                   $(window).trigger("update.versions.sakai", {
+                                   $(window).trigger('updated.version.content.sakai');
+                                   $(window).trigger('update.versions.sakai', {
                                        pageSavePath: sakai_global.content_profile.content_data.content_path,
-                                       saveRef: "",
+                                       saveRef: '',
                                        showByDefault: true
                                    });
                                },
                                error: function(err){
-                                   $uploadnewversionUploading.jqmHide();
+                                   sakai.api.Util.Modal.close($uploadnewversionUploading);
                                    debug.error(err);
                                }
                            });
                        },
                        error: function(err){
-                           $uploadnewversionUploading.jqmHide();
+                           sakai.api.Util.Modal.close($uploadnewversionUploading);
                            debug.error(err);
                        }
                     });
-                    
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    debug.error(jqXHR, textStatus, errorThrown);
+                    sakai.api.Util.Modal.close($uploadnewversionUploading);
                 }
             });
-            $(uploadnewversionUploadContentForm).submit();
         };
 
 
@@ -118,46 +121,45 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
          * Initialize the modal dialog
          */
         var initializeJQM = function(){
-            $uploadnewversionContainer.jqm({
+            sakai.api.Util.Modal.setup($uploadnewversionContainer, {
                 modal: true,
                 overlay: 20,
                 toTop: true
             });
 
-            // position dialog box at users scroll position
-            sakai.api.Util.positionDialogBox($uploadnewversionContainer);
+            sakai.api.Util.Modal.open($uploadnewversionContainer);
 
-            sakai.api.Util.bindDialogFocus($uploadnewversionContainer);
-
-            $uploadnewversionContainer.jqmShow();
-
-            $uploadnewversionUploading.jqm({
+            sakai.api.Util.Modal.setup($uploadnewversionUploading, {
                 modal: true,
                 overlay: 20,
                 toTop: true
             });
-            $uploadnewversionUploading.css("z-index", "4002");
+            $uploadnewversionUploading.css('z-index', '4002');
         };
 
-        var initializeMultiFile = function(){
-            $uploadnewversionFormContainer.html(sakai.api.Util.TemplateRenderer(uploadnewversionFormTemplate,{}));
-            $(uploadnewversionUploadContentForm + " input").MultiFile();
+        var initializeFileUpload = function(){
+            $('#uploadnewversion_fileupload').fileupload({
+                replaceFileInput: false,
+                add: function(e, data) {
+                    filesList = data.files;
+                }
+            });
         };
 
         var addBinding = function(){
-            $(uploadnewversionDoUpload).unbind("click", doUploadVersion);
-            $(uploadnewversionDoUpload).bind("click", doUploadVersion);
+            $(uploadnewversionDoUpload).unbind('click', doUploadVersion);
+            $(uploadnewversionDoUpload).bind('click', doUploadVersion);
         };
 
         var doInit = function(){
             initializeJQM();
-            initializeMultiFile();
+            initializeFileUpload();
             addBinding();
         };
 
-        $(window).bind("init.uploadnewversion.sakai", doInit);
+        $(document).on('init.uploadnewversion.sakai', doInit);
 
     };
 
-    sakai.api.Widgets.widgetLoader.informOnLoad("uploadnewversion");
+    sakai.api.Widgets.widgetLoader.informOnLoad('uploadnewversion');
 });

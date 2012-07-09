@@ -43,7 +43,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
         var $embedcontent_dont_add = $(".embedcontent_dont_add", $rootel);
 
         // Choose Content tab selectors
-        var $embedcontent_tabs = $("#embedcontent_tabs", $rootel);
+        var $embedcontent_tabs = $('#embedcontent_settings_container .s3d-tabs', $rootel);
         var $embedcontent_search_for_content = $("#embedcontent_search_for_content", $rootel);
         var $embedcontent_just_add = $("#embedcontent_just_add", $rootel);
         var $embedcontent_button_goto_display_settings = $("#embedcontent_button_goto_display_settings", $rootel);
@@ -81,7 +81,8 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
         var isPreviewExist = true;
         var active_content_class = "tab_content_active";
         var tab_id_prefix = "embedcontent_tab_";
-        var active_tab_class = "fl-tabs-active";
+        var active_tab_class = 's3d-tabs-active';
+        var defaultsSet = false;
 
         var embedConfig = {
             "name": "Page",
@@ -125,7 +126,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                 }
                 
                 if (value.fullresult) {
-                    var placement = "ecDocViewer" + tuid + value["_path"] + index;
+                    var placement = 'ecDocViewer' + tuid + value['_path'] + sakai.api.Util.generateWidgetId();
                     wData.items[index].placement = placement;
                     docData[placement] = {
                         data: value.fullresult,
@@ -231,8 +232,8 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
             var dataFn = function( query, add ) {
                 var q = sakai.api.Server.createSearchString(query);
                 var options = {"page": 0, "items": 15, "q": q, "userid": sakai.data.me.user.userid};
-                searchUrl = sakai.config.URL.POOLED_CONTENT_SPECIFIC_USER;
-                sakai.api.Server.loadJSON(searchUrl.replace(".json", ""), function(success, data){
+                searchUrl = sakai.config.URL.SEARCH_ALL_FILES.replace(".json", ".infinity.json");
+                sakai.api.Server.loadJSON(searchUrl, function(success, data){
                     if (success) {
                         var suggestions = [];
                         $.each(data.results, function(i) {
@@ -317,6 +318,37 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                     $(".embedcontent_include_" + val, $rootel).show();
                 }
             });
+        };
+
+        /**
+         * Sets the default options in the display settings
+         * @param {Object} options The object containing the default options to set
+         *                          embedmethod {String} original or thumbnail
+         *                          layout {String} vertical or horizontal
+         *                          showName {Boolean} true to show name by default
+         *                          showDetails {Boolean} true to show details by default
+         *                          showDownload {Boolean} true to show download link by default
+         */
+        var setDefaultOptions = function(options) {
+            if (options.embedmethod === 'thumbnail') {
+                $('.embedcontent_option #thumbnail', $rootel).click();
+            } else if (options.embedmethod === 'original') {
+                $('.embedcontent_option #original_size', $rootel).click();
+            }
+            if (options.layout === 'vertical') {
+                $('#embedcontent_layout_vertical', $rootel).click();
+            } else if (options.layout === 'horizontal') {
+                $('#embedcontent_layout_horizontal', $rootel).click();
+            }
+            if (options.showName) {
+                $('#embedcontent_name_checkbox', $rootel).click();
+            }
+            if (options.showDetails) {
+                $('#embedcontent_details_checkbox', $rootel).click();
+            }
+            if (options.showDownload) {
+                $('#embedcontent_download_checkbox', $rootel).click();
+            }
         };
 
         /**
@@ -447,7 +479,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                     if ($.isFunction(callback)) {
                         callback(ret);
                     }
-                });
+                }, false);
             } else if ($.isFunction(callback)) {
                 callback(ret);
             }
@@ -502,17 +534,21 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                 $("#embedcontent_name_checkbox").selected(true);
             }
             $("." + active_tab_class).removeClass(active_tab_class);
-            $(target).parent("li").addClass(active_tab_class);
+            $(target).addClass(active_tab_class);
             $("." + active_content_class).hide();
             $("#" + $(target).attr("id") + "_content").addClass(active_content_class).show();
         };
 
-        $embedcontent_tabs.find("li a").bind("click", function(e) {
+        $embedcontent_tabs.find('button').bind('click', function(e) {
             var tab = $(e.target).attr("id").split(tab_id_prefix)[1];
             if ($(e.target).parent("li").hasClass(active_tab_class)) {
                 return false;
             } else {
                 toggleTabs(e.target);
+            }
+            if (tab === 'display' && !defaultsSet && !wData && sakai.widgets.embedcontent.defaultConfiguration) {
+                setDefaultOptions(sakai.widgets.embedcontent.defaultConfiguration);
+                defaultsSet = true;
             }
             return false;
         });
@@ -581,9 +617,9 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
             addChoicesFromPickeradvanced(data.toAdd);
         });
 
-        $(window).unbind("done.newaddcontent.sakai");
-        $(window).bind("done.newaddcontent.sakai", function(e, data, library) {
-            if ($("#embedcontent_settings", $rootel).is(":visible") && (!sakai_global.group || (sakai_global.group && sakai_global.group.groupId))) {
+        $(document).off('done.newaddcontent.sakai').on('done.newaddcontent.sakai', function(e, data, library) {
+            if ($('#embedcontent_settings', $rootel).is(':visible') && 
+                (!sakai_global.group || (sakai_global.group && sakai_global.group.groupId))) {
                 var obj = {};
                 for (var i = 0; i < data.length; i++){
                     obj[data[i]._path] = data[i];

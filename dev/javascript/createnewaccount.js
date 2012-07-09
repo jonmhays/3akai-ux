@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-require(["jquery", "sakai/sakai.api.core"], function($, sakai){
+require(['jquery', 'sakai/sakai.api.core', 'misc/zxcvbn'], function($, sakai){
 
     sakai_global.createnewaccount = function(){
 
@@ -180,7 +180,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai){
                     error: function(xhr, textStatus, thrownError){
                         // SAKIII-1736 - IE will interpret the 204 returned by the server as a
                         // status code 1223, which will cause the error clause to activate
-                        if (xhr.status === 1223) {
+                        if (xhr.status === 1223 || xhr.status === 409) {
                             ret = false;
                         } else {
                             ret = true;
@@ -197,6 +197,57 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai){
         var initCaptcha = function(){
             sakai.api.Widgets.widgetLoader.insertWidgets("captcha_box", false);
         };
+
+        /**
+         * Uses zxcvbn.js to determine the password strength of the user's
+         * password, and displays a message inline
+         */
+        var checkPasswordStrength = function() {
+            var currentPw = $.trim($('#password').val());
+            if (currentPw) {
+                // Run the zxcvbn test on the currentPw, passing in all
+                // the current input values to use them as data points
+                var strength = zxcvbn(currentPw,
+                    [
+                        $('#username').val(),
+                        $('#firstName').val(),
+                        $('#lastName').val(),
+                        $('#email').val()
+                    ]);
+                var $strength = $('#password_strength');
+                var score = 'zero';
+                var strengthPhrase = 'STRENGTH_WEAK';
+                // Determine the strength phrasing and class
+                switch (strength.score) {
+                    case 1:
+                        score = 'one';
+                        break;
+                    case 2:
+                        strengthPhrase = 'STRENGTH_GOOD';
+                        score = 'two';
+                        break;
+                    case 3:
+                        strengthPhrase = 'STRENGTH_STRONG';
+                        score = 'three';
+                        break;
+                    case 4:
+                        strengthPhrase = 'STRENGTH_VSTRONG';
+                        score = 'four';
+                        break;
+                    default:
+                        break;
+                }
+                // Remove all the classes and add in the new classes and text
+                $strength
+                    .removeClass()
+                    .addClass('strength_' + score)
+                    .text(sakai.api.i18n.getValueForKey(strengthPhrase));
+                $('#password_strength').show();
+            } else {
+                $('#password_strength').hide();
+            }
+        };
+
 
 
         ////////////////////
@@ -235,17 +286,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai){
                 }
             });
 
-            /*
-             * Once the user is trying to submit the form, we check whether all the fields have valid
-             * input and try to create the new account
-             */
-            $.validator.addMethod("nospaces", function(value, element){
-                return this.optional(element) || (value.indexOf(" ") === -1);
-            }, "* No spaces are allowed");
-
-            $.validator.addMethod("validusername", function(value, element){
-                return this.optional(element) || (checkUserName());
-            }, "* This username is already taken.");
+            $('#password').on('keyup', checkPasswordStrength);
 
             var validateOpts = {
                 rules: {
@@ -280,6 +321,14 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai){
                     password_repeat: {
                         required: $(passwordRepeatEmpty).text(),
                         passwordmatch: $(passwordRepeatNoMatch).text()
+                    }
+                },
+                'methods': {
+                    'validusername': {
+                        'method': function(value, element) {
+                            return this.optional(element) || checkUserName();
+                        },
+                        'text': sakai.api.i18n.getValueForKey('THIS_USERNAME_HAS_ALREADY_BEEN_TAKEN')
                     }
                 },
                 submitHandler: function(form, validator){

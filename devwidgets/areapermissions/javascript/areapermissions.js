@@ -102,7 +102,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                     "manager": contextData.isManager,
                     "groupPermissions": sakai_global.group.groupData["sakai:group-visible"],
                     "sakai": sakai,
-                    "area": currentArea._title,
+                    "title": sakai.api.Security.safeOutput(currentArea._title),
                     "meRole": data.id
                 }));
              });
@@ -162,11 +162,11 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                 success: function(data){
                     // Store view and edit roles
                     var pubdata = sakai.api.Server.cleanUpSakaiDocObject(data);
-                    pubdata.structure0[contextData.path]._view = $.toJSON(newView);
-                    pubdata.structure0[contextData.path]._edit = $.toJSON(newEdit);
+                    pubdata.structure0[contextData.path]._view = JSON.stringify(newView);
+                    pubdata.structure0[contextData.path]._edit = JSON.stringify(newEdit);
                     sakai_global.group.pubdata.structure0 = pubdata.structure0;
                     sakai.api.Server.saveJSON("/~" + sakai_global.group.groupId + "/docstructure", {
-                        "structure0": $.toJSON(pubdata.structure0)
+                        "structure0": JSON.stringify(pubdata.structure0)
                     });
                 }
             });
@@ -248,8 +248,8 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                             "permissions": generalPermission
                         }]);
                     }
-                    $("#areapermissions_warning_container").jqmHide();
-                    $("#areapermissions_container").jqmHide();
+                    sakai.api.Util.Modal.close('#areapermissions_warning_container');
+                    sakai.api.Util.Modal.close('#areapermissions_container');
                     sakai.api.Util.notification.show($("#areapermissions_notification_title").text(), $("#areapermissions_notification_body").text());
                 });
             //}
@@ -283,12 +283,11 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
              } else {
                  $("#areapermissions_warning_container_text").html(sakai.api.Util.TemplateRenderer("areapermissions_warning_container_text_template", {
                      "visibility": newVisibilityVal,
-                     "area": currentArea._title
+                     "title": sakai.api.Security.safeOutput(currentArea._title)
                  }));
                  $("#areapermissions_proceedandapply").removeAttr("disabled");
                  $("#areapermissions_apply_permissions").removeAttr("disabled");
-                 sakai.api.Util.bindDialogFocus($("#areapermissions_warning_container"));
-                 $("#areapermissions_warning_container").jqmShow();
+                 sakai.api.Util.Modal.open('#areapermissions_warning_container');
              }
          };
 
@@ -327,14 +326,14 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
          };
 
          var initializeOverlay = function(){
-             $("#areapermissions_container").jqm({
+             sakai.api.Util.Modal.setup('#areapermissions_container', {
                  modal: true,
                  overlay: 20,
                  toTop: true,
                  zIndex: 3000
              });
 
-             $("#areapermissions_warning_container").jqm({
+             sakai.api.Util.Modal.setup('#areapermissions_warning_container', {
                  modal: true,
                  overlay: 20,
                  toTop: true,
@@ -342,8 +341,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
              });
 
              $("#areapermissions_apply_permissions").removeAttr("disabled");
-             sakai.api.Util.bindDialogFocus($("#areapermissions_container"));
-             $("#areapermissions_container").jqmShow();
+             sakai.api.Util.Modal.open('#areapermissions_container');
          };
 
 

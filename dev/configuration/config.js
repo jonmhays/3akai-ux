@@ -24,17 +24,16 @@ define(function(){
             GROUP_DEFAULT_ICON_URL_LARGE: "/dev/images/group_avatar_icon_100x100_nob.png",
             I10N_BUNDLE_URL: "/dev/lib/misc/l10n/cultures/globalize.culture.__CODE__.js",
             I18N_BUNDLE_ROOT: "/dev/bundle/",
+            I18N_DEFAULT_BUNDLE: '/dev/bundle/default.properties',
             INBOX_URL: "/me#l=messages/inbox",
             INVITATIONS_URL: "/me#l=messages/invitations",
-            LOGOUT_URL: "/logout",
             MY_DASHBOARD_URL: "/me#l=dashboard",
-            PROFILE_EDIT_URL: "/me#l=profile/basic",
             SEARCH_ACTIVITY_ALL_URL: "/var/search/activity/all.json",
             SEARCH_URL: "/search",
-            TINY_MCE_CONTENT_CSS: "/dev/css/FSS/fss-base.css,/dev/css/sakai/main.css,/dev/css/sakai/sakai.corev1.css,/dev/css/sakai/sakai.base.css,/dev/css/sakai/sakai.editor.css,/dev/css/sakai/sakai.content_profile.css",
             USER_DEFAULT_ICON_URL: "/dev/images/default_User_icon_50x50.png",
             USER_DEFAULT_ICON_URL_LARGE: "/dev/images/default_User_icon_100x100.png",
             INFINITE_LOADING_ICON: "/dev/images/Infinite_Scrolling_Loader_v01.gif",
+            I18N_CUSTOM_BUNDLE: '/dev/configuration/custom.properties',
 
             // Services
             BATCH: "/system/batch",
@@ -52,15 +51,13 @@ define(function(){
             LOGIN_SERVICE: "/system/sling/formlogin",
             LOGOUT_SERVICE: "/system/sling/logout?resource=/index",
             ME_SERVICE: "/system/me",
-            MESSAGE_BOX_SERVICE: "/var/message/box.json",
             MESSAGE_BOXCATEGORY_SERVICE: "/var/message/boxcategory.json",
             MESSAGE_BOXCATEGORY_ALL_SERVICE: "/var/message/boxcategory-all.json",
             POOLED_CONTENT_MANAGER: "/var/search/pool/me/manager.json",
             POOLED_CONTENT_MANAGER_ALL: "/var/search/pool/me/manager-all.json",
             POOLED_CONTENT_VIEWER: "/var/search/pool/me/viewer.json",
             POOLED_CONTENT_VIEWER_ALL: "/var/search/pool/me/viewer-all.json",
-            POOLED_CONTENT_SPECIFIC_USER: "/var/search/pool/manager-viewer.json",
-            POOLED_CONTENT_ACTIVITY_FEED: "/var/search/pool/activityfeed.json",
+            POOLED_CONTENT_SPECIFIC_USER: "/var/search/pool/auth-all.json",
             PRESENCE_SERVICE: "/var/presence.json",
             SAKAI2_TOOLS_SERVICE: "/var/proxy/s23/site.json?siteid=__SITEID__",
             WORLD_CREATION_SERVICE: "/system/world/create",
@@ -71,11 +68,6 @@ define(function(){
             SEARCH_ALL_ENTITIES_ALL: "/var/search/general-all.json",
             SEARCH_ALL_FILES: "/var/search/pool/all.json",
             SEARCH_ALL_FILES_ALL: "/var/search/pool/all-all.json",
-            SEARCH_MY_BOOKMARKS: "/var/search/files/mybookmarks.json",
-            SEARCH_MY_BOOKMARKS_ALL: "/var/search/files/mybookmarks-all.json",
-            SEARCH_MY_CONTACTS: "/var/search/files/mycontacts.json",
-            SEARCH_MY_FILES: "/var/search/files/myfiles.json",
-            SEARCH_MY_FILES_ALL: "/var/search/files/myfiles-all.json",
             SEARCH_GROUP_MEMBERS: "/var/search/groupmembers.json",
             SEARCH_GROUP_MEMBERS_ALL: "/var/search/groupmembers-all.json",
             SEARCH_GROUPS: "/var/search/groups.infinity.json",
@@ -216,6 +208,9 @@ define(function(){
             Links: {
                 "defaultaccess": "public" // public, everyone or private (see above for role description)
             },
+            Collections: {
+                'defaultaccess': 'public' // public, everyone or private (see above for role description)
+            },
             Copyright: {
                 types: {
                     "creativecommons": {
@@ -243,7 +238,28 @@ define(function(){
             }
         },
 
+        /*
+         * Restrict the ability for a non manager user to share a content item, depending on their role specified, and the content permission.
+         * public - content available to anyone
+         * everyone - content available to logged in users
+         * private - content available to private users
+         */
+        roleCanShareContent: {
+            'public': ['editor', 'viewer', 'everyone', 'anon'],
+            'everyone': ['editor', 'viewer', 'everyone'],
+            'private': ['editor', 'viewer']
+        },
+
         allowPasswordChange: true,
+        /**
+         * Where the email field should live
+         * Default is 'profile' but it can also be 'accountpreferences'
+         *
+         * If you set this to 'accountpreferences', make sure to set the
+         * display property of the email field in the defaultConfig
+         * below to false
+        */
+        emailLocation: 'profile',
 
         Profile: {
             /*
@@ -344,6 +360,7 @@ define(function(){
                     },
                     "aboutme": {
                         "label": "__MSG__PROFILE_ABOUTME_LABEL__",
+                        "altLabel": "__MSG__PROFILE_ABOUTME_LABEL_OTHER__",
                         "required": true,
                         "display": true,
                         "access": "everybody",
@@ -353,6 +370,7 @@ define(function(){
                         "elements": {
                             "aboutme": {
                                 "label": "__MSG__PROFILE_ABOUTME_LABEL__",
+                                "altLabel": "__MSG__PROFILE_ABOUTME_LABEL_OTHER__",
                                 "required": false,
                                 "display": true,
                                 "type": "textarea"
@@ -534,10 +552,21 @@ define(function(){
             }]
         },
 
-        SystemTour: {
-            "enableReminders": true,
-            "reminderIntervalHours": "168"
-        },
+        /*
+         * Object to override default widget configuration
+         * Here you can add an object with the widget ID for the object key, with the configuration you would like to override
+         * An example to override options for the embedcontent widget:
+         *     embedcontent: {
+         *         defaultOptions: {
+         *             'embedmethod': 'original',
+         *             'layout': 'vertical',
+         *             'showName': false,
+         *             'showDetails': false,
+         *             'showDownload': false
+         *         }
+         *     }
+         */
+        WidgetSettings: {},
 
         enableBranding: true,
 
@@ -558,7 +587,6 @@ define(function(){
             Categories: {
                 message: "Message",
                 announcement: "Announcement",
-                chat: "Chat",
                 invitation: "Invitation"
             },
             Subject: "subject",
@@ -606,198 +634,198 @@ define(function(){
         },
         MimeTypes: {
             "application/doc": {
-                cssClass: "icon-doc-sprite",
+                cssClass: "s3d-icon-doc",
                 URL: "/dev/images/mimetypes/doc.png",
                 description: "WORD_DOCUMENT"
             },
             "application/msword": {
-                cssClass: "icon-doc-sprite",
+                cssClass: "s3d-icon-doc",
                 URL: "/dev/images/mimetypes/doc.png",
                 description: "WORD_DOCUMENT"
             },
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
-                cssClass: "icon-doc-sprite",
+                cssClass: "s3d-icon-doc",
                 URL: "/dev/images/mimetypes/doc.png",
                 description: "WORD_DOCUMENT"
             },
             "application/pdf": {
-                cssClass: "icon-pdf-sprite",
+                cssClass: "s3d-icon-pdf",
                 URL: "/dev/images/mimetypes/pdf.png",
                 description: "PDF_DOCUMENT"
             },
             "application/x-download": {
-                cssClass: "icon-pdf-sprite",
+                cssClass: "s3d-icon-pdf",
                 URL: "/dev/images/mimetypes/pdf.png",
                 description: "PDF_DOCUMENT"
             },
             "application/x-pdf": {
-                cssClass: "icon-pdf-sprite",
+                cssClass: "s3d-icon-pdf",
                 URL: "/dev/images/mimetypes/pdf.png",
                 description: "PDF_DOCUMENT"
             },
             "application/vnd.ms-powerpoint": {
-                cssClass: "icon-pps-sprite",
+                cssClass: "s3d-icon-pps",
                 URL: "/dev/images/mimetypes/pps.png",
                 description: "POWERPOINT_DOCUMENT"
             },
             "application/vnd.openxmlformats-officedocument.presentationml.presentation": {
-                cssClass: "icon-pps-sprite",
+                cssClass: "s3d-icon-pps",
                 URL: "/dev/images/mimetypes/pps.png",
                 description: "POWERPOINT_DOCUMENT"
             },
             "application/vnd.oasis.opendocument.text": {
-                cssClass: "icon-doc-sprite",
+                cssClass: "s3d-icon-doc",
                 URL: "/dev/images/mimetypes/doc.png",
                 description: "OPEN_OFFICE_DOCUMENT"
             },
             "application/vnd.oasis.opendocument.presentation": {
-                cssClass: "icon-pps-sprite",
+                cssClass: "s3d-icon-pps",
                 URL: "/dev/images/mimetypes/pps.png",
                 description: "OPEN_OFFICE_PRESENTATION"
             },
             "application/vnd.oasis.opendocument.spreadsheet": {
-                cssClass: "icon-pps-sprite",
+                cssClass: "s3d-icon-pps",
                 URL: "/dev/images/mimetypes/spreadsheet.png",
                 description: "OPEN_OFFICE_SPREADSHEET"
             },
 
             "application/x-shockwave-flash": {
-                cssClass: "icon-swf-sprite",
+                cssClass: "s3d-icon-swf",
                 URL: "/dev/images/mimetypes/swf.png",
                 description: "FLASH_PLAYER_FILE"
             },
             "application/zip": {
-                cssClass: "icon-zip-sprite",
+                cssClass: "s3d-icon-zip",
                 URL: "/dev/images/mimetypes/zip.png",
                 description: "ARCHIVE_FILE"
             },
             "application/x-zip-compressed": {
-                cssClass: "icon-zip-sprite",
+                cssClass: "s3d-icon-zip",
                 URL: "/dev/images/mimetypes/zip.png",
                 description: "ARCHIVE_FILE"
             },
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
-                cssClass: "icon-spreadsheet-sprite",
+                cssClass: "s3d-icon-spreadsheet",
                 URL: "/dev/images/mimetypes/spreadsheet.png",
                 description: "SPREADSHEET_DOCUMENT"
             },
             "application/vnd.ms-excel": {
-                cssClass: "icon-spreadsheet-sprite",
+                cssClass: "s3d-icon-spreadsheet",
                 URL: "/dev/images/mimetypes/spreadsheet.png",
                 description: "SPREADSHEET_DOCUMENT"
             },
             "audio/x-wav": {
-                cssClass: "icon-audio-sprite",
+                cssClass: "s3d-icon-audio",
                 URL: "/dev/images/mimetypes/sound.png",
                 description: "SOUND_FILE"
             },
             "audio/mpeg": {
-                cssClass: "icon-audio-sprite",
+                cssClass: "s3d-icon-audio",
                 URL: "/dev/images/mimetypes/sound.png",
                 description: "SOUND_FILE"
             },
             "text/plain": {
-                cssClass: "icon-txt-sprite",
+                cssClass: "s3d-icon-txt",
                 URL: "/dev/images/mimetypes/txt.png",
                 description: "TEXT_DOCUMENT"
             },
             "text/rtf": {
-                cssClass: "icon-txt-sprite",
+                cssClass: "s3d-icon-txt",
                 URL: "/dev/images/mimetypes/txt.png",
                 description: "TEXT_DOCUMENT"
             },
             "image/png": {
-                cssClass: "icon-image-sprite",
+                cssClass: "s3d-icon-image",
                 URL: "/dev/images/mimetypes/images.png",
                 description: "PNG_IMAGE"
             },
             "image/bmp": {
-                cssClass: "icon-image-sprite",
+                cssClass: "s3d-icon-image",
                 URL: "/dev/images/mimetypes/images.png",
                 description: "BMP_IMAGE"
             },
             "image/gif": {
-                cssClass: "icon-image-sprite",
+                cssClass: "s3d-icon-image",
                 URL: "/dev/images/mimetypes/images.png",
                 description: "GIF_IMAGE"
             },
             "image/jp2": {
-                cssClass: "icon-image-sprite",
+                cssClass: "s3d-icon-image",
                 URL: "/dev/images/mimetypes/images.png",
                 description: "JPG2000_IMAGE"
             },
             "image/jpeg": {
-                cssClass: "icon-image-sprite",
+                cssClass: "s3d-icon-image",
                 URL: "/dev/images/mimetypes/images.png",
                 description: "JPG_IMAGE"
             },
             "image/pjpeg": {
-                cssClass: "icon-image-sprite",
+                cssClass: "s3d-icon-image",
                 URL: "/dev/images/mimetypes/images.png",
                 description: "JPG_IMAGE"
             },
             "image/tiff": {
-                cssClass: "icon-image-sprite",
+                cssClass: "s3d-icon-image",
                 URL: "/dev/images/mimetypes/images.png",
                 description: "TIFF_IMAGE"
             },
             "text/html": {
-                cssClass: "icon-html-sprite",
+                cssClass: "s3d-icon-html",
                 URL: "/dev/images/mimetypes/html.png",
                 description: "HTML_DOCUMENT"
             },
             "video/x-msvideo": {
-                cssClass: "icon-video-sprite",
+                cssClass: "s3d-icon-video",
                 URL: "/dev/images/mimetypes/video.png",
                 description: "VIDEO_FILE"
             },
             "video/mp4": {
-                cssClass: "icon-video-sprite",
+                cssClass: "s3d-icon-video",
                 URL: "/dev/images/mimetypes/video.png",
                 description: "VIDEO_FILE"
             },
             "video/quicktime": {
-                cssClass: "icon-video-sprite",
+                cssClass: "s3d-icon-video",
                 URL: "/dev/images/mimetypes/video.png",
                 description: "VIDEO_FILE"
             },
             "video/x-ms-wmv": {
-                cssClass: "icon-video-sprite",
+                cssClass: "s3d-icon-video",
                 URL: "/dev/images/mimetypes/video.png",
                 description: "VIDEO_FILE"
             },
             "folder": {
-                cssClass: "icon-kmultiple-sprite",
+                cssClass: "s3d-icon-kmultiple",
                 URL: "/dev/images/mimetypes/kmultiple.png",
                 description: "FOLDER"
             },
             "x-sakai/link": {
-                cssClass: "icon-url-sprite",
+                cssClass: "s3d-icon-url",
                 URL: "/dev/images/mimetypes/html.png",
                 description: "URL_LINK"
             },
             "x-sakai/document": {
-                cssClass: "icon-sakaidoc-sprite",
+                cssClass: "s3d-icon-sakaidoc",
                 URL: "/dev/images/mimetypes/sakaidoc.png",
                 description: "DOCUMENT"
             },
             "x-sakai/collection": {
-                cssClass: "icon-collection-sprite",
+                cssClass: "s3d-icon-collection",
                 URL: "/dev/images/mimetypes/collection.png",
                 description: "COLLECTION"
             },
             "kaltura/video": {
-                cssClass: "icon-video-sprite",
+                cssClass: "s3d-icon-video",
                 URL: "/dev/images/mimetypes/video.png",
                 description: "VIDEO_FILE"
             },
             "kaltura/audio": {
-                cssClass: "icon-sound-sprite",
+                cssClass: "s3d-icon-audio",
                 URL: "/dev/images/mimetypes/sound.png",
                 description: "SOUND_FILE"
             },
             "other": {
-                cssClass: "icon-unknown-sprite",
+                cssClass: "s3d-icon-unknown",
                 URL: "/dev/images/mimetypes/unknown.png",
                 description: "OTHER_DOCUMENT"
             }
@@ -806,6 +834,7 @@ define(function(){
         Authentication: {
             "allowInternalAccountCreation": true,
             "internal": true,
+            "internalAndExternal": false,
             "external": [{
                 label: "External Login System 1",
                 url: "http://external.login1.com/"
@@ -829,6 +858,13 @@ define(function(){
             }
         },
 
+        /**
+         * Top navigation configuration
+         *
+         * To indicate that a link should be placed on the right of the signup
+         * link, the object should indicate it as:
+         *   'rightLink': true
+         */
         Navigation: [{
             "url": "/me#l=dashboard",
             "id": "navigation_you_link",
@@ -871,7 +907,8 @@ define(function(){
             "subnav": [{
                 "id": "subnavigation_add_content_link",
                 "label": "ADD_CONTENT",
-                "url": "#"
+                "url": "#",
+                "cssClass": "sakai_add_content_overlay"
             }, {
                 "id": "subnavigation_add_collection_link",
                 "label": "ADD_COLLECTION",
@@ -959,7 +996,7 @@ define(function(){
         /*
          * List of pages that require a logged in user
          */
-        requireUser: ["/me", "/dev/me.html", "/dev/search_sakai2.html", "/create", "/dev/createnew.html"],
+        requireUser: ["/me", "/dev/me.html", "/create", "/dev/createnew.html"],
 
         /*
          * List of pages that require an anonymous user
@@ -969,7 +1006,7 @@ define(function(){
          * List of pages that will be added to requireUser if
          * anonAllowed is false
          */
-        requireUserAnonNotAllowed: ["/me", "/dev/me.html", "/dev/search_sakai2.html"],
+        requireUserAnonNotAllowed: ["/me", "/dev/me.html"],
         /*
          * List of pages that will be added to requireAnonymous if
          * anonAllowed is false
@@ -981,7 +1018,7 @@ define(function(){
          * are then required to call the sakai.api.Security.showPage
          * themselves
          */
-        requireProcessing: ["/dev/user.html", "/me" ,"/dev/me.html", "/dev/content_profile.html", "/dev/content_profile.html", "/dev/group_edit.html", "/dev/show.html", "/content"],
+        requireProcessing: ["/dev/user.html", "/me" ,"/dev/me.html", "/dev/content_profile.html", "/dev/content_profile.html", "/content"],
 
         useLiveSakai2Feeds: false,
         /*
@@ -997,6 +1034,8 @@ define(function(){
         },
 
         displayDebugInfo: true,
+        displayTimezone: true,
+        displayLanguage: true,
 
         /**
          * Section dividers can be added to the directory structure by adding in the following
@@ -1511,51 +1550,63 @@ define(function(){
         Languages: [{ 
             "country": "ES", 
             "language": "es", 
+            "bundle": "/dev/bundle/es_ES.properties",
             "displayName": "Español"
         }, {
             "country": "CN",
             "language": "zh",
+            "bundle": "/dev/bundle/zh_CN.properties",
             "displayName": "中文"
         }, {
             "country": "NL",
             "language": "nl",
+            "bundle": "/dev/bundle/nl_NL.properties",
             "displayName": "Nederlands"
         }, {
             "country": "GB",
             "language": "en",
+            "bundle": "/dev/bundle/en_GB.properties",
             "displayName": "English (United Kingdom)"
         }, {
             "country": "US",
             "language": "en",
+            "bundle": "/dev/bundle/en_US.properties",
             "displayName": "English (United States)"
         }, {
             "country": "JP",
             "language": "ja",
+            "bundle": "/dev/bundle/ja_JP.properties",
             "displayName": "日本語"
         }, {
             "country": "HU",
             "language": "hu",
+            "bundle": "/dev/bundle/hu_HU.properties",
             "displayName": "Magyar"
         }, {
             "country": "KR",
             "language": "ko",
+            "bundle": "/dev/bundle/ko_KR.properties",
             "displayName": "한국어"
         }],
 
         // Default Language for the deployment, must be one of the language_COUNTRY pairs that exists above
         defaultLanguage: "en_US",
+        defaultLanguageBundle: "/dev/bundle/en_US.properties",
 
-        enableChat: false,
         enableCategories: true,
 
         // The data schema version. Version 2 as of the 1.2 release in March 2012
         schemaVersion: '2',
 
         Editor: {
-            tinymceLanguagePacks: ['ar','ch','en','gl','id','lb','nb','ru','sv','uk','az','cn','eo','gu','is','lt','nl',
-                'sc','ta','ur','be','cs','es','he','it','lv','nn','se','te','vi','bg','cy','et','hi','ja','mk','no','si',
-                'th','zh-cn','bn','da','eu','hr','ka','ml','pl','sk','tn','zh-tw','br','de','fa','hu','kl','mn','ps','sl',
-                'tr','zh','bs','dv','fi','hy','km','ms','pt','sq','tt','zu','ca','el','fr','ia','ko','my','ro','sr','tw']
+            languagePacks: ['ar', 'az', 'be', 'bg', 'bn', 'br', 'bs', 'ca', 'ch',
+                'cn', 'cs', 'cy', 'da', 'de', 'dv', 'el', 'en', 'eo', 'es', 'et',
+                'eu', 'fa', 'fi', 'fr', 'gl', 'gu', 'he', 'hi', 'hr', 'hu', 'hy',
+                'ia', 'id', 'is', 'it', 'ja', 'ka', 'kl', 'km', 'ko', 'lb', 'lt',
+                'lv', 'mk', 'ml', 'mn', 'ms', 'my', 'nb', 'nl', 'nn', 'no', 'pl',
+                'ps', 'pt', 'ro', 'ru', 'sc', 'se', 'si', 'sk', 'sl', 'sq', 'sr',
+                'sv', 'ta', 'te', 'th', 'tn', 'tr', 'tt', 'tw', 'uk', 'ur', 'vi',
+                'zh-cn', 'zh-tw', 'zh', 'zu']
         },
 
         /**
@@ -1581,6 +1632,11 @@ define(function(){
                 }
             ]
         },
+
+        /*
+         * Content to display if there are no pages available to the user in a group/world
+         */
+        pageUnavailableContent: '<p>__MSG__PAGE_UNAVAILABLE__</p>',
 
         /*
          * _canEdit: can change the area permissions on this page
@@ -1640,7 +1696,7 @@ define(function(){
             '${refid}0': {
                 'id2506067': {
                     'htmlblock': {
-                        'content': '<div class="fl-force-right"><button type="button" class="s3d-button s3d-margin-top-5 s3d-header-button s3d-header-smaller-button dashboard_change_layout" data-tuid="${refid}5">__MSG__EDIT_LAYOUT__</button><button type="button" class="s3d-button s3d-margin-top-5 s3d-header-button s3d-header-smaller-button dashboard_global_add_widget" data-tuid="${refid}5">__MSG__ADD_WIDGET__</button></div><div class="s3d-contentpage-title">__MSG__MY_DASHBOARD__</div>'
+                        'content': '<div class="fl-force-right"><button type="button" class="s3d-button s3d-margin-top-5 s3d-header-button s3d-header-smaller-button dashboard_change_layout" data-tuid="${refid}5">__MSG__EDIT_LAYOUT__</button><button type="button" class="s3d-button s3d-margin-top-5 s3d-header-button s3d-header-smaller-button dashboard_global_add_widget" data-tuid="${refid}5">__MSG__ADD_WIDGET__</button></div><h1 class="s3d-contentpage-title">__MSG__MY_DASHBOARD__</h1>'
                     }
                 },
                 '${refid}5': {
@@ -1929,6 +1985,28 @@ define(function(){
                     "layout": "dev",
                     "columns": [["mygroups", "mycontacts"], ["mycontent", "recentmessages"]]
                 }
+            }
+        },
+
+        /**
+         * Explore (landing page/index.html) configuration
+         *
+         * oneRow: indicates if there should just be one row and one widget in
+         *         that row. Requires widges.oneRowWidget to be set
+         * widgets: object that contains the widgets that should be in the
+         *          landing page configuration
+         *   rightColumn: The widget in the right column
+         *   main: The widget on the top left
+         *   bottom: The widget under the main widget
+         *   oneRowWidget: When oneRow is set to true, this widget will be the
+         *                 only widget displayed on the page
+         */
+        explore : {
+            oneRow: false,
+            widgets: {
+                rightColumn: "recentactivity",
+                main: "welcome",
+                bottom: "featuredcontent"
             }
         }
     };

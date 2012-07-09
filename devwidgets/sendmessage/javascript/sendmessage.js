@@ -47,8 +47,6 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
 
             // CSS IDs
             var dialogBoxContainer = "#sendmessage_dialog_box";
-            var dialogFooterContainer = "#sendmessage_dialog_footer";
-            var dialogFooterInner = "dialog_footer_inner";
 
             var messageDialogContainer = '.message_dialog';
             var messageForm = "#message_form";
@@ -128,7 +126,6 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                 $(dialogHeaderClass, $sendmessage_container).show();
                 $sendmessage_container.addClass(dialogContainerClass);
                 $(dialogBoxContainer).addClass(dialogBoxClass);
-                $(".sendmessage_dialog_footer_inner").addClass(dialogFooterInner);
                 $(messageDialogContainer).addClass(dialogClass.replace(/\./,''));
                 $(messageDialogContainer).show();
                 $(sendmessage_to).show();
@@ -156,7 +153,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                     sakai.api.Util.notification.show("", errorMsg, sakai.api.Util.notification.type.ERROR);
                 }
                 if ($(messageDialogContainer).hasClass('s3d-dialog')) {
-                    $(messageDialogContainer).jqmHide();
+                    sakai.api.Util.Modal.close(messageDialogContainer);
                 }
 
                 // If we have a valid callback function we call that
@@ -190,7 +187,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                             "name": toUser.username,
                             "value": toUser.uuid
                         });
-                    } else if (_.isArray(toUser)) {
+                    } else if ($.isArray(toUser)) {
                         $.each(toUser, function(i,usr) {
                             preFill.push({
                                 "name": usr.username,
@@ -225,6 +222,23 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
             // INITIALISE FUNCTION   //
             ///////////////////////////
 
+            var addSendMessageValidation = function() {
+                var validateOpts = {
+                    submitHandler: sendMessage,
+                    'methods': {
+                        'requiredsuggest': {
+                            'method': function(value, element) {
+                                return value.indexOf(
+                                    sakai.api.i18n.getValueForKey('ENTER_CONTACT_OR_GROUP_NAMES', 'sendmessage')) === -1 &&
+                                        $.trim($(element).next('input.as-values').val()).replace(/,/g, '') !== '';
+                            },
+                            'text': sakai.api.i18n.getValueForKey('AUTOSUGGEST_REQUIRED_ERROR')
+                        }
+                    }
+                };
+                sakai.api.Util.Forms.validate($sendmessage_form, validateOpts, true);
+            };
+
             /**
              * Initializes the sendmessage widget, optionally preloading the message
              * with a recipient, subject and body. By default, the widget appears as
@@ -242,7 +256,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                 // Make sure that everything is standard.
                 resetView();
                 // The user we are sending a message to.
-                if (userObj && (($.isPlainObject(userObj) && userObj.username) || _.isArray(userObj))) {
+                if (userObj && (($.isPlainObject(userObj) && userObj.username) || $.isArray(userObj))) {
                     toUser = userObj;
                 } else {
                     toUser = false;
@@ -301,6 +315,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                 }
 
                 initAutoSuggest();
+                addSendMessageValidation();
                 // Store the callback
                 if (callback) {
                     callbackWhenDone = callback;
@@ -308,15 +323,16 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
 
                 // show popup
                 if (layover) {
-                    // position dialog box at users scroll position
-                    sakai.api.Util.positionDialogBox(messageDialogContainer);
-                    $(messageDialogContainer).jqm({
+                    var dialogOptions = {
                         modal: true,
                         overlay: 20,
                         toTop: true
-                    });
-                    sakai.api.Util.bindDialogFocus(messageDialogContainer, "a.as-close");
-                    $(messageDialogContainer).jqmShow();
+                    };
+                    var openOptions = {
+                        bindKeyboardFocusIgnoreElements: 'a.as-close'
+                    };
+                    sakai.api.Util.Modal.setup(messageDialogContainer, dialogOptions);
+                    sakai.api.Util.Modal.open(messageDialogContainer, openOptions);
                 }
                 sakai.api.Util.Forms.clearValidation($sendmessage_form);
             };
@@ -337,7 +353,10 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                 if(success) {
                     showMessageSent(success);
                 } else {
-                    sakai.api.Util.notification.show(sakai.api.i18n.getValueForKey("YOUR_MESSAGE_FAILED_DELIVERED"),"",sakai.api.Util.notification.type.ERROR);
+                    sakai.api.Util.notification.show(
+                        sakai.api.i18n.getValueForKey('SEND_MESSAGE', 'sendmessage'),
+                        sakai.api.i18n.getValueForKey('YOUR_MESSAGE_FAILED_DELIVERED', 'sendmessage'),
+                        sakai.api.Util.notification.type.ERROR);
                 }
                 $(buttonSendMessage).removeAttr("disabled");
             };
@@ -359,14 +378,6 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
             };
 
             var bindEvents = function() {
-                $.validator.addMethod("requiredsuggest", function(value, element){
-                    return value.indexOf(sakai.api.i18n.getValueForKey("ENTER_CONTACT_OR_GROUP_NAMES", "sendmessage")) === -1 && $.trim($(element).next("input.as-values").val()).replace(/,/g, "") !== "";
-                }, sakai.api.i18n.getValueForKey("AUTOSUGGEST_REQUIRED_ERROR", "sendmessage"));
-
-                var validateOpts = {
-                    submitHandler: sendMessage
-                };
-                sakai.api.Util.Forms.validate($sendmessage_form, validateOpts, true);
 
                 ////////////////////////
                 // jqModal functions  //
@@ -375,27 +386,41 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                 $(send_message_cancel).die("click");
                 $(send_message_cancel).live("click", function() {
                     if ($(messageDialogContainer).hasClass('s3d-dialog')) {
-                        $(messageDialogContainer).jqmHide();
+                        sakai.api.Util.Modal.close(messageDialogContainer);
                     }
                     if ($.isFunction(callbackWhenDone)) {
                         callbackWhenDone(false);
                     }
                 });
-                ////////////////////
-                // Initialization //
-                ////////////////////
-                $(window).unbind("initialize.sendmessage.sakai");
-                $(window).bind("initialize.sendmessage.sakai", function(e, userObj, insertInId, callback, subject, body, replyOnly, replyID, buttonText) {
-                    initialize(userObj, insertInId, callback, subject, body, replyOnly, replyID, buttonText);
-                });
             };
 
-            var init = function() {
-                bindEvents();
-                $(window).trigger("ready.sendmessage.sakai");
-            };
+            ////////////////////
+            // Initialization //
+            ////////////////////
 
-            init();
+            $(document).on('initialize.sendmessage.sakai', function(e, userObj, insertInId, callback, subject, body, replyOnly, replyID, buttonText) {
+                initialize(userObj, insertInId, callback, subject, body, replyOnly, replyID, buttonText);
+            });
+            $(document).on('click', '.sakai_sendmessage_overlay', function(ev) {
+                var el = $(this);
+                var person = false;
+                var people = [];
+                if (el.attr('sakai-entityid') && el.attr('sakai-entityname')) {
+                    var userIDArr = el.attr('sakai-entityid').split(',');
+                    var userNameArr = sakai.api.Security.safeOutput(el.attr('sakai-entityname')).split(',');
+                    for (var i = 0; i < userNameArr.length; i++) {
+                        people.push({
+                            'uuid': userIDArr[i],
+                            'username': userNameArr[i],
+                            'type': el.attr('sakai-entitytype') || 'user'
+                        });
+                    }
+                }
+                initialize(people);
+            });
+
+            bindEvents();
+
         };
     }
     sakai.api.Widgets.widgetLoader.informOnLoad("sendmessage");

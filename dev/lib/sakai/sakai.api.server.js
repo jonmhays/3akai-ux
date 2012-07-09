@@ -96,22 +96,9 @@ define(
                         }
                     }
                 });
-            } else {
-                // ie7 and lower don't support GETs over 2032 chars,
-                // so lets check for that and POST if we need to
-                var hasIELongUrlBug = false;
-                // Long requests are overflowing the Jetty header cache
-                // so lets use POST for long requests on all browsers until that's fixed
-                //if($.browser.msie && $.browser.version.substr(0,1)<="7"){
-                    hasIELongUrlBug = true;
-                //}
 
-                var urlLength = (document.location.protocol + "://" + document.location.host + sakai_conf.URL.BATCH + "?requests=" + $.toJSON(_requests).replace(/[^A-Za-z0-9._]/g, "%XX")).length;
-                if (!_forcePOST && hasIELongUrlBug && urlLength > 2000) {
-                    method = "POST";
-                } else if(hasIELongUrlBug && $.browser.msie && urlLength > 300){
-                    cache = false;
-                }
+            } else {
+
                 // if any request contains a POST, we should be POSTing so the request isn't cached
                 // maybe just GET with no cache? not sure
                 for (var i=0; i<_requests.length; i++) {
@@ -127,7 +114,7 @@ define(
                     async: async,
                     data: {
                         "_charset_":"utf-8",
-                        requests: $.toJSON(_requests)
+                        requests: JSON.stringify(_requests)
                     },
                     success: function(data) {
                         if ($.isFunction(_callback)) {
@@ -141,6 +128,61 @@ define(
                     }
                 });
             }
+        },
+
+        /**
+         * Copy one node to another node
+         *
+         * @param {Object} config JSON object which has several options
+         *  - source: The source path, where you want to copy from
+         *  - destination: The destination path, where you want to copy to
+         *  - replace: If true, it will remove the destination branch before doing the copy
+         * @param {Function} callback A callback function which is executed at the end of the operation
+         */
+        copy : function(config, callback) {
+
+            // Argument check
+            if (!config.source || !config.destination) {
+
+                // Log the error message
+                debug.warn('sakai.api.Server.copy: Not enough or empty arguments!');
+
+                // Still invoke the callback function
+                if ($.isFunction(callback)) {
+                    callback(false, 'The supplied arguments were incorrect.');
+                }
+
+                // Make sure none of the other code in this function is executed
+                return;
+            }
+
+            var batchRequests = [];
+
+            // If replace is true, we'll remove the destination branch first
+            if (config.replace) {
+                batchRequests.push({
+                    'url': config.destination,
+                    'method': 'POST',
+                    'parameters': {
+                        ':operation': 'delete'
+                    }
+                });
+            }
+
+            // The actual copy operation
+            batchRequests.push({
+                'url': config.source,
+                'method': 'POST',
+                'parameters': {
+                    ':operation': 'copy',
+                    ':dest': config.destination,
+                    ':replace': true
+                }
+            });
+
+            // Execute the batch operation
+            sakaiServerAPI.batch(batchRequests, callback, false, true);
+
         },
 
         /**
@@ -286,7 +328,7 @@ define(
                 });
             }
             sakaiServerAPI.removeServerCreatedObjects(i_data, ['_']);
-            postData[':content'] = $.toJSON(i_data);
+            postData[':content'] = JSON.stringify(i_data);
             // Send request
             $.ajax({
                 url: i_url,
@@ -325,19 +367,14 @@ define(
                 $.each(newobj, function(key,val) {
                     for (var ns = 0; ns < namespace.length; ns++) {
                         if (key && key.indexOf && key.indexOf(namespace[ns]) === 0) {
-                            var canRemove = true;
-                            for (var i = 0; i < notToRemove.length; i++) {
-                                if (notToRemove[i] === key) {
-                                    canRemove = false;
-                                    break;
-                                }
-                            }
-                            if (canRemove) {
+                            if (notToRemove.indexOf(key) === -1) {
                                 delete newobj[key];
+                                break;
                             }
-                        } else if ($.isPlainObject(newobj[key]) || $.isArray(newobj[key])) {
-                            newobj[key] = sakaiServerAPI.removeServerCreatedObjects(newobj[key], namespace, notToRemove);
                         }
+                    }
+                    if ($.isPlainObject(newobj[key]) || $.isArray(newobj[key])) {
+                        newobj[key] = sakaiServerAPI.removeServerCreatedObjects(newobj[key], namespace, notToRemove);
                     }
                 });
             } else if ($.isArray(obj)) {

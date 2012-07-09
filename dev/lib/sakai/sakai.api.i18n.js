@@ -29,12 +29,11 @@
  */
 define(
     [
-        "jquery",
-        "config/config_custom",
-        "sakai/sakai.api.server",
-        "underscore",
-        "jquery-plugins/jquery.timeago",
-        "jquery-plugins/jquery.pager.sakai-edited"
+        'jquery',
+        'config/config_custom',
+        'sakai/sakai.api.server',
+        'underscore',
+        'jquery-plugins/jquery.timeago'
     ],
     function($, sakai_config, sakai_serv, _) {
 
@@ -42,6 +41,7 @@ define(
         data : {
             localBundle : false,
             defaultBundle : false,
+            customBundle: false,
             widgets : {},
             culture : "default",
             meData: false
@@ -171,15 +171,6 @@ define(
                     year: sakaii18nAPI.getValueForKey("JQUERY_TIMEAGO_YEAR"),
                     years: sakaii18nAPI.getValueForKey("JQUERY_TIMEAGO_YEARS")
                 };
-                // Translate the jquery.pager.js plugin
-                $.fn.pager.defaults.htmlparts = {
-                    "first" : sakaii18nAPI.getValueForKey("FIRST"),
-                    "last" : sakaii18nAPI.getValueForKey("LAST"),
-                    "prev" : '<span><div class=\"sakai_pager_prev\"></div> <a href="javascript:;" class="t" title="' + sakaii18nAPI.getValueForKey("PREVIOUS_PAGE") + '">' + sakaii18nAPI.getValueForKey("PREV") + '</span></a>',
-                    "next" : '<span><a href="javascript:;" class="t" title="' + sakaii18nAPI.getValueForKey("NEXT_PAGE") + '">' + sakaii18nAPI.getValueForKey("NEXT") + '</a><div class=\"sakai_pager_next\"></div></span>',
-                    "current": '<li class="page-number"><a href="javascript:;" title="' + sakaii18nAPI.getValueForKey("PAGE") + ' ${page}">${page}</a></li>'
-                };
-
             };
 
             /**
@@ -207,7 +198,7 @@ define(
              *  JSON object where the keys are the keys we expect in the HTML and the values are the translated strings
              *  in the default language
              */
-            var doI18N = function(localjson, defaultjson){
+            var doI18N = function() {
                 var newstring = sakaii18nAPI.General.process(tostring);
                 // We actually use the old innerHTML function here because the $.html() function will
                 // try to reload all of the JavaScript files declared in the HTML, which we don't want as they
@@ -227,14 +218,27 @@ define(
              * and we'll use the global sakai.api.User.data.me object to extract it from. If there is no prefered langauge,
              * we'll use the default bundle to translate everything.
              */
-            var loadLanguageBundles = function(){
-                
-                var langCode, i10nCode, loadDefaultBundleRequest, loadLocalBundleRequest;
+            var loadLanguageBundles = function() {
+                var langCode = '';
+                var langBundle = '';
+                var i10nCode = '';
+                var loadDefaultBundleRequest = {};
+                var loadCustomBundleRequest = {};
+                var loadLocalBundleRequest = {};
 
                 if (meData && meData.user && meData.user.locale && meData.user.locale.country) {
                     langCode = meData.user.locale.language + "_" + meData.user.locale.country.replace("_", "-");
+                    // Set the path for the language file
+                    // SAKIII-5891 Hashed default bundles not loaded
+                    $.each(sakai_config.Languages, function(index, lang) {
+                        if (lang.country === meData.user.locale.country) {
+                            langBundle = lang.bundle;
+                            return false;
+                        }
+                    });
                 } else {
                     langCode = sakai_config.defaultLanguage;
+                    langBundle = sakai_config.defaultLanguageBundle;
                 }
                 i10nCode = langCode.replace("_", "-");
 
@@ -250,46 +254,64 @@ define(
                 }
 
                 loadDefaultBundleRequest = {
-                    "url": sakai_config.URL.I18N_BUNDLE_ROOT + "default.properties",
-                    "method": "GET"
+                    'url': sakai_config.URL.I18N_DEFAULT_BUNDLE,
+                    'method': 'GET'
                 };
+
+                loadCustomBundleRequest = {
+                    'url': sakai_config.URL.I18N_CUSTOM_BUNDLE,
+                    'method': 'GET'
+                };
+
                 loadLocalBundleRequest = {
-                    "url": sakai_config.URL.I18N_BUNDLE_ROOT + langCode + ".properties",
-                    "method":"GET"
+                    'url': langBundle,
+                    'method': 'GET'
                 };
 
                 // callback function for response from batch request
                 var bundleReqFunction = function(success, reqData){
                     if (success){
-                        var loadDefaultBundleSuccess, loadDefaultBundleData, loadLocalBundleSuccess, loadLocalBundleData;
-                        // Default bundle
-                        loadDefaultBundleSuccess = reqData.results[0].success;
-                        loadDefaultBundleData = reqData.results[0].body;
-                        // Local bundle
+                        var loadDefaultBundleSuccess = reqData.results[0].success;
+                        var loadDefaultBundleData = reqData.results[0].body;
+                        var loadLocalBundleSuccess;
+                        var loadLocalBundleData;
+                        var loadCustomBundleSuccess;
+                        var loadCustomBundleData;
+
+                        // Custom bundle
                         if (reqData.results[1]) {
-                            loadLocalBundleSuccess = reqData.results[1].success;
-                            loadLocalBundleData = reqData.results[1].body;
+                            loadCustomBundleSuccess = reqData.results[1].success;
+                            loadCustomBundleData = reqData.results[1].body;
+                        }
+
+                        // Local bundle
+                        if (reqData.results[2]) {
+                            loadLocalBundleSuccess = reqData.results[2].success;
+                            loadLocalBundleData = reqData.results[2].body;
                         }
 
                         // process the responses
+                        if (loadCustomBundleSuccess) {
+                            loadCustomBundleData = sakaii18nAPI.changeToJSON(loadCustomBundleData);
+                            sakaii18nAPI.data.customBundle = loadCustomBundleData;
+                        }
+
+                        if (loadLocalBundleSuccess) {
+                            loadLocalBundleData = sakaii18nAPI.changeToJSON(loadLocalBundleData);
+                            sakaii18nAPI.data.localBundle = loadLocalBundleData;
+                        }
+
                         if (loadDefaultBundleSuccess) {
                             loadDefaultBundleData = sakaii18nAPI.changeToJSON(loadDefaultBundleData);
                             sakaii18nAPI.data.defaultBundle = loadDefaultBundleData;
-                            if (loadLocalBundleSuccess) {
-                                    loadLocalBundleData = sakaii18nAPI.changeToJSON(loadLocalBundleData);
-                                    sakaii18nAPI.data.localBundle = loadLocalBundleData;
-                                    doI18N(sakaii18nAPI.data.localBundle, sakaii18nAPI.data.defaultBundle);
-                            } else {
-                                doI18N(null, sakaii18nAPI.data.defaultBundle);
-                            }
-                        } else {
-                            finishI18N();
                         }
+
+                        doI18N();
                     }
                 };
 
-                var batchRequest = [loadDefaultBundleRequest, loadLocalBundleRequest];
-                sakai_serv.batch(batchRequest, bundleReqFunction);     
+                var batchRequest = [loadDefaultBundleRequest, loadCustomBundleRequest, loadLocalBundleRequest];
+                sakai_serv.batch(batchRequest, bundleReqFunction);
             };
 
 
@@ -385,7 +407,12 @@ define(
             if (locale === "lu_GB") {
                 return key;
             } else {
-                // First check the bundle for the widget, if provided
+                // First check if the key can be found in the custom bundle,
+                // so that those values override everything
+                if (sakaii18nAPI.data.customBundle && _.isString(sakaii18nAPI.data.customBundle[key])) {
+                    return sakaii18nAPI.processUTF16ToText(sakaii18nAPI.data.customBundle[key]);
+                }
+                // Check the bundle for the widget, if provided
                 if (widgetname) {
                     if (typeof sakaii18nAPI.data.widgets[widgetname]) {
                         // First check if the key can be found in the widget's locale bundle
@@ -398,7 +425,8 @@ define(
                         }
                     }
                 }
-                // First check if the key can be found in the general locale bundle
+
+                // Check if the key can be found in the general locale bundle
                 if (sakaii18nAPI.data.localBundle && _.isString(sakaii18nAPI.data.localBundle[key])) {
                     return sakaii18nAPI.processUTF16ToText(sakaii18nAPI.data.localBundle[key]);
                 }
@@ -437,6 +465,21 @@ define(
                 }
             }
             return $.trim(translation);
+        },
+
+        /**
+         * Get the language for the editor for the current user
+         * If the editor language doesn't exist, we default to English
+         * @return {String} The language for the current user (e.g. 'nl')
+         */
+        getEditorLanguage: function() {
+            var language = sakaii18nAPI.getUserLocale().split('_')[0];
+
+            if ($.inArray(language, sakai_config.Editor.languagePacks) === -1) {
+                language = 'en';
+            }
+
+            return language;
         },
 
         /**

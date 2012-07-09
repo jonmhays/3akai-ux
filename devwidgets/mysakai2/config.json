@@ -1,21 +1,21 @@
 {
+    "enabled": true,
+    "hasSettings": false,
     "i18n": {
         "default": {
             "bundle": "/devwidgets/mysakai2/bundles/default.properties",
-            "name":" My bSpace favorites",
-            "description":" My bSpace favorites"
+            "name": " My bSpace favorites",
+            "description": " My bSpace favorites"
         },
         "en_GB": {
             "bundle": "/devwidgets/mysakai2/bundles/en_GB.properties",
-            "name":"My bSpace favourites",
-            "description":"My bSpace favourites"
+            "name": "My bSpace favourites",
+            "description": "My bSpace favourites"
         }
     },
-    "img":"/devwidgets/mysakai2/images/s2icon.png",
-    "id":"mysakai2",
-    "personalportal":false,
-    "type":"sakai",
-    "enabled":false,
-    "hasSettings":false,
-    "url":"/devwidgets/mysakai2/mysakai2.html"
+    "id": "mysakai2",
+    "img": "/devwidgets/mysakai2/images/s2icon.png",
+    "personalportal": false,
+    "type": "sakai",
+    "url": "/devwidgets/mysakai2/mysakai2.html"
 }
