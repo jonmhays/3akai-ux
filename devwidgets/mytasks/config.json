@@ -2,11 +2,11 @@
     "id":"mytasks",
     "personalportal":true,
     "url":"/devwidgets/mytasks/mytasks.html",
-    "i18n": { 
-        "default": { 
-            "bundle": "/devwidgets/mytasks/bundles/default.properties", 
-            "description":"My tasks", 
-            "name":"My Tasks" 
+    "i18n": {
+        "default": {
+            "bundle": "/devwidgets/mytasks/bundles/default.properties",
+            "description":"My tasks",
+            "name":"My Tasks"
         }
     },
     "multipleinstance": false,
@@ -14,5 +14,5 @@
     "type":"sakai",
     "enabled":true,
     "userdashboard":true,
-    "personalportal":true 
+    "personalportal":true
 }

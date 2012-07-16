@@ -39,7 +39,7 @@ define(["config/config", "config/env"], function(config) {
 
     // Extend the set of enabled dashboard widgets(so they can be re-added after user removal)
     // This may go away in 1.4 - duplicative with existing widget configs
-    config.enabledDashboardWidgets.push("walktime", "quicklinks", "mytasks", "myevents");
+    // config.enabledDashboardWidgets.push("walktime", "quicklinks", "mytasks", "myevents");
 
     // Show mylinks dashboard widget by default for new users
     config.defaultprivstructure["${refid}0"]["${refid}5"].dashboard.columns.column3.push({

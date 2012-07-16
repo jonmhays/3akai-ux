@@ -2,12 +2,12 @@
     "id":"myevents",
     "personalportal":true,
     "url":"/devwidgets/myevents/myevents.html",
-    "i18n": { 
-        "default": { 
-            "bundle": "/devwidgets/myevents/bundles/default.properties", 
-            "description":"My events", 
-            "name":"My Events" 
-        } 
+    "i18n": {
+        "default": {
+            "bundle": "/devwidgets/myevents/bundles/default.properties",
+            "description":"My events",
+            "name":"My Events"
+        }
     },
     "multipleinstance": false,
     "deletable":true,
