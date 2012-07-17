@@ -21,8 +21,8 @@ define(["config/config", "config/env"], function(config) {
     // CalCentral custom begin
 
     // This is our custom CAS log in information.
-    config.Authentication.internal = config.isDev;
-    config.Authentication.internalAndExternal = false; // for CalCentral this is always false because CAS is always on
+    config.Authentication.internal = config.isDev; // for CalCentral this is always false because CAS is always on
+    config.Authentication.internalAndExternal = config.isDev;
     config.Authentication.external = [
         {
           label: "Login using your CalNet ID",
