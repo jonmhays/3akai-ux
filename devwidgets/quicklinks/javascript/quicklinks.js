@@ -75,25 +75,6 @@ require(
         /** Utility Functions. **/
 
         /**
-         * Call the jquery Validator plugin funciton to validate the form. Simplifies some form validation messaing
-         * and more.
-         *
-         * @type Validator object (http://docs.jquery.com/Plugins/Validation#Validator).
-         */
-        var validator = $myLinksFormId.validate({
-            rules: {
-                'quicklinks-link-title': {
-                    required: true
-                },
-                'quicklinks-link-url': {
-                    required: true,
-                    url: true,
-                    appendhttp: true
-                }
-            }
-        });
-
-        /**
          * Role information could be stored in various places in the user object. This allows
          * flexible definitions of how to reference the roles stored in the system.
          * @param {String} lookupStrategy name of which lookup strategy is loaded.
@@ -297,31 +278,7 @@ require(
             if ($addLinkButton.attr('disabled') === 'true') {
                 return;
             }
-            var isValid = validator.form();
-            if (isValid) {
-                $saveLinkClickClass.attr('disabled', true);
-
-                var index = $myLinksFormId.attr('data-eltindex');
-
-                index = index || userLinkData.links.length;
-
-                userLinkData.links[index] = {
-                    'name': $linkTitleInput.val(),
-                    'url': $linkUrlInput.val(),
-                    'popup_description': $linkTitleInput.val()
-                };
-                defaultLinks.sections[defaultLinks.userSectionIndex] = userLinkData;
-
-                sakai.api.Widgets.saveWidgetData(tuid, userLinkData, function(success) {
-                    if (success) {
-                        cancelEditMode();
-                        renderLinkList(defaultLinks);
-                    } else {
-                        sakai.api.Util.notification.show('', sakai.api.i18n.getValueForKey('SERVER_ERROR_SAVE_LINK', 'quicklinks'),
-                                sakai.api.Util.notification.type.ERROR, false);
-                    }
-                });
-            }
+            $myLinksFormId.trigger('submit');
         };
 
         /** Event Handlers. */
@@ -348,6 +305,46 @@ require(
                     cancelEditMode();
                 }
             });
+
+
+            /**
+             * Stores new links to db. This function should only be called after form fields have been validated.
+             */
+             var storeNewLink = function() {
+                $saveLinkClickClass.attr('disabled', true);
+
+                var index = $myLinksFormId.attr('data-eltindex');
+
+                index = index || userLinkData.links.length;
+
+                userLinkData.links[index] = {
+                    'name': $linkTitleInput.val(),
+                    'url': $linkUrlInput.val(),
+                    'popup_description': $linkTitleInput.val()
+                };
+                defaultLinks.sections[defaultLinks.userSectionIndex] = userLinkData;
+
+                sakai.api.Widgets.saveWidgetData(tuid, userLinkData, function(success) {
+                    if (success) {
+                        cancelEditMode();
+                        renderLinkList(defaultLinks);
+                    } else {
+                        sakai.api.Util.notification.show('', sakai.api.i18n.getValueForKey('SERVER_ERROR_SAVE_LINK', 'quicklinks'),
+                            sakai.api.Util.notification.type.ERROR, false);
+                    }
+                });
+            }
+
+            /**
+             * Call OAE's wrappper around the jquery Validator plugin function.
+             * Links are permanently stored only after passing validation.
+             *
+             * @type Validator object (http://docs.jquery.com/Plugins/Validation#Validator).
+             */
+            sakai.api.Util.Forms.validate($myLinksFormId, {
+                submitHandler: storeNewLink
+            }, true);
+
         };
 
         /**
@@ -379,7 +376,7 @@ require(
          * @return {undefined} return to accordion panes
          */
         var cancelEditMode = function() {
-            validator.resetForm();
+            sakai.api.Util.Forms.clearValidation($myLinksFormId);
             $addEditPanel.hide();
             $myLinksFormId.attr('data-eltindex', '');
             $('label.error', $widgetContainer).hide();
