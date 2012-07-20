@@ -72,7 +72,7 @@ define(["config/config", "config/env"], function(config) {
     provide default JSON template for same.
      */
 
-    // Add these items only for advisers
+    // Stub - can be used to add functionality for advisers only
     // if(!myb.api.security.isUserAnAdviser()) {
     //     return;
     // }
@@ -119,7 +119,7 @@ define(["config/config", "config/env"], function(config) {
         }
     };
 
-    // Generates Notifications widget for/with Content Authoring meta-widget
+    // Generates Notifications widget for use in Content Authoring
     config.defaultprivstructure.id1307490615 = {
         'rows': [{
             'id': 'id9583409539834883',
@@ -137,7 +137,7 @@ define(["config/config", "config/env"], function(config) {
     };
 
 
-    // My dynamic lists (nav menu)
+    // My dynamic lists (left nav)
     config.defaultprivstructure.structure0.dynlists = {
             "_title": "__MSG__MY_DYNAMIC_LISTS__",
             "_ref": "id1307386414",
@@ -148,7 +148,7 @@ define(["config/config", "config/env"], function(config) {
     };
 
 
-    // Generates Dynamic Lists widget for/with Content Authoring meta-widget
+    // Generates Dynamic Lists widget for use in Content Authoring
     config.defaultprivstructure.id1307386414 = {
         'rows': [{
             'id': 'id8965114838384',

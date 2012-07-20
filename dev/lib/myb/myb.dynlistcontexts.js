@@ -17,51 +17,50 @@
  */
 
 define(["jquery", "sakai/sakai.api.core"], function($, sakai) {
-    sakai_global.dynlistcontexts = function() {
+    var dynlistcontexts = {};
 
-        var parseDynamicListContexts = function(data) {
-            var children = [];
-            $.each(data, function(key, val) {
-               var inner = data[key];
-               if (inner.hasOwnProperty("sling:resourceType")) {
-                   if (inner["sling:resourceType"] === "myberkeley/dynamicListContext") {
-                       inner["name"] = key;
-                       children.push(inner);
-                   }
+    var parseDynamicListContexts = function(data) {
+        var children = [];
+        $.each(data, function(key, val) {
+           var inner = data[key];
+           if (inner.hasOwnProperty("sling:resourceType")) {
+               if (inner["sling:resourceType"] === "myberkeley/dynamicListContext") {
+                   inner.name = key;
+                   children.push(inner);
                }
-            });
-            return children;
-        };
-        
-        /**
-         * Load the available dynamic list contexts. They will look like so:
-         * 
-         * [{
-         *    "name": "myb-cnr-grads-plant",
-         *    "sling:resourceType": "myberkeley/dynamicListContext",
-         *    "myb-clauses": [
-         *       "/colleges/NAT RES/standings/grad/majors/PLANT BIOLOGY",
-         *       "/colleges/NAT RES/standings/grad/majors/Microbiology",
-         *       "/colleges/NAT RES/standings/grad/majors/AGRICULTURAL CHEM"
-         *    ],
-         *    "myb-filters": ["/student/*"]
-         * }, ... ]
-         */
-        var loadDynamicListContexts = function() {
-            var availableDynamicListContexts;
-            sakai.api.Server.loadJSON("/var/myberkeley/dynamiclists.tidy.1.json", function(success, data) {
-                var availableDynamicListContexts;
-                if (success) {
-                    availableDynamicListContexts = parseDynamicListContexts(data);
-                } else {
-                    availableDynamicListContexts = [];
-                }
-                sakai.data.me.dynamiclistcontexts = availableDynamicListContexts;
-            });
-        };
-        
-        loadDynamicListContexts();
+           }
+        });
+        return children;
     };
-    
-    sakai.api.Widgets.Container.registerForLoad("dynlistcontexts");
+
+    /**
+     * Load the available dynamic list contexts. They will look like so:
+     *
+     * [{
+     *    "name": "myb-cnr-grads-plant",
+     *    "sling:resourceType": "myberkeley/dynamicListContext",
+     *    "myb-clauses": [
+     *       "/colleges/NAT RES/standings/grad/majors/PLANT BIOLOGY",
+     *       "/colleges/NAT RES/standings/grad/majors/Microbiology",
+     *       "/colleges/NAT RES/standings/grad/majors/AGRICULTURAL CHEM"
+     *    ],
+     *    "myb-filters": ["/student/whatever"]
+     * }, ... ]
+     */
+    dynlistcontexts.loadDynamicListContexts = function(callback) {
+        var availableDynamicListContexts;
+        sakai.api.Server.loadJSON("/var/myberkeley/dynamiclists.tidy.1.json", function(success, data) {
+            var availableDynamicListContexts;
+            if (success) {
+                availableDynamicListContexts = parseDynamicListContexts(data);
+            } else {
+                availableDynamicListContexts = [];
+            }
+            sakai.data.me.dynamiclistcontexts = availableDynamicListContexts;
+            if (callback && $.isFunction(callback)){
+                callback();
+            }
+        });
+    };
+    return dynlistcontexts;
 });

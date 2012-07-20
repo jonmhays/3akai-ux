@@ -36,11 +36,11 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
         ///////////////////
         // CONFIGURATION //
         ///////////////////
-        
+
         // Begin CalCentral customization
         // Don't fire custom showAllArrows() function if URL includes "Me"
         var URLsegment1 = window.location.pathname.split( '/' )[1];
-        // End CalCentral customization            
+        // End CalCentral customization
 
         var $rootel = $('#' + tuid);
 
@@ -83,12 +83,17 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
             // Begin CalCentral customization
             showAllArrows();
 
-            if(!myb.api.security.isUserAnAdviser()) {
-                // Hide DynamicLists and Notifications from non-supervisors
-                $('li[data-sakai-path="notifications"]').hide();
-                $('li[data-sakai-path="dynlists"]').hide();
+            // Hide DynamicLists and Notifications from non-supervisors
+            var checkuser = function(hasperm) {
+                if (!hasperm) {
+                    $('li[data-sakai-path="notifications"]').hide();
+                    $('li[data-sakai-path="dynlists"]').hide();
+                }
             };
-            // End CalCentral customization            
+
+            myb.api.security.isUserAnAdviser(checkuser);
+
+            // End CalCentral customization
         };
 
         ////////////////////////
@@ -684,7 +689,7 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
                 $('.lhnavigation_selected_submenu', $el).show();
                 // Begin CalCentral customization
                 showAllArrows();
-                // End CalCentral customization            
+                // End CalCentral customization
             }
         };
 
@@ -694,7 +699,7 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
                 $('.lhnavigation_selected_submenu_image').removeClass('clicked');
                 // Begin CalCentral customization
                 showAllArrows();
-                // End CalCentral customization                            
+                // End CalCentral customization
             }
         };
 
@@ -727,11 +732,11 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
         // Begin CalCentral customization
         var showAllArrows = function() {
             if (URLsegment1 != "me") {
-                $('.lhnavigation_selected_submenu','li[data-sakai-manage="true"][data-sakai-reorder-only=""]','#lhnavigation_container').show();                
+                $('.lhnavigation_selected_submenu','li[data-sakai-manage="true"][data-sakai-reorder-only=""]','#lhnavigation_container').show();
             };
         };
-        // End CalCentral customization            
-        
+        // End CalCentral customization
+
 
         //////////////////////
         // Area permissions //
@@ -801,7 +806,7 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
                 if (success) {
                     var newpageid = sakai.api.Util.generateWidgetId();
                     var neworder = pubstructure.orderedItems.length;
-        
+
                     var pageContent = {
                         'rows': [{
                             'id': 'id' + Math.round(Math.random() * 100000000),
@@ -829,15 +834,15 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
                         },
                         '_childCount':1
                     };
-        
+
                     pubstructure.pages[newpageid] = pageContent;
                     sakaiDocsInStructure[contextData.puburl][newpageid] = pageContent;
-        
+
                     pubstructure.items[newpageid] = pageToCreate;
                     pubstructure.items._childCount++;
                     sakaiDocsInStructure[currentPageShown.savePath].structure0[newpageid] = pageToCreate;
                     sakaiDocsInStructure[currentPageShown.savePath].orderedItems = orderItems(sakaiDocsInStructure[currentPageShown.savePath].structure0);
-        
+
                     renderData();
                     addParametersToNavigation();
                     $(window).trigger('sakai.contentauthoring.needsTwoColumns');
@@ -860,10 +865,10 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
                 if (success) {
                     var newpageid = sakai.api.Util.generateWidgetId();
                     var neworder = sakaiDocsInStructure[currentPageShown.pageSavePath].orderedItems.length;
-        
+
                     var fullRef = currentPageShown.pageSavePath.split('/p/')[1] + '-' + newpageid;
                     var basePath = currentPageShown.path.split('/')[0];
-        
+
                     var pageContent = {
                         'rows': [{
                             'id': sakai.api.Util.generateWidgetId(),
@@ -909,13 +914,13 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
                         },
                         '_childCount':1
                     };
-        
+
                     pubstructure.pages[fullRef] = pageContent;
                     sakaiDocsInStructure[currentPageShown.pageSavePath][newpageid] = pageContent;
-        
+
                     pubstructure.items[basePath][newpageid] = pageToCreate;
                     pubstructure.items[basePath]._childCount++;
-        
+
                     sakaiDocsInStructure[currentPageShown.pageSavePath].structure0[newpageid] = pageToCreate1;
                     sakaiDocsInStructure[currentPageShown.pageSavePath].orderedItems = orderItems(sakaiDocsInStructure[currentPageShown.pageSavePath].structure0);
 
@@ -957,7 +962,7 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
             var inputArea = $('.lhnavigation_change_title', menuitem);
             inputArea.show();
             inputArea.val($.trim(pageTitle.text()));
-            
+
             pageTitle.hide();
 
             // Hide the dropdown menu

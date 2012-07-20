@@ -17,13 +17,16 @@
  */
 
 /* global $, Config, opensocial */
-define(["jquery", "sakai/sakai.api.core"], function($, sakai) {
+define(["jquery", "sakai/sakai.api.core", "myb/myb.dynlistcontexts"], function($, sakai, dynlistcontexts) {
 
     var security = {};
 
-    security.isUserAnAdviser = function() {
-        return (sakai.data.me.dynamiclistcontexts &&
-                sakai.data.me.dynamiclistcontexts.length > 0);
+    security.isUserAnAdviser = function(callback) {
+        dynlistcontexts.loadDynamicListContexts(function() {
+                var hasperm = sakai.data.me.dynamiclistcontexts && (sakai.data.me.dynamiclistcontexts.length > 0);
+                callback(hasperm);
+            }
+        );
     };
 
     /**
@@ -31,7 +34,7 @@ define(["jquery", "sakai/sakai.api.core"], function($, sakai) {
      * This function checks 'sakai.data.me.user.userid.public.authprofile.data.myberkeley.elements.participant.value'.
      * If false, call the callback.
      */
-     
+
     security.isNotMyBerkeleyParticipant = function(callback) {
             sakai.api.Server.loadJSON("/~" + sakai.data.me.user.userid + "/public/authprofile", function(success, data) {
                 if (success) {
@@ -39,8 +42,8 @@ define(["jquery", "sakai/sakai.api.core"], function($, sakai) {
                         if ($.isFunction(callback)) {
                             callback();
                         }
-                    };
-                };
+                    }
+                }
             });
 
         return false;
