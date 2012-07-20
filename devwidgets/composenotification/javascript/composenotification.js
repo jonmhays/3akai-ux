@@ -1464,11 +1464,13 @@ require(["jquery", "/dev/lib/myb/jquery/jquery-ui-datepicker.min.js", "sakai/sak
         var doInit = function() {
             var security = sakai.api.Security;
 
-            // if the user is not a member of the advisers group then bail
-            if (!myb.api.security.isUserAnAdviser()) {
-                security.send403();
-                return;
-            }
+            // Bail if user is not a member of the advisers group
+            var checkuser = function(hasperm) {
+                if (!hasperm) {
+                    security.send403();
+                  }
+            };
+            myb.api.security.isUserAnAdviser(checkuser);
 
             validatorObj = setupValidation($formElement, validationErrorPlacement);
             setState();

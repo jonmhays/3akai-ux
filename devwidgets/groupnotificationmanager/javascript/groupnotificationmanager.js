@@ -147,18 +147,18 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_cus
         var inboxGeneralMessagesSendFailed = inboxGeneralMessages + "_send_fail";
         var inboxGeneralMessagesMovedFailed = inboxGeneralMessagesMoved + "_failed";
         var inboxGeneralMessagesCopiedFailed = inboxGeneralMessagesCopied + "_copied";
-        
+
         var draftsButtons = $(".queue_checked_btn, .copy_checked_btn, .trash_checked_btn", $rootElement);
         var queueButtons = $(".move_checked_btn, .copy_checked_btn, .trash_checked_btn", $rootElement);
         var archiveButtons = $(".copy_checked_btn", $rootElement);
         var trashButtons = $(".move_checked_btn, .delete_checked_btn", $rootElement);
-        
+
         var allButtons = $(".button-list .s3d-button", $rootElement);
 
         // Keep JSLint.com happy...
         var getCount = function(){
         };
-        
+
         var getAllMessages = function(){
         };
 
@@ -218,7 +218,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_cus
                 $(pane).show();
             }
         };
-        
+
         var updateButtonState = function () {
             if (anyChecked()) {
                 allButtons.removeAttr('disabled').removeClass("disabled");
@@ -233,7 +233,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_cus
         var tickMessages = function(){
             $(inboxInboxCheckMessage).prop("checked", ($(inboxInboxCheckAll).is(":checked") ? "checked" : ''));
             updateButtonState();
-        }; 
+        };
 
         /**
          * test if the current browser supports the ellipsis overflow
@@ -460,12 +460,12 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_cus
             }
             return returnStr;
         };
-        
+
         var removeRowHilite = function (jqRowObj) {
             jqRowObj.removeClass("saved-elm-hilite");
         };
-        
-        
+
+
         /**
          * highlights the last saved message in the table if the id is set in the namespace.
          */
@@ -561,13 +561,13 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_cus
 
             // do ellipsis
             ellipsisSubjects();
-            
+
             // hilight the last saved message if it is set
             if (savedRowID !== null && savedRowID !== "") {
                 hiliteRow(); // id is set in the function namespace
             }
         };
-        
+
         /**
          * Show a certain page of messages.
          */
@@ -801,7 +801,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_cus
 
             // Reset 'Check All' checkbox
             uncheckCheckAllCheckbox();
-            
+
             // If we are in trash we hard delete the messages.
             deleteMessages(pathToMessages, (selectedType === sakai.config.Messages.Types.trash));
         };
@@ -864,7 +864,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_cus
 
             // Reset 'Check All' checkbox
             uncheckCheckAllCheckbox();
-            
+
             moveMessages(pathToMessages, toWhere);
         }
 
@@ -900,7 +900,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_cus
 
             // Reset 'Check All' checkbox
             uncheckCheckAllCheckbox();
-            
+
             moveMessages(pathToMessages, "queue");
 
             if (numberOfSkippedMessages !== 0) {
@@ -1003,10 +1003,10 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_cus
                     correctHighlightedTab($(this).attr("id").substring(6, $(this).attr("id").length));
                 }
             });
-            
+
             // Reset 'Check All' checkbox
             uncheckCheckAllCheckbox();
-            
+
             $("#inbox-new-button").show();
         });*/
 
@@ -1018,7 +1018,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_cus
             // Reset 'Check All' checkbox
             uncheckCheckAllCheckbox();
         };
-            
+
         /**
          *
          * OPERATIONS ON MULTIPLE CHECKED MESSAGES
@@ -1028,23 +1028,23 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_cus
         $(inboxInboxCheckAll, $rootElement).change(function(){
             tickMessages();
         });
-        
+
         $(inboxInboxCheckMessage, $rootElement).live("change", function () {
             updateButtonState();
         });
-        
+
         var uncheckCheckAllCheckbox = function () {
-            $(inboxInboxCheckAll, $rootElement).attr("checked", false); 
+            $(inboxInboxCheckAll, $rootElement).attr("checked", false);
         };
-        
+
         var uncheckAllCheckboxs = function () {
             $(inboxInboxCheckMessage, $rootElement).attr("checked", false);
         };
-        
+
         var anyChecked = function () {
-            return ($(inboxInboxCheckMessage + ":checked", $rootElement).length > 0); 
+            return ($(inboxInboxCheckMessage + ":checked", $rootElement).length > 0);
         };
-        
+
         // Delete or trash all checked messages.
         $(".delete_checked_btn, .trash_checked_btn", $rootElement).live("click", function() {
             deleteChecked();
@@ -1151,7 +1151,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_cus
             } else {
                 currentPage = 0;
             }
-            
+
             savedRowID = (state.hasOwnProperty("saved")) ? state.saved : "";
 
             if (box === "notifications/drafts") {
@@ -1163,7 +1163,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_cus
             } else if (box === "notifications/trash") {
                 showFilteredList("trash", inboxFilterTrash);
             }
-            
+
 
             $rootElement.show();
 
@@ -1172,7 +1172,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_cus
         $(window).bind('hashchange', function() {
             setState();
         });
-        
+
         /////////////////////////////
         // Initialization function //
         /////////////////////////////
@@ -1180,11 +1180,13 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_cus
 
         var doInit = function(){
 
-            // if the user is not a member of the advisers group then bail
-            if (!myb.api.security.isUserAnAdviser()) {
-                sakai.api.Security.send403();
-                return;
-            }
+            // Bail if user is not a member of the advisers group
+            var checkuser = function(hasperm) {
+                if (!hasperm) {
+                    security.send403();
+                  }
+            };
+            myb.api.security.isUserAnAdviser(checkuser);
 
             setState();
 

@@ -66,7 +66,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
          * Dynamic lists base URL (parent node in Sparse), delete this node to remove all dynamic lists for current user
          */
         var dynamicListsBaseUrl;
-        
+
         /**
          * The dynamic list context which is in effect for this editing session.
          */
@@ -319,10 +319,10 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
             if(undergrads.isConditionObjectEmpty()) {
                 undergrads.OR =[$includeUndergradsCheckbox.val()];
             }
-            
+
             undergradsFilter = selectedLevelsOR;
             undergradsFilter = undergradsFilter.joinTwoConditionsByAND(selectedAdmittedAsOR);
-            
+
             undergrads.joinFilterToCondition(undergradsFilter);
 
             return undergrads;
@@ -432,7 +432,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
          * @param {bool} setActive enable or disable the set, if undefined set to the checked state of $masterCheck
          * @param {bool} setMaster set the checkedState of $masterCheck to setActive state
          */
-        
+
         var toggleControlSet = function ($masterCheck, $subGroup, setActive, setMaster) {
             setActive = setActive || $masterCheck.is(':checked');
             if (setMaster) {
@@ -1191,7 +1191,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
             $showMoreOrLess.click(toggleSectionC);
 
         };
-        
+
         var filterTemplateDataByContext = function(data) {
             if (propExists(data.undergraduates)) {
                 if (propExists(data.undergraduates.id) && !dynamicListContextAllowed.test(data.undergraduates.id)) {
@@ -1216,7 +1216,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
                 }
             }
         };
-        
+
         var filterItemsArrayByContext = function(data, arrayHolder) {
           var newItemArray = [];
           for (var i = 0; i < data[arrayHolder].items_array.length; i++) {
@@ -1449,8 +1449,8 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
          $(window).bind('hashchange', function() {
             setState();
         });
-         
-        var findDynamicListContext = function(contextName) {           
+
+        var findDynamicListContext = function(contextName) {
             for (var i=0; i < sakai.data.me.dynamiclistcontexts.length; i++) {
                 if (sakai.data.me.dynamiclistcontexts[i].name === contextName) {
                     return sakai.data.me.dynamiclistcontexts[i];
@@ -1458,7 +1458,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
             }
             return null;
         };
-        
+
         /**
          * Virtually all advisers will have access to only one Dynamic List context,
          * and so the UX design does not yet include a way to switch contexts.
@@ -1478,7 +1478,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
                 }
             }
             dynamicListContextUrl = "/var/myberkeley/dynamiclists/" + dynamicListContext.name;
-            
+
             // Initialize filtering pattern from the context clauses.
             var pattern = "";
             var alloweds = dynamicListContext["myb-clauses"];
@@ -1570,7 +1570,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
                 clearInvalidsInSection($gradsGroup);
             }
         };
-        
+
         /////////////////////////////
         // Initialization function //
         /////////////////////////////
@@ -1583,11 +1583,13 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
         var doInit = function() {
             var security = sakai.api.Security;
 
-            // if the user is not a member of the advisers group then bail
-            if (!myb.api.security.isUserAnAdviser()) {
-                security.send403();
-                return;
-            }
+            // Bail if user is not a member of the advisers group
+            var checkuser = function(hasperm) {
+                if (!hasperm) {
+                    security.send403();
+                  }
+            };
+            myb.api.security.isUserAnAdviser(checkuser);
 
             populateDesignateTermYear();
 
@@ -1603,7 +1605,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
         doInit();
 
     };
-    
+
     sakai.api.Widgets.widgetLoader.informOnLoad("dynamiclisteditor");
 
 });
