@@ -128,6 +128,8 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
          */
         var $designateTermYear = $("#designate_term_year", $cohortStatus);
 
+        var $formElementTemplate;
+
         /**
          * Undergraduate students wrapper DIV (template must be loaded before using this variable)
          */
@@ -624,7 +626,6 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
 
             $("#create_new_list").show();
 
-
             // Show/hide appropriate buttons
             $dynListsCancelEditingButton.show();
             $dynListsSaveButton.removeClass("disabled");
@@ -951,13 +952,10 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
          *  @return {String} a condition object created from sections A, B, C data as string.
          */
          var buildCriteriaStringFromListEditingForm = function() {
-            return $.toJSON(buildCriteriaFromListEditingForm());
+            // return $.toJSON(buildCriteriaFromListEditingForm());
+            return JSON.stringify(buildCriteriaFromListEditingForm());
         };
 
-        var validateUserInput = function() {
-            // single ampersand is used for full-circuit evaluation
-            return validatorObj.form() & validatorObjTemplate.form();
-        };
 
         var getDataFromInput = function() {
             var result = {};
@@ -1094,23 +1092,16 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
 
         $dynListsSaveButton.click(function(){
 
-            if(!validateUserInput()) {
-                showGeneralMessage(translate("PLEASE_CORRECT_THE_FIELDS_AS_SPECIFIED_BY_THE_RED_ERROR_TEXT"), true, translate("ERROR_LIST_CANNOT_BE_CREATED"));
-                return;
-            }
+            // This page consists of two forms, not one. In order to get both to pass validation, async ajax
+            // requests are sent for each, which means we can't trust a test that checks for both passing.
+            // Instead, we force them to be synchronous by triggering just one. That one in turn triggers the other.
+            $formElement.trigger('submit');
 
-            if ($dynListsSaveButton.is(".disabled")) {
-                // prevent double-clicking of save button
-                return;
-            }
+            // if(!validateUserInput()) {
+            //     showGeneralMessage(translate("PLEASE_CORRECT_THE_FIELDS_AS_SPECIFIED_BY_THE_RED_ERROR_TEXT"), true, translate("ERROR_LIST_CANNOT_BE_CREATED"));
+            //     return;
+            // }
 
-            if (lastNumberOfTargetedStudents > 0) {
-                getDataAndSaveList();
-            } else if(lastUsedCriteriaString.length === 0 || lastUsedCriteriaString === "{}"){
-                $noStudentsEverWarningDialog.jqmShow();
-            } else {
-                $noStudentsWarningDialog.jqmShow();
-            }
         });
 
         /**
@@ -1181,7 +1172,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
             });
 
             // Apply validation rules to section B
-            var $formElementTemplate = $("#frm_main_dynamic", $rootElement); // Used for validation
+            $formElementTemplate = $("#frm_main_dynamic", $rootElement); // Used for validation
             validatorObjTemplate = setupValidationForTemplate($formElementTemplate);
 
 
@@ -1243,8 +1234,8 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
          * @return true if property exists and is not null; otherwise false.
          */
         var propExists = function(prop) {
-     			return typeof(prop) !== 'undefined' && prop !== null;
-    	};
+            return typeof(prop) !== 'undefined' && prop !== null;
+        };
 
 
         var loadDataIntoTemplate = function () {
@@ -1334,7 +1325,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
                 $("#residency_status_specified_students", $sectionC).attr("checked", "checked");
             }
 
-            updateNumberOfPeopleSelectedByCriteria($.toJSON(currentList.criteria));
+            updateNumberOfPeopleSelectedByCriteria(JSON.stringify(currentList.criteria));
 
              if(isSomethingSelectedInSectionC(idArray)) {
                  showSectionC();
@@ -1488,7 +1479,6 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
                 }
                 pattern += alloweds[i].replace("*", ".*");
             }
-            //console.log("pattern = " + pattern);
             dynamicListContextAllowed = new RegExp(pattern);
         };
 
@@ -1513,13 +1503,26 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
             list_name: translate("PLEASE_ENTER_A_NAME_FOR_THIS_LIST")
         };
 
-        var setupValidationForListName = function($frm) {
-            return $frm.validate({
-                debug: debugValidation,
-                messages: errorMessagesForListNameValidation
-            });
+        var submitTopForm = function() {
+            $formElementTemplate.trigger('submit');
         };
 
+        var setupValidationForListName = function($frm) {
+            sakai.api.Util.Forms.validate($frm, {
+                debug: debugValidation,
+                messages: errorMessagesForListNameValidation,
+                submitHandler: submitTopForm
+            }, true);
+        };
+
+
+        // No longer throwing the Gritter message, since we no longer submit both forms at once and
+        // don't have a single function we can do it from. This can be re-instated if desired once
+        // this widget is converted back into a single form.
+        // if(!validateUserInput()) {
+        //     showGeneralMessage(translate("PLEASE_CORRECT_THE_FIELDS_AS_SPECIFIED_BY_THE_RED_ERROR_TEXT"), true, translate("ERROR_LIST_CANNOT_BE_CREATED"));
+        //     return;
+        // }
 
         // Dynamic list template validation
 
@@ -1537,7 +1540,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
             }
         };
 
-        // These two rules below make validation happen only when something is checked in undergrads or grads sections
+        // The two rules below make validation happen only when something is checked in undergrads or grads sections
         var undergradDependencyRuleForTemplateValidation = {
             depends: function(element) {
                 return isSomethingSelectedInUndergradsSection();
@@ -1551,13 +1554,26 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
         };
 
         var setupValidationForTemplate = function($frm) {
-            return $frm.validate({
+            sakai.api.Util.Forms.validate($frm, {
                 debug: debugValidation,
-                rules: {
-                },
+                rules: {},
                 messages: errorMessagesForTemplateValidation,
-                errorPlacement: errorPlacementForTemplateValidation
-            });
+                errorPlacement: errorPlacementForTemplateValidation,
+                submitHandler: function() {
+                    if ($dynListsSaveButton.is(".disabled")) {
+                        // prevent double-clicking of save button
+                        return;
+                    }
+
+                    if (lastNumberOfTargetedStudents > 0) {
+                        getDataAndSaveList();
+                    } else if(lastUsedCriteriaString.length === 0 || lastUsedCriteriaString === "{}"){
+                        $noStudentsEverWarningDialog.jqmShow();
+                    } else {
+                        $noStudentsWarningDialog.jqmShow();
+                    }
+                }
+            }, true);
         };
 
 

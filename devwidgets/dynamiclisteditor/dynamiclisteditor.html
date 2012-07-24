@@ -13,7 +13,7 @@
         <form id="dyn-list-form">
             <fieldset class="dyn-list-section">
                 <div class="dyn-list-define fl-fix">
-                    <span class="label-left"><label for="list_name"><span class="required" aria-hidden="true">*</span> List Name</label></span>
+                    <span class="label-left"><label for="list_name"><span aria-hidden="true">*</span> List Name</label></span>
                     <span class="field-right"><input type="text" id="list_name" name="list_name" size="40" maxlength="40" class="required" aria-required="true" /></span>
                 </div>
 
@@ -44,19 +44,19 @@
                 <div style="clear:both">&nbsp;</div>
                 <div class="main_title" style="border-top: 3px solid #000;clear: both;padding-top: 10px">Filter Selected Students</div>
                 <div class="sub_title">Registration Status</div>
-    
-    
+
+
                 <div class="registration_status">
                     <!-- outer div -->
                     <div class="checkbox"><input type="radio" name="reg_statuses" value="reg_status_include_all" id="reg_status_include_all" checked="checked" /><label for="reg_status_include_all">Include all current registered students as selected</label></div>
                     <div class="checkbox"><input type="radio" name="reg_statuses" value="reg_status_only_designated_statuses" id="reg_status_only_designated_statuses" /><label for="reg_status_only_designated_statuses">Only include students in designated registration statuses</label></div>
-    
+
                     <!-- Begin 3 column layout -->
-    
+
                     <div class="wrapper">
                         <div class="reg_status_col_left1">
-    
-    
+
+
                             <div class="reg_status">
                                 <div class="group_header">Registered</div>
                                 <form name="frm_reg_status">
@@ -75,12 +75,12 @@
                                     </div>
                                 </form>
                             </div>
-    
-    
+
+
                         </div>
                         <div class="reg_status_col_left2">
-    
-    
+
+
                             <div class="current_or_not">
                                 <div class="group_header">Current</div>
                                 <form name="frm_current_or_not">
@@ -95,11 +95,11 @@
                                     </div>
                                 </form>
                             </div>
-    
-    
+
+
                         </div>
                         <div class="reg_status_col_right">
-    
+
                             <div class="student_reg_status">
                                 <div class="group_header">Withdrawn, etc.</div>
                                 <form name="frm_student_reg_status">
@@ -112,25 +112,25 @@
                                     </div>
                                 </form>
                             </div>
-    
+
                         </div>
                     </div>
                     <!-- End 3 column layout -->
-    
+
                 <!-- outer div -->
                 </div>
-    
-    
+
+
                 <div class="cohort_status" style="clear:both;">
-    
+
                     <div class="sub_title">Cohort Status</div>
                     <!-- Begin 2 col layout -->
                     <div class="wrapper">
-    
+
                         <div class="checkbox"><input type="radio" name="cohort_statuses" value="cohort_status_all_students" id="cohort_status_all_students" checked="checked" /><label for="cohort_status_all_students">Include all selected students</label></div>
                         <div class="checkbox"><input type="radio" name="cohort_statuses" value="cohort_status_specified_students" id="cohort_status_specified_students" /><label for="cohort_status_specified_students">Only include students in designated cohort(s)</label></div>
                         <div class="cohort_status_col_left">
-    
+
                             <div class="sub_group">
                                 <div class="group_header">Designate Term:</div>
                                 <div class="wrapper">
@@ -149,21 +149,21 @@
                                     </div>
                                 </div>
                             </div>
-    
+
                         </div>
                         <div class="cohort_status_col_right">
-    
+
                             <div class="choose_cohort">
                                 <div class="group_header">Choose Cohort:</div>
                                 <div class="checkbox"><input type="radio" name="cohort_status_terms" value="cohort_status_term_before" id="cohort_status_term_before" checked="checked" /><label for="cohort_status_term_before">Students who started <b>before</b> the designated term</label></div>
                                 <div class="checkbox"><input type="radio" name="cohort_status_terms" value="cohort_status_term_during" id="cohort_status_term_during" /><label for="cohort_status_term_during">Students who started <b>in or after</b> the designated term</label></div>
                             </div>
-    
+
                         </div>
                     </div>
                     <!-- End 2 col layout -->
                 </div>
-    
+
                 <div class="special_programs" style="clear:both;">
                     <div class="group_header">Special Programs</div>
                     <div class="checkbox"><input type="radio" name="special_programs" value="" id="special_program_all_students" checked="checked" /><label for="special_program_all_students">Include all selected students</label></div>
@@ -212,7 +212,7 @@
                         <!-- End 2 col layout -->
                     </div>
                 </div>
-    
+
                 <div class="student_and_residency_status" style="clear:both;">
                     <!-- Beging 2 col layout -->
                     <div class="wrapper">
@@ -237,7 +237,7 @@
                                 <div class="checkbox"><input type="checkbox" id="residency_status_domestic_students" value="residency_status_domestic_students" /><label for="residency_status_domestic_students">Domestic Students</label></div>
                                 <div class="checkbox"><input type="checkbox" id="residency_status_int_students" value="residency_status_int_students" /><label for="residency_status_int_students">International Students</label></div>
                             </div>
-    
+
                         </div>
                     </div>
                     <!-- End 2 col layout -->

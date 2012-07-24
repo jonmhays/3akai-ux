@@ -10,7 +10,7 @@
 }
 
 .dyn-form-header {
-    padding-bottom: 20px;   
+    padding-bottom: 20px;
 }
 
 .dynamiclisteditor_widget span.asterisk {
@@ -26,7 +26,7 @@
 
 .dynamiclisteditor_widget fieldset {
     padding: 15px 10px;
-    margin-bottom: 0; 
+    margin-bottom: 0;
 }
 
 .dynamiclisteditor_widget .dyn-list-section {
@@ -54,7 +54,7 @@
      width:140px;
      float:left;
 }
- 
+
 .dynamiclisteditor_widget span.label-left label {
     display: inline-block;
     margin: 5px 0 0;
@@ -66,7 +66,7 @@
 }
 
 .dynamiclisteditor_widget input[type="text"] {
-    height: 22px;    
+    height: 22px;
 }
 
 .dynamiclisteditor_widget div.group_header {
@@ -318,9 +318,14 @@
     width: 17em;
 }
 
-.dynamiclisteditor_widget label.error {
+.dynamiclisteditor_widget .s3d-error-after {
     margin-top: 3px;
     display: block;
+    color:#cc0000;
+}
+
+.dynamiclisteditor_widget input.s3d-error-after {
+  color:black;
 }
 
 #no_students_ever_warning_dialog, #no_students_warning_dialog

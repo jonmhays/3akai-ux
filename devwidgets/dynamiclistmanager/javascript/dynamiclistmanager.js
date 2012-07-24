@@ -290,7 +290,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/javascript/m
                 traditional: true,
                 type: "POST",
                 data: {
-                    requests: $.toJSON(requests)
+                    requests: JSON.stringify(requests)
                 },
                 success: function(){
                     if ($.isFunction(successCallback)){

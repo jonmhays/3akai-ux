@@ -852,7 +852,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_cus
                     }
                 });
             }
-        }
+        };
 
         var moveChecked = function(toWhere){
             // pathToMessages = an array of all checked messages
@@ -866,7 +866,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_cus
             uncheckCheckAllCheckbox();
 
             moveMessages(pathToMessages, toWhere);
-        }
+        };
 
         /**
          * Moves selected drafts to Queue message box.
