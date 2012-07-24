@@ -28,12 +28,12 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core"], function($, sakai
      * @param {String} tuid Unique id of the widget
      * @param {Boolean} showSettings Show the settings of the widget or not
      */
-    sakai_global.optin = function (tuid, showSettings) { 
-    
+    sakai_global.optin = function (tuid, showSettings) {
+
         /////////////////////////////
         // Configuration variables //
         /////////////////////////////
-        
+
         var $parentElm = $("#" + tuid);
 
         var $optinDialog = $("#join_myberkeley_dialog", $parentElm);
@@ -46,7 +46,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core"], function($, sakai
         var ajaxPostMaxTries = 3;				// Number of tries before giving up
         var ajaxPostRetryIntervalMs = 500;		// Retry interval in milliseconds
         var ajaxPostTimeBeforeLogOutMs = 3000;	// Time in milliseconds before logging user out (for reading an error message)
-        
+
         var optoutURL = '/dev/logout.html';
 
         ///////////////////////
@@ -95,7 +95,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core"], function($, sakai
          * if this happens the user will be logged out.
          */
         function makeParticipant() {
-            
+
             $.ajax({
                 url: "/~" + sakai.data.me.profile["rep:userId"] + "/public/authprofile/myberkeley/elements/joinDate",
                 traditional: true,
@@ -106,7 +106,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core"], function($, sakai
                 },
                 success: function(data) {},
                 error: function(xhr, textStatus, thrownError) {
-    
+
                     // Not the last try?
                     if (ajaxPostTryNumber === 0) {
                         showGeneralMessage("Saving failed. Will retry...", true);
@@ -116,27 +116,27 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core"], function($, sakai
                         setTimeout(logOut, ajaxPostTimeBeforeLogOutMs);
                         return;
                     }
-    
+
                     // Retrying ...
                     ajaxPostTryNumber++;
                     setTimeout(makeParticipant, ajaxPostRetryIntervalMs);
                 }
             });
-            
+
             ajaxPostTryNumber = 0;
             $.ajax({
                 url: "/~" + sakai.data.me.profile["rep:userId"] + "/public/authprofile/myberkeley/elements/participant",
                 traditional: true,
                 type: "POST",
                 data: {
-                    value: $.toJSON(true)
+                    value: JSON.stringify(true)
                 },
                 success: function(data) {
                     $optinDialog.jqmHide();
                     showGeneralMessage("Welcome to CalCentral!", false);
                 },
                 error: function(xhr, textStatus, thrownError) {
-    
+
                     // Not the last try?
                     if (ajaxPostTryNumber === 0) {
                         showGeneralMessage("Saving failed. Will retry...", true);
@@ -146,13 +146,13 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core"], function($, sakai
                         setTimeout(logOut, ajaxPostTimeBeforeLogOutMs);
                         return;
                     }
-    
+
                     // Retrying ...
                     ajaxPostTryNumber++;
                     setTimeout(makeParticipant, ajaxPostRetryIntervalMs);
                 }
             });
-        };
+        }
 
         ////////////////////
         // Event handling //
@@ -161,7 +161,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core"], function($, sakai
         $chkAgreeToSocu.change(checkIfUserAgreed);
 
         $chkAgreeToReceiveAdviserMessages.change(checkIfUserAgreed);
-        
+
         // Sets user's "participant" status to true
         $btnJoinMyBerkeley.click(function() {
 
@@ -172,9 +172,9 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core"], function($, sakai
             }
 
         });
-        
+
         $btnOptOut.click(function () {
-           document.location = optoutURL; 
+           document.location = optoutURL;
         });
 
         var isLoggedIn = function() {
@@ -187,9 +187,9 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core"], function($, sakai
             // If the user is not an opted-in participant of CalCentral project,
             // redirect him to the participation explanation page
             if (isLoggedIn()) {
-              
+
               myb.api.security.isNotMyBerkeleyParticipant(function(){
-              
+
                 // We will show a nice Join CalCentral dialog on this page
                 $optinDialog.jqm({
                          modal: true,
@@ -198,11 +198,11 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core"], function($, sakai
                          onShow: null
                      });
                 $optinDialog.jqmShow();
-                
+
               });
-            } 
+            }
         };
-        
+
         doInit();
 
     };

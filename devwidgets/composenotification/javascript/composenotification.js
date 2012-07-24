@@ -882,7 +882,7 @@ require(["jquery", "/dev/lib/myb/jquery/jquery-ui-datepicker.min.js", "sakai/sak
             $.ajax({
                 url: url,
                 type: "POST",
-                data: { notification : $.toJSON(toPost) },
+                data: { notification : JSON.stringify(toPost) },
                 success: function(response) {
                     // Remember the ID of the saved notification.
                     if (response.id) {
@@ -1089,7 +1089,7 @@ require(["jquery", "/dev/lib/myb/jquery/jquery-ui-datepicker.min.js", "sakai/sak
                 traditional: true,
                 type: "POST",
                 data: {
-                    requests: $.toJSON(requests)
+                    requests: JSON.stringify(requests)
                 },
                 success: function() {
                     backToTrash();

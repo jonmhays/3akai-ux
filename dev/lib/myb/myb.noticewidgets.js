@@ -250,7 +250,7 @@ define(["jquery","sakai/sakai.api.core"], function($, sakai) {
 
                 postNotice(
                         config.dataURL,
-                        { calendars : $.toJSON([
+                        { calendars : JSON.stringify([
                             {
                                 uri : rowData.uri,
                                 isCompleted : rowData.isCompleted,
@@ -292,7 +292,7 @@ define(["jquery","sakai/sakai.api.core"], function($, sakai) {
                     renderTemplateAndUpdateUI();
                     postNotice(
                             config.dataURL,
-                            { calendars : $.toJSON([
+                            { calendars : JSON.stringify([
                                 {
                                     uri : rowData.uri,
                                     isCompleted : rowData.isCompleted,
@@ -353,7 +353,7 @@ define(["jquery","sakai/sakai.api.core"], function($, sakai) {
                         rowData.isArchived = !rowData.isArchived;
 
                         postNotice(config.dataURL,
-                                { calendars : $.toJSON([
+                                { calendars : JSON.stringify([
                                     {
                                         uri : rowData.uri,
                                         isCompleted : rowData.isCompleted,
@@ -397,7 +397,7 @@ define(["jquery","sakai/sakai.api.core"], function($, sakai) {
                     }
 
                     postNotice(config.dataURL, {
-                        calendars: $.toJSON(calendars)
+                        calendars: JSON.stringify(calendars)
                     }, that.getNotices);
 
                 });

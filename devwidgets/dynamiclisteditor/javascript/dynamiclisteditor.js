@@ -952,7 +952,6 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
          *  @return {String} a condition object created from sections A, B, C data as string.
          */
          var buildCriteriaStringFromListEditingForm = function() {
-            // return $.toJSON(buildCriteriaFromListEditingForm());
             return JSON.stringify(buildCriteriaFromListEditingForm());
         };
 
@@ -1091,17 +1090,10 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
         });
 
         $dynListsSaveButton.click(function(){
-
             // This page consists of two forms, not one. In order to get both to pass validation, async ajax
             // requests are sent for each, which means we can't trust a test that checks for both passing.
             // Instead, we force them to be synchronous by triggering just one. That one in turn triggers the other.
             $formElement.trigger('submit');
-
-            // if(!validateUserInput()) {
-            //     showGeneralMessage(translate("PLEASE_CORRECT_THE_FIELDS_AS_SPECIFIED_BY_THE_RED_ERROR_TEXT"), true, translate("ERROR_LIST_CANNOT_BE_CREATED"));
-            //     return;
-            // }
-
         });
 
         /**
