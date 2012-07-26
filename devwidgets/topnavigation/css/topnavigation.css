@@ -230,9 +230,15 @@
 }
 
 /* begin CalCentral custom */
+.topnavigation_user_container #topnavigation_user_options_login_wrapper:hover, .topnavigation_user_container #topnavigation_user_options_login_wrapper.topnavigation_force_submenu_display_title {
+    border-radius:2px;
+}
+
+.topnavigation_user_container #topnavigation_user_options_login_wrapper.topnavigation_dual_login:hover, .topnavigation_user_container #topnavigation_user_options_login_wrapper.topnavigation_force_submenu_display_title {
+    border-radius:2px 2px 0 0;
+}
 
 .topnavigation_user_container #topnavigation_user_options_login_external, .topnavigation_user_container #topnavigation_user_options_login  {
     cursor:pointer;
 }
-
 /* end CalCentral custom */
