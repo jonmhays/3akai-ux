@@ -17,9 +17,6 @@
  */
 define(["config/config", "config/env"], function(config) {
 
-    // Insert custom configuration here
-    // CalCentral custom begin
-
     // This is our custom CAS log in information.
     config.Authentication.internal = config.isDev; // for CalCentral this is always false because CAS is always on
     config.Authentication.internalAndExternal = config.isDev;
@@ -62,20 +59,11 @@ define(["config/config", "config/env"], function(config) {
      */
     enabledCarousel: false;
 
-    /**
-     * Remove googlemaps from the set of inserterbar widgets (restore in 1.4)
-     */
-    config.exposedSakaiDocWidgets.splice(2,1);
 
     /*
     Inject DynamicLists and Notifications into menus;
     provide default JSON template for same.
      */
-
-    // Stub - can be used to add functionality for advisers only
-    // if(!myb.api.security.isUserAnAdviser()) {
-    //     return;
-    // }
 
     // My notifications
     config.defaultprivstructure.structure0.notifications = {
@@ -231,6 +219,7 @@ define(["config/config", "config/env"], function(config) {
     ];
 
     // Add My Notification and My Dynamic Lists to TOP Navigation
+    // These are suppressed for non-advisers in topnavigation.js
     config.Navigation[0].subnav.splice(2,0,
         {
             "url": "/me#l=notifications/drafts",

@@ -539,6 +539,26 @@ require(["jquery", "sakai/sakai.api.core", "myb/myb.api.core"], function($, saka
             $(topnavExploreRight).html(sakai.api.Util.TemplateRenderer(navTemplate, obj));
             setCountUnreadMessages();
             addBinding();
+
+            /**
+             * Begin CalCentral ***
+             * Hide Dynamic Lists and Notifications top menu items from non-Advisors
+             * Call isUserAnAdviser with this checkuser func as a callback, and hide on fail.
+             */
+
+            var checkuser = function(hasperm) {
+                if (!hasperm) {
+                    $('li a#subnavigation_notifications_link').hide();
+                    $('li a#subnavigation_dynlists_link').hide();
+                }
+            };
+
+            myb.api.security.isUserAnAdviser(checkuser);
+
+            /**
+             * End CalCentral ***
+             */
+
         };
 
 

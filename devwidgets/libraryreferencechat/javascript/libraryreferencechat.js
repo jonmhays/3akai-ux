@@ -17,6 +17,11 @@
  */
 /* global $, Config, jQuery, sakai, sdata */
 
+// ***********************
+// NOTE: If this code is ever brought back to life, it will need a technique
+// Other than iframes (which were disallowed in 1.4)
+// ***********************
+
  require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
 
     /**
