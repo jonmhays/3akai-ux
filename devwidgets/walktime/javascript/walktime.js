@@ -74,7 +74,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
                 var distance = Math.round(d);
 
                 return distance;
-            };
+            }
         };
 
 
@@ -92,7 +92,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
         var setToRad = function(thenum) {
             // Convert numeric degrees to radians
             return thenum * Math.PI / 180;
-        };        
+        };
 
 
         /////////////////////////
@@ -118,11 +118,12 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
             var coords = getStartEndPoints();
             var distance = findDistance(coords);
 
+            var selectlist;
             if (startfinish === 'start') {
-                var selectlist = $startPoint;
+                selectlist = $startPoint;
             } else {
-                var selectlist = $endPoint;
-            };
+                selectlist = $endPoint;
+            }
 
             // First use regex to add commas to long numeric strings
             var distanceString = distance.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -134,7 +135,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
                 $resultsDisplayContainer.hide();
             } else {
                 $resultsDisplayContainer.show();
-            };
+            }
         };
 
         // Determine optimum zoom level for a distance between two points,
@@ -149,7 +150,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
                 zoom = 17;
             } else {
                 zoom = 18;
-            };
+            }
             return zoom;
         };
 
@@ -189,7 +190,7 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
             });
 
             // Using the static maps image generator in the Google Maps API instead of iframe
-            var imgURL = 'http://maps.googleapis.com/maps/api/staticmap?center='+coords[2]+','+coords[3]+'&zoom=16&size=200x200&maptype=roadmap&markers=color:blue%7C'+coords[2]+','+coords[3]+'&sensor=false';
+            var imgURL = 'https://maps.googleapis.com/maps/api/staticmap?center='+coords[2]+','+coords[3]+'&zoom=16&size=200x200&maptype=roadmap&markers=color:blue%7C'+coords[2]+','+coords[3]+'&sensor=false';
             $('#walktime_googleimg').attr({src : imgURL});
         };
 
