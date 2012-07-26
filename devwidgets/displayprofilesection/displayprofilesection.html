@@ -20,7 +20,7 @@
 
 <div id="displayprofilesection_edit_template" style="display:none"><!--
     {macro renderTextInput(config, field_id, data)}
-        <input type="text" id="${field_id}" name="${field_id}" {if data && data.value}value="${data.value|safeOutput}"{/if} class="{if config.required}required {/if}{if config.validation} ${config.validation} {/if}"/>
+        <input type="text" id="${field_id}" name="${field_id}" {if data && data.value}value="${data.value|safeOutput}"{/if} class="{if config.required}required {/if}{if config.validation} ${config.validation} {/if}" {if config.required}aria-required="true"{/if} />
     {/macro}
 
     {macro renderTextarea(config, field_id, data)}
@@ -54,10 +54,16 @@
         <div class="s3d-form-field-wrapper">
         {for field in section.elements}
             {if field.display}
+                {if field.editable != false}
+                   {var has_editable_fields = true}
+                {/if}
+                {if field.required && field.editable != false}
+                    {var show_legend = true}
+                {/if}
                 {var field_data = data && data[ field_index ] ? data[ field_index ] : false}
                 {var field_id = unique ? field_index + "_" + unique : field_index}
                 <div class="displayprofilesection_field">
-                    <label for="${field_id}" class="s3d-input-label{if field.type === "tags"} tagslabel{/if}">${field.label}:</label>
+                    <label for="${field_id}" class="s3d-input-label{if field.type === "tags"} tagslabel{/if}">{if field.required && field.editable} <span class="required" aria-hidden="true">*</span>{/if} ${field.label}: </label>
                     {if field.editable === false}
                         <span class="displayprofilesection_field_nonedtiable">${field_data.value}</span>
                     {else}
@@ -78,6 +84,9 @@
             {/if}
         {/for}
         </div>
+    {if show_legend && has_editable_fields}
+        <p id="form_legend" class="form_legend" aria-hidden="true"><span class="required">*</span> Required field</p>
+    {/if}
     {if !section.multiple}
         <div class="dialog_buttons fl-force-right">
             <button type="button" class="s3d-link-button s3d-bold profile-section-cancel-button">__MSG__CANCEL__</button>
