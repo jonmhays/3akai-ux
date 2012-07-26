@@ -136,7 +136,18 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                 });
                 tags = sakai.api.Util.AutoSuggest.getTagsAndCategories( $tagfield, true );
             }
-            sakai.api.User.updateUserProfile(userid, widgetData.sectionid, values, tags, sectionData, multiple, handleSave);
+            //sakai.api.User.updateUserProfile(userid, widgetData.sectionid, values, tags, sectionData, multiple, handleSave);
+            /** CalCentral specific changes for view permissions BEGIN **/
+            sakai.api.User.updateUserProfile(userid, widgetData.sectionid, values, tags, sectionData, multiple, function(success, data) {
+                if (widgetData.sectionid === 'basic') {
+                    savePanelPermissions(success, data);
+                } else{
+                    handleSave(success, data);
+                }
+            });
+            /** CalCentral specific changes for view permissions END **/
+
+
             $('button.profile-section-save-button', $rootel).attr('disabled', 'disabled');
             return false;
         };
@@ -243,6 +254,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                         var uid = _.keys( sectionData )[ 0 ];
                         var sectionHTML = sakai.api.Util.TemplateRenderer( template, {
                             section: section,
+                            sectionid: widgetData.sectionid,
                             sakai: sakai,
                             unique: uid,
                             data: _.values( sectionData )[ 0 ],
@@ -311,6 +323,50 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                                 sakai: sakai
                             });
                             $displayprofilesection_body.html( sakai.api.i18n.General.process( bodyHTML ) );
+
+                            /** CalCentral specific profile mucking BEGIN **/
+                            if (widgetData.sectionid === 'basic') {
+                                $('#displayprofilesection_body').prepend('<h2>Name</h2>');
+                                var otherSections = ['email', 'institutional'];
+                                $(otherSections).each(function(elt, value) {
+                                    var section = sakai.config.Profile.configuration.defaultConfig[value];
+                                    var tmpData = data[value] && data[value].elements ? data[value].elements : false;
+                                    var privacySetting = sakai_global.user.pubdata.structure0.profile[value]._view || '';
+                                    if (tmpData !== false) {
+                                        var divider = sakai.api.Util.TemplateRenderer($('#displayprofilesection_multiple_divider_template'), {
+                                            title: section.label,
+                                            sectionid: value,
+                                            isMe: isMe,
+                                            editing: editing,
+                                            privacySetting: privacySetting
+                                        })
+                                        if (editing) {
+                                            $('#displayprofilesection_form_basic', $rootel).append(divider);
+                                        } else {
+                                            $displayprofilesection_body.append(divider);
+                                        }
+                                    }
+                                    var moreContent = sakai.api.Util.TemplateRenderer( $displayprofilesection_view_template, {
+                                        sectionid: value,
+                                        section: section,
+                                        data: tmpData,
+                                        unique: false,
+                                        sakai: sakai
+                                    });
+                                    if (editing) {
+                                        $('#displayprofilesection_form_basic', $rootel).append(moreContent);
+
+                                    } else {
+                                        $displayprofilesection_body.append(moreContent);
+                                    }
+                                });
+
+                                // Shifting the submit buttons to a more logical location afterwards.
+                                var $tmpStore = $('#displayprofilesection_form_basic .dialog_buttons').remove().css('margin-right', '0px');
+                                $('#displayprofilesection_form_basic', $rootel).append($tmpStore);
+                            }
+                            /** CalCentral specific profile mucking END **/
+
                             var $tagfield = $displayprofilesection_body.find( "textarea[data-tag-field]" );
                             if ( $tagfield.length ) {
                                 allowUpdate = false;
@@ -363,6 +419,34 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                 }
             }
         };
+
+        /** CalCentral specific code BEGIN **/
+        var savePanelPermissions = function(success, data) {
+            //async saves makes this frustratingly silly... forcing email before institution
+            // var permission = $('#displayprofilesection_form_basic select.user_permissions[data-sakai-profile-section="' + sectionid + '"]', $rootel).val() || false;
+            // sakai.config.Profile.configuration.defaultConfig[sectionid].access = permission;
+
+            var emailPermission = $('#displayprofilesection_form_basic select.user_permissions[data-sakai-profile-section="email"]', $rootel).val() || false;
+            var institutionalPermission = $('#displayprofilesection_form_basic select.user_permissions[data-sakai-profile-section="institutional"]', $rootel).val() || false;
+
+            if (emailPermission) {
+                sakai_global.user.pubdata.structure0.profile.email._view = emailPermission;
+                sakai.api.Content.setACLsOnPath("/~" + sakai.data.me.user.userid + "/public/authprofile/email", emailPermission, sakai.data.me.user.userid, function() {
+                    if (institutionalPermission) {
+                        sakai_global.user.pubdata.structure0.profile.institutional._view = institutionalPermission;
+
+                        sakai.api.Server.saveJSON("/~" + sakai.data.me.user.userid + "/public/pubspace", {
+                             "structure0": JSON.stringify(sakai_global.user.pubdata.structure0)
+                        });
+                        sakai.api.Content.setACLsOnPath("/~" + sakai.data.me.user.userid + "/public/authprofile/institutional", institutionalPermission, sakai.data.me.user.userid, function() {
+                            handleSave(success, data);
+                        });
+                    };
+                });
+            }
+        }
+
+        /** CalCentral specific code END **/
 
         $rootel.on('input change cut paste', function() {
             enableUpdate();

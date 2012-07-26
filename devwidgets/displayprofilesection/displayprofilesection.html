@@ -153,7 +153,7 @@
         </span>
     {/macro}
 
-    <div class="section_box">
+    <div class="section_box" data-sectionid=${sectionid}>
     {for field in section.elements}
         {if field.display}
             {var field_key = field_index === "tags" ? "sakai:tags" : field_index}
@@ -177,6 +177,40 @@
     {if section.multiple}
     <hr/>
     {/if}
+--></div>
+<div id="displayprofilesection_multiple_divider_template" style="display:none;"><!--
+    {macro decryptPermission(permission)}
+    {if permission === 'anonymous'}
+    Everyone
+    {elseif permission === 'everyone' || permission === 'everybody'}
+    Logged in people only
+    {elseif permission === 'contacts'}
+    My contacts only
+    {elseif permission === 'private'}
+    Only me
+    {else}
+    {/if}
+    {/macro}
+
+    <div class="clear"></div>
+    <hr />
+    <div class="mini_header">
+    <h2>${title}</h2>
+    {if isMe}
+        <div class="userpermissions_visible_to">Who can view or search on this:
+            {if editing}
+                <select class="user_permissions" data-sakai-profile-section="${sectionid}" data-original-selection="${privacySetting}">
+                    <option value="anonymous" {if privacySetting === 'anonymous'} selected="true" {/if}>${decryptPermission('anonymous')}</option>
+                    <option value="everybody" {if privacySetting === 'everyone'} selected="true" {/if}>${decryptPermission('everybody')}</option>
+                    <option value="contacts" {if privacySetting === 'contacts'} selected="true" {/if}>${decryptPermission('contacts')}</option>
+                    <option value="private" {if privacySetting === 'private'} selected="true" {/if}>${decryptPermission('private')}</option>
+                </select>
+            {else}
+                <strong>${decryptPermission(privacySetting)}</strong>
+            {/if}
+        </div>
+    {/if}
+    </div>
 --></div>
 
 
