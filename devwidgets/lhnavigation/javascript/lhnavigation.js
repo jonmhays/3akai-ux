@@ -82,6 +82,7 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
 
             // Begin CalCentral customization
             showAllArrows();
+            // $('#lhnavigation_public_pages li.lhnavigation_menuitem[data-sakai-path="profile"] button.lhnavigation_selected_submenu_image').remove();
 
             // Hide DynamicLists and Notifications from non-supervisors
             var checkuser = function(hasperm) {
@@ -1262,6 +1263,10 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
                 processData(pubdata, cData.puburl, function(processedPub) {
                     pubstructure = processedPub;
                     renderData();
+                    // CalCentral modification BEGIN
+                    modifyProfileSections();
+                    // CalCentral modification END
+
                     if (sakai_global.contentauthoring && sakai_global.contentauthoring.ready) {
                         selectPage();
                     } else {
@@ -1283,6 +1288,14 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
                 sakaiDocsInStructure[mainPrivUrl].orderedItems = orderItems(sakaiDocsInStructure[mainPrivUrl].structure0);
             }
         };
+
+        ///////////////////////////////////////
+        // CalCentral Modifications Code     //
+        ///////////////////////////////////////
+        var modifyProfileSections = function(data) {
+            $('#lhnavigation_public_pages li.lhnavigation_menuitem[data-sakai-path="profile/email"]', $rootel).remove();
+            $('#lhnavigation_public_pages li.lhnavigation_menuitem[data-sakai-path="profile/institutional"]', $rootel).remove();
+        }
 
         ///////////////////////////////////////
         // Initializing the Sakaidocs widget //

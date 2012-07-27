@@ -26,38 +26,122 @@
 .displayprofilesection_field span.field_value{width:580px;}
 .displayprofilesection_field span.field_value{padding:3px 0px;margin-bottom:5px;}
 #displayprofilesection_container .displayprofilesection_generalinfo_example{clear:both;color:#666;display:block;font-size:11.5px;margin:-8px 0 10px 130px;padding:0 3px 3px 3px;float:left;}
-#displayprofilesection_body .dialog_buttons{
+
+/* CalCentral BEGIN: */
+
+#displayprofilesection_container .s3d-contentpage-title {
+    margin-bottom: 15px;
+}
+
+.displayprofilesection_add_section {
+    clear:both;
+    float:left;
+}
+
+#displayprofilesection_container .displayprofilesection_remove_section {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+#displayprofilesection_container hr {
+    margin: 10px 0 10px 0px;
+    border-bottom: 1px solid #999;
+    color: transparent;
+    height: 1px;
+    width: 100%;
+    clear: both;
+}
+
+#displayprofilesection_container .tagslabel {
+    margin-top: 12px;
+}
+
+#displayprofilesection_container textarea {
+    height: 50px;
+}
+
+#displayprofilesection_container .autosuggest_wrapper {
+    width: 55%;
+}
+
+#displayprofilesection_container .s3d-form-field-wrapper ul.as-selections {
+    width: 100%;
+}
+
+#displayprofilesection_container .displayprofilesection_field_nonedtiable {
+    float: left;
+    padding: 3px 0px;
+}
+
+/* Validation */
+#displayprofilesection_container .s3d-form-field-wrapper span.s3d-error {
+    margin-left: 132px;
+}
+
+#displayprofilesection_body .dialog_buttons {
     float: right;
     margin-right: 190px;
     margin-top: 20px;
 }
-#displayprofilesection_header .dialog_buttons{
+
+#displayprofilesection_header .dialog_buttons {
     float: right;
     margin-top: 0;
 }
-#displayprofilesection_body .section_box{
-    background-color: #F4F4F4;
+
+#displayprofilesection_body .section_box {
     float: left;
     margin-bottom: 10px;
-    padding: 10px 0 10px;
+    padding: 10px 0 4px;
 }
 
-.displayprofilesection_add_section{clear:both;float:left;}
-#displayprofilesection_container .displayprofilesection_remove_section {margin-top: 20px; margin-bottom: 10px;}
-#displayprofilesection_container hr{margin:10px 0 10px 0px;border-bottom:1px solid #999;color:transparent;height:1px;width:100%; clear: both;}
-
-#displayprofilesection_container .tagslabel{margin-top:12px;}
-#displayprofilesection_container textarea {height:50px;}
-#displayprofilesection_container .autosuggest_wrapper{width:55%;}
-#displayprofilesection_container .s3d-form-field-wrapper ul.as-selections{width:100%;}
-
-#displayprofilesection_container .displayprofilesection_field_nonedtiable{float:left;padding:3px 0px;}
-
-/* Validation */
-#displayprofilesection_container .s3d-form-field-wrapper span.s3d-error{margin-left:132px;}
-
-/* CalCentral begin: Add nowrap so text doesn't wrap on longer labels */                                                          
+/* Add nowrap so text doesn't wrap on longer labels */
 .s3d-form-field-wrapper .displayprofilesection_field label.s3d-input-label, .displayprofilesection_field span.s3d-input-label {
   white-space: nowrap;
 }
-/* CalCentral end */
+
+#displayprofilesection_container h2 {
+    margin-top: 0;
+    font-size: 1.10em;
+    padding-bottom: 6px;
+}
+
+#displayprofilesection_container .mini_header {
+    padding-top: 14px;
+    clear: both;
+    border-top: 1px solid #CCC;
+}
+
+#displayprofilesection_container .mini_header .userpermissions_visible_to {
+    color: #333;
+    display: inline;
+    float: right;
+    padding-right: 15px;
+    padding-bottom: 6px;
+}
+
+#displayprofilesection_container .mini_header .userpermissions_visible_to span {
+    color: #666;
+}
+
+
+#displayprofilesection_container .mini_header h2 {
+    float: left;
+}
+
+#displayprofilesection_container #displayprofilesection_body.profile_edit_mode {
+    width: 96%;
+    padding: 10px;
+    background-color: #f4f4f4;
+    border-radius: 6px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    box-shadow: 0px 0px 5px 0px #ccc;
+    -moz-box-shadow:0px 0px 5px 0px #ccc;
+    -webkit-box-shadow:0px 0px 5px 0px #ccc;
+}
+
+#displayprofilesection_container #displayprofilesection_body .clear {
+    clear: right;
+}
+/* CalCentral END */
