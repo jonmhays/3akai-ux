@@ -27,60 +27,80 @@
           </div>
         {/if}
         {for day in days}
-          {var events = day[1]}
-          <tbody>
-          {for event in events}
-            <tr class="agenda-row">
-                {if event_index == 0}
-                    <td rowspan="${events.length}"
-                    {if event.dayDelta < 2 && event.dayDelta >= -5}
-                        class="date relative"
-                        title="${event.absDate}">${event.relDate}
-                        </td>
-                    {else}
-                        class="date absolute"
-                        title="${event.relDate}">${event.absDate}
-                        </td>
+            {var events = day[1]}
+                <tbody>
+                {for event in events}
+                    <tr class="agenda-row">
+                    {if event_index == 0}
+                        {if isInThreeColumnView}
+                            <td 
+	                        {if event.dayDelta < 2 && event.dayDelta >= -5}
+	                            class="date relative"
+	                            title="${event.absDate}">${event.relDate}
+	                        {else}
+	                            class="date absolute"
+	                            title="${event.relDate}">${event.absDate}
+ 		                    {/if}
+                            </td>
+                            <td>
+                            </td>
+                            </tr>
+                            <tr>
+                       {else}
+                            <td rowspan="${events.length}"
+                            {if event.dayDelta < 2 && event.dayDelta >= -5}
+                                class="date relative"
+                                title="${event.absDate}">${event.relDate}
+                                </td>
+                            {else}
+                                class="date absolute"
+                                title="${event.relDate}">${event.absDate}
+                                </td>
+                             {/if}
+		                {/if}
                     {/if}
-                {/if}
-              <td class="time">${event.time}</td>
-              <td class="description">
-                <div class="summary compact link expandable">
-                  ${event.summary}
-                </div>
-                <div class="full">
-                  {for para in event.description}
-                  <p>${para}</p>
-                  {/for}
-                  <table class="info-block">
-                  {if event.url}
-                    <tr>
-                      <td>
-                        <span class="label">
-                          __MSG__EVENT_DETAIL_LABEL_URL__:
-                        </span>
-                      </td>
-                      <td>
-                        <a target="_blank" href="${event.url}"
-                           class="value link">${event.url}</a>
-                      </td>
-                    </tr>
-                  {/if}
-                  {if event.location}
-                    <tr>
-                      <td>
-                        <span class="label">
-                          __MSG__EVENT_DETAIL_LABEL_LOCATION__:
-                        </span>
-                      </td>
-                      <td>
-                        <a target="_blank"
-                           href="http://maps.google.co.uk/maps?q=${encodeURIComponent(event.location)}"
-                           class="value link">${event.location}</a>
-                        </td>
-                    </tr>
-                  {/if}
-                  {if event.contact}
+                    {if isInThreeColumnView}
+                        <td class="time-narrow">${event.time}
+                    {else}
+                        <td class="time-wide">${event.time}</td>
+                    {/if}
+	                   <td class="description">
+	                    <div class="summary compact link expandable">
+	                        ${event.summary}
+	                    </div>
+                   <div class="full">
+                    {for para in event.description}
+                        <p>${para}</p>
+                    {/for}
+                    <table class="info-block">
+                    {if event.url}
+                        <tr>
+                            <td>
+                                <span class="label">
+                                __MSG__EVENT_DETAIL_LABEL_URL__:
+                                </span>
+                            </td>
+                            <td>
+                                <a target="_blank" href="${event.url}"
+                                class="value link">${event.url}</a>
+                            </td>
+                        </tr>
+                    {/if}
+                    {if event.location}
+                      <tr>
+                          <td>
+                              <span class="label">
+                              __MSG__EVENT_DETAIL_LABEL_LOCATION__:
+                              </span>
+                          </td>
+                          <td>
+                              <a target="_blank"
+                              href="http://maps.google.co.uk/maps?q=${encodeURIComponent(event.location)}"
+                             class="value link">${event.location}</a>
+                          </td>
+                      </tr>
+                    {/if}
+                    {if event.contact}
                     <tr>
                       <td>
                         <span class="label">
@@ -91,7 +111,7 @@
                         <span class="value">${event.contact}</span>
                       </td>
                     </tr>
-                  {/if}
+                    {/if}
                   </table>
 
                 </div>
@@ -140,7 +160,7 @@
           </label>
           <input type="text" id="cccalendarfeed_settings_txtUrl"
                  name="rss_settings_txtUrl"
-                 class="required url s3d-input-full-width" />
+                 class="required url checkICS s3d-input-full-width" />
 
           <label class="s3d-input-label s3d-input-label-above">
             __MSG__SETTINGS_FORM_LABEL_CALENDAR_DISPLAY_RANGE__:

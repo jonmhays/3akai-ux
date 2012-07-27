@@ -109,10 +109,9 @@ table { margin: 0; }
 
 .cccalendarfeed_instruction {
 	color: #999;
-	font-size: 10px;
-	text-align: right;
+	font-size: 9px;
 	margin-top: -4px;
-	margin-bottom: -14px;
+	margin-bottom: -10px;
 }
 
 /* Agenda Table */
@@ -138,10 +137,9 @@ table { margin: 0; }
 }
 
 .cccalendarfeed_widget td {
-
 	padding: 5px 0 5px 0;
-
 }
+
 .cccalendarfeed_widget td.date {
 	vertical-align: top;
 	font-weight: bold;
@@ -149,11 +147,18 @@ table { margin: 0; }
 	width: 80px;
 }
 
-.cccalendarfeed_widget td.time {
+.cccalendarfeed_widget td.time-wide {
 	vertical-align: top;
 	width: 60px;
 	text-align: right;
 	padding-right: 5px;
+}
+
+.cccalendarfeed_widget td.time-narrow {
+	vertical-align: top;
+	width: 40px;
+	text-align: left;
+	padding-right: 0px;
 }
 
 .cccalendarfeed_widget .description {
@@ -163,6 +168,7 @@ table { margin: 0; }
 .cccalendarfeed_widget .summary {
 	font-weight: bold;
 }
+
 .cccalendarfeed_widget .compact {
 	white-space: nowrap;
 	text-overflow: ellipsis;
