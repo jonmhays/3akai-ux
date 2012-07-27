@@ -13,11 +13,11 @@
 
 
 /** CalCentral widget customizations **/
-.mytasks .s3d-contentpage-title, .myevents .s3d-contentpage-title, .mylinks .s3d-contentpage-title {
+.mytasks .s3d-contentpage-title, .myevents .s3d-contentpage-title, .quicklinks .s3d-contentpage-title {
     margin-bottom: 0;
 }
 
-.mytasks .s3d-widget-footer, .myevents .s3d-widget-footer, .mylinks .s3d-widget-footer {
+.mytasks .s3d-widget-footer, .myevents .s3d-widget-footer, .quicklinks .s3d-widget-footer {
     margin-top: 0;
 }
 

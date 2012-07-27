@@ -38,7 +38,7 @@ define(["config/config", "config/env"], function(config) {
     // This may go away in 1.4 - duplicative with existing widget configs
     // config.enabledDashboardWidgets.push("walktime", "quicklinks", "mytasks", "myevents");
 
-    // Show mylinks dashboard widget by default for new users
+    // Show quicklinks dashboard widget by default for new users
     config.defaultprivstructure["${refid}0"]["${refid}5"].dashboard.columns.column3.push({
         "uid": "id63754673110789",
         "visible": "block",
