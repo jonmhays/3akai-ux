@@ -11,7 +11,7 @@
 
 <div id="displayprofilesection_header_template" style="display:none"><!--
     {if isMe}
-    <div class="dialog_buttons">
+    <div class="dialog_buttons" data-sectionid="${sectionid}">
         <button type="button" class="s3d-button s3d-margin-top-5 s3d-header-button s3d-header-smaller-button profile-section-edit-button">__MSG__ADD_EDIT_INFORMATION__</button>
     </div>
     {/if}
@@ -52,6 +52,9 @@
     <input type="hidden" name="order_${unique}" value="${order}" />
     {/if}
         <div class="s3d-form-field-wrapper">
+        {if sectionid === 'basic'}
+            <h2>Name</h2>
+        {/if}
         {for field in section.elements}
             {if field.display}
                 {if field.editable != false}
@@ -121,7 +124,7 @@
         <div class="s3d-no-results-icon s3d-no-results-contacts"></div>
         <p>
             <span id="displayprofilesection_no_results_text">${errorString}</span>
-            <span id="displayprofilesection_no_results_message" {if !showMessage}style="display:none;"{/if}>
+            <span id="displayprofilesection_no_results_message" data-sectionid="${sectionid}" {if !showMessage}style="display:none;"{/if}>
                 {if isMe}
                 <button type="button" class="s3d-link-button sakai_editinfo_overlay profile-section-edit-button" sakai-entityid="${userid}">__MSG__ADD_EDIT__</button> __MSG__YOUR_INFORMATION_HERE__
                 {else}
@@ -154,6 +157,9 @@
     {/macro}
 
     <div class="section_box" data-sectionid=${sectionid}>
+    {if sectionid === 'basic'}
+        <h2>Name</h2>
+    {/if}
     {for field in section.elements}
         {if field.display}
             {var field_key = field_index === "tags" ? "sakai:tags" : field_index}
