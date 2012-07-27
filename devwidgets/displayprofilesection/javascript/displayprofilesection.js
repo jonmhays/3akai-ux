@@ -136,8 +136,12 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                 });
                 tags = sakai.api.Util.AutoSuggest.getTagsAndCategories( $tagfield, true );
             }
+
             //sakai.api.User.updateUserProfile(userid, widgetData.sectionid, values, tags, sectionData, multiple, handleSave);
             /** CalCentral specific changes for view permissions BEGIN **/
+            if (widgetData.sectionid === 'aboutme') {
+                sectionData["sakai:tags"].value = sectionData["sakai:tags"].value.split(',');
+            }
             sakai.api.User.updateUserProfile(userid, widgetData.sectionid, values, tags, sectionData, multiple, function(success, data) {
                 if (widgetData.sectionid === 'basic') {
                     savePanelPermissions(success, data);
@@ -146,7 +150,6 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                 }
             });
             /** CalCentral specific changes for view permissions END **/
-
 
             $('button.profile-section-save-button', $rootel).attr('disabled', 'disabled');
             return false;
@@ -309,6 +312,13 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                         // data[widgetData.sectionid] won't exist when the user hasn't logged in before
                         if (editing || (data[widgetData.sectionid] && sectionHasElements(data[widgetData.sectionid].elements))) {
                             sectionData = data[ widgetData.sectionid ] && data[ widgetData.sectionid ].elements ? data[ widgetData.sectionid ].elements : false;
+                            /** CalCentral specific extension of aboutMe with tags data BEGIN **/
+                            if (widgetData.sectionid === 'aboutme' && !editing && data["sakai:tags"] && data["sakai:tags"].length) {
+                                sectionData["sakai:tags"] = {
+                                    "value": data["sakai:tags"].toString()
+                                };
+                            }
+                            /** CalCentral specific extension of aboutMe with tags data END **/
                             $.each(section.elements, function(index, element) {
                                 if (element.altLabel) {
                                     element.altLabel = sakai.api.i18n.General.process(section.altLabel)
@@ -380,7 +390,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                                         enableUpdate();
                                     }
                                 };
-                                var initialTagsValue = sectionData["sakai:tags"] && sectionData["sakai:tags"].value ? sectionData["sakai:tags"].value : false;
+                                var initialTagsValue = data["sakai:tags"] && data["sakai:tags"].length ? data["sakai:tags"] : false;
                                 sakai.api.Util.AutoSuggest.setupTagAndCategoryAutosuggest(
                                     $tagfield,
                                     autoSuggestOptions,
