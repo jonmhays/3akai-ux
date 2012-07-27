@@ -15,7 +15,8 @@
     },
     "id": "mysakai2",
     "img": "/devwidgets/mysakai2/images/s2icon.png",
-    "personalportal": false,
+    "personalportal": true,
+    "showInSakai2Window": true,
     "type": "sakai",
     "url": "/devwidgets/mysakai2/mysakai2.html"
 }

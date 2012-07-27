@@ -12,5 +12,10 @@
     "personalportal": false,
     "sakaidocs": false,
     "type": "core",
-    "url": "/devwidgets/searchsakai2/searchsakai2.html"
+    "url": "/devwidgets/searchsakai2/searchsakai2.html",
+    // Begin CalCentral Customization to allow external linking to bSpace/CLE sites
+    // and chose which icon image to use
+    "showInSakai2Window": true,
+    "iconPath": "/dev/images/bspace_grp_icon.png"
+    // End CalCentral Customization
 }
