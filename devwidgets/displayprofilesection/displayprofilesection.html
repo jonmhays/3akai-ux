@@ -192,12 +192,10 @@
     {/if}
     {/macro}
 
-    <div class="clear"></div>
-    <hr />
     <div class="mini_header">
     <h2>${title}</h2>
     {if isMe}
-        <div class="userpermissions_visible_to">Who can view or search on this:
+        <div class="userpermissions_visible_to"><span>Who can view or search on this:</span>
             {if editing}
                 <select class="user_permissions" data-sakai-profile-section="${sectionid}" data-original-selection="${privacySetting}">
                     <option value="anonymous" {if privacySetting === 'anonymous'} selected="true" {/if}>${decryptPermission('anonymous')}</option>

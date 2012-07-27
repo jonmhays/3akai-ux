@@ -416,11 +416,20 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                     } else if (!editing && isMe) {
                         $('button.profile-section-edit-button', $rootel).on('click', {'editingMode': true}, toggleEdit).show();
                     }
+
+                    /* CalCentral specific code start */
+                    toggleEditMode(editing);
+                    /* CalCentral specific code end */
                 }
             }
         };
 
         /** CalCentral specific code BEGIN **/
+
+        var toggleEditMode = function (editing) {
+            $displayprofilesection_body.toggleClass("profile_edit_mode", editing);
+        };
+
         var savePanelPermissions = function(success, data) {
             //async saves makes this frustratingly silly... forcing email before institution
             // var permission = $('#displayprofilesection_form_basic select.user_permissions[data-sakai-profile-section="' + sectionid + '"]', $rootel).val() || false;
