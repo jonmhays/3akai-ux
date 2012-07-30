@@ -13,8 +13,6 @@
             "description":"Calendar Feed"
         }
     },
-    "personalportal":     true,
-    "userpages": true,
-    "grouppages": true,
-    "sakaidocs": false
+    "personalportal": true,
+    "sakaidocs": true
 }
