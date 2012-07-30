@@ -152,7 +152,7 @@ require(["jquery", "sakai/sakai.api.core", "jquery-ui"], function($, sakai) {
                 if (sakai.config.widgets.defaults[widgetPropertyName].columns && sakai.config.widgets.defaults[widgetPropertyName].columns.length) {
                     columns = sakai.config.widgets.defaults[widgetPropertyName].columns;
                 }
-            }  
+            }
 
             var jsonobj = {};
             jsonobj.columns = {};
