@@ -82,7 +82,7 @@ require(['jquery', 'underscore', 'sakai/sakai.api.core', "myb/myb.api.core", 'jq
 
             // Begin CalCentral customization
             showAllArrows();
-            // $('#lhnavigation_public_pages li.lhnavigation_menuitem[data-sakai-path="profile"] button.lhnavigation_selected_submenu_image').remove();
+            $('#lhnavigation_public_pages li.lhnavigation_menuitem[data-sakai-path="profile"] button.lhnavigation_selected_submenu_image').remove();
 
             // Hide DynamicLists and Notifications from non-supervisors
             var checkuser = function(hasperm) {
