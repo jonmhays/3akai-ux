@@ -738,10 +738,16 @@ define(["config/config", "config/env"], function(config) {
         }]
     };
 
-    // Hybrid
-  	// these are set in env.js per environment
-    config.showSakai2=false;
-    config.useLiveSakai2Feeds=false;
+    /*
+    * CalCentral Hybrid 0.5
+  	* the props commented out below are set in env.{env}.js
+    * per environment e.g. myberkeley/configs/dev/load/env.dev.js
+    * they cannot appear here as they must be
+    * unique to the env.{env}.js file or their
+    * values will be overriden by assignment here
+    * config.showSakai2=false;
+    * config.useLiveSakai2Feeds=false;
+    */
 
     // adds the Sakai 2 Sites item to the left hand nav
     config.defaultprivstructure['${refid}0']['${refid}5'].dashboard.columns.column1.push({
