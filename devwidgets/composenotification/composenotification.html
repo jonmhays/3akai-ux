@@ -8,12 +8,12 @@
     <div id="cn-widget-title" class="s3d-contentpage-title">__MSG__WIDGET_TITLE_CREATE_NOTIFICATION__</div>
 
     <div class="cn-form-header fl-fix"><div class="fl-force-right"id="form_legend" class="form_legend" aria-hidden="true"><span class="required">*</span> Required field</div></div>
-    
+
     <!-- FORM -->
     <div id="message_form" class="edit-notification-wrapper">
-    
+
         <div id="composenotification_box" class="send_message">
-            <form class="compose-form">
+            <form class="compose-form s3d-form-field-wrapper">
 
                 <fieldset class="edit-notification-type">
                     <!-- TYPE -->
@@ -101,13 +101,13 @@
                     <!-- SUBJECT-->
                     <div id="composenotification_subject" class="fl-fix">
                         <span class="left"><label for="cn-subject" class="name"><span class="required" aria-hidden="true">*</span> <span id="cn-subject-text"></span></label></span>
-                        <span class="right"><input type="text" class="compose-subject compose-form-elm text-field" id="cn-subject" name="subject" aria-required="true" /></span>
+                        <span class="right"><input type="text" class="compose-subject compose-form-elm text-field required" id="cn-subject" name="subject" aria-required="true" /></span>
                     </div>
 
                     <!-- BODY-->
                     <div id="composenotification_body" class="fl-fix">
                         <span class="left"><label for="cn-body" class="name"><span class="required" aria-hidden="true">*</span> __MSG__DESCRIPTION__</label></span>
-                        <span class="right"><textarea class="compose-body compose-form-elm text-field" id="cn-body" name="body" aria-required="true" ></textarea></span>
+                        <span class="right"><textarea class="compose-body compose-form-elm text-field required" id="cn-body" name="body" aria-required="true" ></textarea></span>
                     </div>
 
                     <!-- CONTACT PERSON -->
@@ -124,7 +124,7 @@
 
                 </fieldset>
 
-            </form>                    
+            </form>
             <!-- Button Lists-->
             <div class="dialog_buttons fl-force-right" id="createnew-buttons" style="display:none;">
                 <button id="cn-cancel-button" class="s3d-button s3d-link-button s3d-bold">__MSG__CANCEL__</button>
@@ -156,8 +156,8 @@
 
 
             <hr class="fl-push fl-hidden">
-        </div>                             
-    
+        </div>
+
     </div>
 
     <!-- SAVE REMINDER DIALOG -->

@@ -2478,7 +2478,9 @@ define(
              * @param {Boolean} [insertAfterLabel] Insert the error span after the label, not before
              */
             validate: function($form, opts, insertAfterLabel) {
-
+                // CalCentral: Note four modifications to this func below - these changes
+                // will be in OAE 1.5 - revert to their version then.
+                
                 // Load the plug-in when necessary
                 require(['jquery-plugins/jquery.validate'], function() {
                     var options = {
@@ -2545,7 +2547,7 @@ define(
                     $.extend(true, options, opts);
 
                     // Success is a callback on each individual field being successfully validated
-                    options.success = function($label) {
+                    options.success = options.success || function($label) {
                         // For autosuggest clearing, since we have to put the error on the ul instead of the element
                         if (insertAfterLabel && $label.next('ul.as-selections').length) {
                             $label.next('ul.as-selections').removeClass('s3d-error');
@@ -2558,7 +2560,7 @@ define(
                         }
                     };
 
-                    options.errorPlacement = function($error, $element) {
+                    options.errorPlacement = options.errorPlacement || function($error, $element) {
                         if ($element.hasClass('s3d-error-calculate')) {
                             // special element with variable left margin
                             // calculate left margin and width, set it directly on the error element
@@ -2578,14 +2580,14 @@ define(
                         }
                     };
 
-                    options.invalidHandler = function($thisForm, validator) {
+                    options.invalidHandler = options.invalidHandler || function($thisForm, validator) {
                         $form.find('.s3d-error').attr('aria-invalid', 'false');
                         if ($.isFunction(invalidCallback)) {
                             invalidCallback($thisForm, validator);
                         }
                     };
 
-                    options.showErrors = function(errorMap, errorList) {
+                    options.showErrors = options.showErrors || function(errorMap, errorList) {
                         if (errorList.length !== 0 && $.isFunction(options.error)) {
                             options.error();
                         }

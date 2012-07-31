@@ -28,7 +28,7 @@
 }
 
 .cn-form-header {
-    padding-bottom: 20px;   
+    padding-bottom: 20px;
 }
 
 .compose-form div {
@@ -42,7 +42,7 @@
 
 .compose-form fieldset {
     padding: 15px 10px 0;
-    margin-bottom: 0; 
+    margin-bottom: 0;
 }
 
 .compose-form .edit-notification-type {
@@ -69,20 +69,29 @@
 .cn-task {position: relative; left: 23px;}
 .cn-event {position: relative; left: 23px;}
 
-/*#composenotification_box {width: 575px;} */
 .composenotification_error_message {font-weight:bold;margin:10px;padding:10px;border:1px solid #ff0000;background-color:#f7d8d8;}
 .composenotification_normal_message {margin:10px;padding:10px;border:1px solid #00ff00;background-color:#d9f7d8;}
 .composenotification_invalid {background-color:#FFCCCC !important;}
 
-#composenotification_box .compose-form label.name {
-    display: inline-block;
+#composenotification_box .compose-form , #composenotification_box .compose-form label.name {
+    display: inline-block !important;
     padding: 5px 0 0;
 }
+
+/* Override form field error label style from OAE */
+.s3d-form-field-wrapper input, .s3d-form-field-wrapper textarea, .s3d-form-field-wrapper select, .s3d-form-field-wrapper ul.as-selections {
+    margin-bottom: 0px;
+}
+
+.s3d-form-field-wrapper input {
+    width:10%;
+}
+
 
 /* send_message_lightbox.html */
 
 .dynamiclistselect {
-    margin-top: 8px;    
+    margin-top: 8px;
 }
 
 .new-dynamic-list-button {
@@ -94,7 +103,7 @@
 }
 
 .send_message .compose-form input[type="text"] {
-    height: 22px;    
+    height: 22px;
 }
 
 .send_message .compose-form .compose-subject {
@@ -104,6 +113,11 @@
 .send_message .compose-form .compose-body {
     height:150px; width:500px;
 }
+
+/*.s3d-error-after {
+    display:block;
+    margin-top:2px;
+}*/
 
 #send_message {font-weight:bold}
 
