@@ -740,7 +740,7 @@ define(["config/config", "config/env"], function(config) {
 
     /*
     * CalCentral Hybrid 0.5
-  	* the props commented out below are set in env.{env}.js
+    * the props commented out below are set in env.{env}.js
     * per environment e.g. myberkeley/configs/dev/load/env.dev.js
     * they cannot appear here as they must be
     * unique to the env.{env}.js file or their
