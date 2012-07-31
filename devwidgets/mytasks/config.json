@@ -12,7 +12,5 @@
     "multipleinstance": false,
     "deletable":true,
     "type":"sakai",
-    "enabled":true,
-    "userdashboard":true,
-    "personalportal":true
+    "enabled":true
 }
