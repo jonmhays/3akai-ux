@@ -194,7 +194,19 @@ define(["config/config", "config/env"], function(config) {
 
     config.Navigation[0].label = "ME";
 
-    // Override default access permissions for new collections
+    /* Override default access permissions for content, documents, and collections
+     **  content = files added to CalCentral
+     **  documents = documents created in CalCentral
+     */
+
+    config.Permissions.Content = {
+        'defaultaccess': 'private' // public, everyone or private
+    };
+
+    config.Permissions.Documents = {
+        'defaultaccess': 'private' // public, everyone or private
+    };
+
     config.Permissions.Collections = {
         'defaultaccess': 'private' // public, everyone or private
     };
@@ -737,7 +749,7 @@ define(["config/config", "config/env"], function(config) {
         'visible': 'block',
         'name': 'mysakai2'
     });
-    
+
 	config.defaultprivstructure.structure0['sakai2sites'] =  {
 	    '_ref': '${refid}2345',
 	    '_title': 'My bSpace sites',
@@ -751,7 +763,7 @@ define(["config/config", "config/env"], function(config) {
 	        '_title': 'My Sakai 2 sites'
 	    }
 	};
-	
+
 	config.defaultprivstructure['${refid}2345'] = {
 	    'rows': [
 	        {
@@ -770,7 +782,7 @@ define(["config/config", "config/env"], function(config) {
 	        }
 	    ]
 	};
-    
+
     // adds the My Sakai 2 Sites menu item to the Me menu
 	config.Navigation[0].subnav.splice(2,0, {
         'url': '/me#l=sakai2sites',
@@ -779,7 +791,7 @@ define(["config/config", "config/env"], function(config) {
     });
 
     // End CalCentral custom
-	
+
     /**
      * Kaltura Settings
      */
