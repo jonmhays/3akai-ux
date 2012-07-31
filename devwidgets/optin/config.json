@@ -1,7 +1,5 @@
 {
     "enabled":            false,
-    "groupdashboard":     false,
-    "grouppages":         false,
     "hasSettings":        true,
     "i18n": {
         "default": {
@@ -13,7 +11,5 @@
     "id":                 "optin",
     "personalportal":     false,
     "type":               "sakai",
-    "url":                "/devwidgets/optin/optin.html",
-    "userdashboard":      false,
-    "userpages":          false
+    "url":                "/devwidgets/optin/optin.html"
 }

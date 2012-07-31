@@ -1,7 +1,5 @@
 {
     "enabled":            false,
-    "groupdashboard":     false,
-    "grouppages":         false,
     "hasSettings":        true,
     "hashParams": ["selfregister"],
     "i18n": {
@@ -14,7 +12,5 @@
     "id":                 "selfregister",
     "personalportal":     false,
     "type":               "sakai",
-    "url":                "/devwidgets/selfregister/selfregister.html",
-    "userdashboard":      false,
-    "userpages":          false
+    "url":                "/devwidgets/selfregister/selfregister.html"
 }
