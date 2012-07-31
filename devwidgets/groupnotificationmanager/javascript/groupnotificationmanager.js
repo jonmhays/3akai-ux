@@ -1147,7 +1147,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_cus
             }
 
             if (state.hasOwnProperty("currentPage")) {
-                currentPage = parseInt(state.currentPage);
+                currentPage = parseInt(state.currentPage, 10);
             } else {
                 currentPage = 0;
             }
