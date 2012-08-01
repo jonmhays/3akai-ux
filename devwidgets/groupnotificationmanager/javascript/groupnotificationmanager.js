@@ -17,8 +17,8 @@
  */
 /* global $, Config, jQuery, sakai, sdata */
 
-require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_custom", "/dev/javascript/myb/myb.securepage.js"],
-        function($, sakai, myb, config) {
+require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "config/config_custom", "/dev/javascript/myb/myb.securepage.js", 'jquery-pager'],
+    function($, sakai, myb, config) {
     /**
      * @name sakai_global.groupnotificationmanager
      *
