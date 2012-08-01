@@ -64,6 +64,12 @@ require(["jquery", "/dev/lib/myb/jquery/jquery-ui-datepicker.min.js", "sakai/sak
          */
         var isDirty = false;
 
+        // Needed to change validation rules per form type.
+        // Default to initial state of showing Tasks, so task validation rules are initally in effect.
+        // This gets changed whenever the form type is changed via dropdown.
+        var taskRule = true;
+        var eventRule = false;
+
 
         /**
          *
@@ -480,20 +486,20 @@ require(["jquery", "/dev/lib/myb/jquery/jquery-ui-datepicker.min.js", "sakai/sak
             $messageRequiredYes.attr("checked", true); // tasks are always required
             $messageFieldSubject.val(currentMessage.calendarWrapper.icalData.SUMMARY);
             $messageFieldBody.val(currentMessage.calendarWrapper.icalData.DESCRIPTION);
-            if (currentMessage.calendarWrapper.icalData.DUE !== null) {
+            if (currentMessage.calendarWrapper.icalData.DUE != null) {
                 var taskDate = sakai.api.Util.parseSakaiDate(currentMessage.calendarWrapper.icalData.DUE);
                 $messageTaskDueDate.datepicker("setDate", taskDate);
             }
         };
 
         var messageHasSavedUXState = function() {
-            if (currentMessage.uxState["eventMin"] !== null) {
+            if (currentMessage.uxState["eventMin"] != null) {
                 return true;
             }
-            else if (currentMessage.uxState["eventHour"] !== null) {
+            else if (currentMessage.uxState["eventHour"] != null) {
                 return true;
             }
-            else if (currentMessage.uxState["eventAMPM"] !== null) {
+            else if (currentMessage.uxState["eventAMPM"] != null) {
                 return true;
             }
             return false;
@@ -515,7 +521,7 @@ require(["jquery", "/dev/lib/myb/jquery/jquery-ui-datepicker.min.js", "sakai/sak
             $messageFieldSubject.val(currentMessage.calendarWrapper.icalData.SUMMARY);
             $messageFieldBody.val(currentMessage.calendarWrapper.icalData.DESCRIPTION);
             // If the event date was filled out properly, we can extract all the proper date and time information from it.
-            if (currentMessage.calendarWrapper.icalData.DTSTART !== null) {
+            if (currentMessage.calendarWrapper.icalData.DTSTART != null) {
                 var eventDate = sakai.api.Util.parseSakaiDate(currentMessage.calendarWrapper.icalData.DTSTART);
                 var hours = eventDate.getHours();
                 var minutes = eventDate.getMinutes();
@@ -544,7 +550,7 @@ require(["jquery", "/dev/lib/myb/jquery/jquery-ui-datepicker.min.js", "sakai/sak
                 eventTimeInit(hours, minutes, AMPM);
             }
 
-            if(currentMessage.calendarWrapper.icalData.LOCATION !== null) {
+            if(currentMessage.calendarWrapper.icalData.LOCATION != null) {
                 $messageEventPlace.val(currentMessage.calendarWrapper.icalData.LOCATION);
             }
         };
@@ -563,7 +569,7 @@ require(["jquery", "/dev/lib/myb/jquery/jquery-ui-datepicker.min.js", "sakai/sak
         var fillInMessage = function() {
 
             // Fill out all the common fields.
-            if (currentMessage["sendDate"] !== null && currentMessage["sendDate"] !== "null") {
+            if (currentMessage["sendDate"] != null && currentMessage["sendDate"] !== "null") {
                 var sendDate = sakai.api.Util.parseSakaiDate(currentMessage["sendDate"]);
                 $messageFieldSendDate.datepicker("setDate", sendDate);
             }
@@ -729,7 +735,7 @@ require(["jquery", "/dev/lib/myb/jquery/jquery-ui-datepicker.min.js", "sakai/sak
             toPost.calendarWrapper.component = "VEVENT";
             // If the event date is filled out, we handle this normally and save the time information there.
             var startDate = $messageEventDate.datepicker("getDate");
-            if (startDate !== null) {
+            if (startDate != null) {
                 startDate.setMinutes($messageEventTimeMinute.val());
                 // Get the event time details and add to the eventDate obj.
                 if ($messageEventTimeAMPM.val() === "PM" && parseInt($messageEventTimeHour.val()) !== 12) {
@@ -835,10 +841,6 @@ require(["jquery", "/dev/lib/myb/jquery/jquery-ui-datepicker.min.js", "sakai/sak
          */
         var postNotification = function (toPost, successCallback, copyCheck, msgTxt) {
 
-            // Needed to change validation rules per form type
-            var taskRule = false;
-            var eventRule = false;
-
             // don't save twice if user is rapidly double-clicking
             if (!saveEnabled) {
                 return;
@@ -860,7 +862,7 @@ require(["jquery", "/dev/lib/myb/jquery/jquery-ui-datepicker.min.js", "sakai/sak
             } else {
                 // Are we modifying an existing notification?
                 // When creating a new message currentMessageId is null
-                if (currentMessageId !== null) {
+                if (currentMessageId != null) {
                     toPost.id = currentMessageId;
 
                 }
@@ -882,7 +884,7 @@ require(["jquery", "/dev/lib/myb/jquery/jquery-ui-datepicker.min.js", "sakai/sak
                     }
                 },
                 error: function(response) {
-                    if (msgTxt !== null) {
+                    if (msgTxt != null) {
                         showGeneralMessage(msgTxt + " failed.", true);
                     }
                     else {
@@ -1268,7 +1270,6 @@ require(["jquery", "/dev/lib/myb/jquery/jquery-ui-datepicker.min.js", "sakai/sak
             }
 
             if (eventRule) {
-                console.log("foo");
                 $messageEventDate.addClass("checkEventDate required");
                 $messageEventTimeHour.addClass("required");
                 $messageEventTimeMinute.addClass("required");
