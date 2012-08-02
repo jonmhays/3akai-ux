@@ -249,18 +249,31 @@ define(["config/config", "config/env"], function(config) {
         }
     );
 
-    config.Directory = {
-        topic_divider: {
+    /* REWRITE config.Directory
+     * shoving the OAE's SUBJECT directory into the middle of our directory */
+
+    /* Grab the current OAE subject categories */
+    var oaeSubjectDirectory = config.Directory;
+
+    /* DIVIDERS FOR SUBJECTS */
+    var calcSubjectDirectoryDiv = {
+        by_subject_divider: {
             divider: true,
-            title: "By Topic",
-            cssClass: "myb-cat-by-topic"
+            title: "Subjects",
+            cssClass: "myb-cat-by-subject"
+        }
+    };
+
+    /* COLLEGES AND SCHOOLS */
+    var calcCollegeDirectory = {
+        by_org_divider: {
+            divider: true,
+            title: "Colleges & Schools",
+            cssClass: "myb-cat-by-org"
         },
-
-
-
         college_of_letters_science_arts_humanities: {
-            title: "College of Letters & Science",
-            maj_title: "Arts & Humanities",
+            title_prefix: "College of Letters & Science",
+            title: "Arts & Humanities",
             children: {
                 ancient_history_mediterranean_archaeology: {
                     title: "Ancient History & Mediterranean Archaeology"
@@ -359,8 +372,8 @@ define(["config/config", "config/env"], function(config) {
 
         },
         college_of_letters_science_biological_sciences: {
-            title: "College of Letters & Science",
-            maj_title: "Biological Sciences",
+            title_prefix: "College of Letters & Science",
+            title: "Biological Sciences",
             children: {
                 biochemistry_biophysics_structural_biology: {
                     title: "Biochemistry, Biophysics & Structural Biology"
@@ -389,8 +402,8 @@ define(["config/config", "config/env"], function(config) {
             }
         },
         haas_school_of_business: {
-            title: "Haas School of",
-            maj_title: "Business",
+            title_prefix: "Haas School of",
+            title: "Business",
             children: {
                 accounting: {
                     title: "Accounting"
@@ -419,8 +432,8 @@ define(["config/config", "config/env"], function(config) {
             }
         },
         college_of_chemistry: {
-            title: "College of",
-            maj_title: "Chemistry",
+            title_prefix: "College of",
+            title: "Chemistry",
             children: {
                 chemical_biomolecular_engineering: {
                     title: "Chemical & Biomolecular Engineering"
@@ -437,8 +450,8 @@ define(["config/config", "config/env"], function(config) {
             }
         },
         graduate_school_of_education: {
-            title: "Graduate School of",
-            maj_title: "Education",
+            title_prefix: "Graduate School of",
+            title: "Education",
             children: {
                 education: {
                     title: "Education"
@@ -449,8 +462,8 @@ define(["config/config", "config/env"], function(config) {
             }
         },
         college_of_engineering: {
-            title: "College of",
-            maj_title: "Engineering",
+            title_prefix: "College of",
+            title: "Engineering",
             children: {
                 applied_science_technology: {
                     title: "Applied Science & Technology"
@@ -491,8 +504,8 @@ define(["config/config", "config/env"], function(config) {
             }
         },
         college_of_environmental_design: {
-            title: "College of",
-            maj_title: "Environmental Design",
+            title_prefix: "College of",
+            title: "Environmental Design",
             children: {
                 architecture: {
                     title: "Architecture"
@@ -512,8 +525,8 @@ define(["config/config", "config/env"], function(config) {
             }
         },
         school_of_information: {
-            title: "School of",
-            maj_title: "Information",
+            title_prefix: "School of",
+            title: "Information",
             children: {
                 human_computer_interaction: {
                     title: "Human-Computer Interaction"
@@ -540,9 +553,7 @@ define(["config/config", "config/env"], function(config) {
         },
         interdepartmental_graduate_programs: {
             title: "Interdepartmental Graduate Programs",
-            maj_title: "Fix this",
             children: {
-
                 comparative_biochemistry: {
                     title: "Comparative Biochemistry"
                 },
@@ -552,8 +563,8 @@ define(["config/config", "config/env"], function(config) {
             }
         },
         graduate_school_of_journalism: {
-            title: "Graduate School of",
-            maj_title: "Journalism",
+            title_prefix: "Graduate School of",
+            title: "Journalism",
             children: {
                 business_reporting: {
                     title: "Business Reporting"
@@ -594,8 +605,8 @@ define(["config/config", "config/env"], function(config) {
             }
         },
         school_of_law: {
-            title: "School of",
-            maj_title: "Law",
+            title_prefix: "School of",
+            title: "Law",
             children: {
                 business_law_economics: {
                     title: "Business, Law & Economics"
@@ -624,8 +635,8 @@ define(["config/config", "config/env"], function(config) {
             }
         },
         college_of_letters_science_mathematical_physical_sciences: {
-            title: "College of Letters & Science",
-            maj_title: "Mathematical & Physical Sciences",
+            title_prefix: "College of Letters & Science",
+            title: "Mathematical & Physical Sciences",
             children: {
                 astronomy: {
                     title: "Astronomy"
@@ -642,8 +653,8 @@ define(["config/config", "config/env"], function(config) {
             }
         },
         college_of_natural_resources: {
-            title: "College of",
-            maj_title: "Natural Resources",
+            title_prefix: "College of",
+            title: "Natural Resources",
             children: {
                 agricultural_resource_economics: {
                     title: "Agricultural & Resource Economics"
@@ -666,8 +677,8 @@ define(["config/config", "config/env"], function(config) {
             }
         },
         school_of_optometry: {
-            title: "School of",
-            maj_title: "Optometry",
+            title_prefix: "School of",
+            title: "Optometry",
             children: {
                 optometry: {
                     title: "Optometry"
@@ -678,8 +689,8 @@ define(["config/config", "config/env"], function(config) {
             }
         },
         school_of_public_health: {
-            title: "School of",
-            maj_title: "Public Health",
+            title_prefix: "School of",
+            title: "Public Health",
             children: {
                 biostatistics: {
                     title: "Biostatistics"
@@ -717,8 +728,8 @@ define(["config/config", "config/env"], function(config) {
             }
         },
         goldman_school_of_public_policy: {
-            title: "Goldman School of",
-            maj_title: "Public Policy",
+            title_prefix: "Goldman School of",
+            title: "Public Policy",
             children: {
                 public_policy: {
                     title: "Public Policy"
@@ -726,8 +737,8 @@ define(["config/config", "config/env"], function(config) {
             }
         },
         college_of_letters_science_social_sciences: {
-            title: "College of Letters & Science",
-            maj_title: "Social Sciences",
+            title_prefix: "College of Letters & Science",
+            title: "Social Sciences",
             children: {
                 african_american_studies: {
                     title: "African American Studies"
@@ -768,8 +779,8 @@ define(["config/config", "config/env"], function(config) {
             }
         },
         school_of_social_welfare: {
-            title: "School of",
-            maj_title: "Social Welfare",
+            title_prefix: "School of",
+            title: "Social Welfare",
             children: {
                 social_welfare: {
                     title: "Social Welfare"
@@ -778,7 +789,6 @@ define(["config/config", "config/env"], function(config) {
         },
         undergraduate_interdisciplinary_studies: {
             title: "Undergraduate & Interdisciplinary Studies",
-            maj_title: "None - fix this",
             children: {
                 american_studies: {
                     title: "American Studies"
@@ -829,62 +839,48 @@ define(["config/config", "config/env"], function(config) {
                     title: "Religious Studies"
                 }
             }
-        },
+        }
+    };
 
-        subjects: {
-            title: "Subjects - see confluence",
-            children:{}
-        },
-
-        campus_life: {
-            title: "Campus Life - see confluence",
-            children: {
-                arts: {
-                    title: "Arts"
-                },
-                culture: {
-                    title: "Culture"
-                },
-                political: {
-                    title: "Political"
-                },
-                professional: {
-                    title: "Professional"
-                },
-                sport: {
-                    title: "Sport"
-                },
-                religious: {
-                    title: "Religious"
-                },
-                service: {
-                    title: "Service"
-                }
-            }
-        },
-
-        by_org_divider: {
+    /* CAMPUS LIFE */
+    var calcCampusDirectory = {
+        by_campus_divider: {
             divider: true,
-            title: "By Berkeley Campus Organization",
-            cssClass: "myb-cat-by-org"
+            title: "Campus Life",
+            cssClass: "myb-cat-by-campus"
         },
-        departments: {
-            title: "Colleges & Departments",
-            children: {
-                ced: {
-                    title: "College of Environmental Design"
-                },
-                cnr: {
-                    title: "College of Natural Resources"
-                }
-            }
+        campus_arts: {
+            title: "Arts",
+            children: {}
         },
-        col_groups: {
-            title: "Collaborative Groups",
+        campus_culture: {
+            title: "Culture",
+            children: {}
+        },
+        campus_political: {
+            title: "Political",
+            children: {}
+        },
+        campus_professional: {
+            title: "Professional",
+            children: {}
+        },
+        campus_sport: {
+            title: "Sport",
+            children: {}
+        },
+        campus_religious: {
+            title: "Religious",
+            children: {}
+        },
+        campus_service: {
+            title: "Service",
             children: {}
         }
     };
 
+    /* Concatenate the above directories together */
+    config.Directory = $.extend({}, calcCollegeDirectory, calcSubjectDirectoryDiv, oaeSubjectDirectory, calcCampusDirectory);
 
     /*
      * CalCentral Custom Profile settings
