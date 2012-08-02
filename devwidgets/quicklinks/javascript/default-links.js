@@ -13,6 +13,20 @@ define(function() {
                         "roles" : [ "ALL" ]
                     },
                     {
+                        "id"   : "academic_departments_a-z",
+                        "name" : "Academic Departments A-Z",
+                        "url" : "http://berkeley.edu/academics/dept/a.shtml",
+                        "popup_description": "Explore campus majors.",
+                        "roles" : [ "ALL" ]
+                    },
+                    {
+                        "id"   : "advising_tutoring",
+                        "name" : "Advising & Tutoring",
+                        "url" : "http://berkeley.edu/academics/advise.shtml",
+                        "popup_description": "Learning resources and services for students.",
+                        "roles" : [ "Faculty", "Students" ]
+                    },
+                    {
                         "id"   : "bspace",
                         "name" : "bSpace",
                         "url" : "http://bspace.berkeley.edu",
@@ -55,6 +69,76 @@ define(function() {
                         "roles" : [ "Students" ]
                     },
                     {
+                        "id": "development_recognition_fellowships",
+                        "name": "Development, recognition and fellowships",
+                        "url": "http://www.berkeley.edu/teach/award.shtml",
+                        "popup_description": "Faculty workshops, grants, fellowships and Awards.",
+                        "roles" : [ "Faculty" ]
+                    },
+                    {
+                        "id": "disabled_students_program",
+                        "name": "Disabled Students Program",
+                        "url": "http://dsp.berkeley.edu/",
+                        "popup_description": "Services in support of equal access to educational opportunities for disabled students.",
+                        "roles" : [ "Staff", "Students" ]
+                    },
+                    {
+                        "id": "discovery_courses",
+                        "name": "Discovery Courses",
+                        "url": "http://lsdiscovery.berkeley.edu/",
+                        "popup_description": "L&S classes taught by distinguished faculty.",
+                        "roles" : [ "Students" ]
+                    },
+                    {
+                        "id": "educational_development_office",
+                        "name": "Educational Development Office",
+                        "url": "http://oed.berkeley.edu/",
+                        "popup_description": "Support and promotion of teaching efforts of faculty at Berkeley.",
+                        "roles" : [ "Faculty" ]
+                    },
+                    {
+                        "id": "executive_education",
+                        "name": "Executive Education Program",
+                        "url": "http://executive.berkeley.edu/programs",
+                        "popup_description": "Professional, executive-level classes, at the Haas School of Business.",
+                        "roles" : [ "ALL" ]
+                    },
+                    {
+                        "id": "faculty_expertise_database",
+                        "name": "Faculty Expertise Database",
+                        "url": "http://vcresearch.berkeley.edu/faculty-expertise",
+                        "popup_description": "Find faculty by specialization and expertise.",
+                        "roles" : [ "Faculty" ]
+                    },
+                    {
+                        "id": "freshman_sophomore_seminars",
+                        "name": "Freshman & Sophomore Seminars",
+                        "url": "http://fss.berkeley.edu/",
+                        "popup_description": "Small-group faculty-taught undergraduate courses on an wide range of topics.",
+                        "roles" : [ "Students" ]
+                    },
+                    {
+                        "id": "graduate_division",
+                        "name": "Graduate Division",
+                        "url": "http://www.grad.berkeley.edu/",
+                        "popup_description": "Information for graduate students.",
+                        "roles" : [ "Students", "Faculty" ]
+                    },
+                    {
+                        "id": "gsi_resource_center",
+                        "name": "GSI Resource Center",
+                        "url": "http://gsi.berkeley.edu/",
+                        "popup_description": "GSI tools, training and more.",
+                        "roles" : [ "Students", "Faculty" ]
+                    },
+                    {
+                        "id": "language_center",
+                        "name": "Language Center",
+                        "url": "http://blc.berkeley.edu/",
+                        "popup_description": "Language study resources for students and instructors.",
+                        "roles" : [ "Students", "Faculty" ]
+                    },
+                    {
                         "id": "library",
                         "name": "Library",
                         "url": "http://www.lib.berkeley.edu",
@@ -62,18 +146,60 @@ define(function() {
                         "roles" : [ "ALL" ]
                     },
                     {
-                        "id": "class_schedule",
-                        "name": "Schedule of Classes",
-                        "url": "http://schedule.berkeley.edu",
-                        "popup_description": "Classes offerings by semester.",
+                        "id": "museum_collections",
+                        "name": "Museum & Collections",
+                        "url": "http://www.mip.berkeley.edu/mip/collections/collections.html",
+                        "popup_description": "Explore Berkeley's many museums and collections.",
                         "roles" : [ "ALL" ]
+                    },
+                    {
+                        "id": "publications_journals",
+                        "name": "Publications & Journals",
+                        "url": "http://berkeley.edu/research/pub.shtml",
+                        "popup_description": "Berkeley's many newsletters and journals.",
+                        "roles" : [ "Students", "Faculty" ]
+                    },
+                    {
+                        "id": "research",
+                        "name": "Research",
+                        "url": "http://vcresearch.berkeley.edu/",
+                        "popup_description": "Overview of Berkeley's Research program and resources.",
+                        "roles" : [ "Students", "Faculty" ]
                     },
                     {
                         "id": "schedule_planning",
                         "name": "Schedule Planning",
                         "url": "https://schedulebuilder.berkeley.edu/",
                         "popup_description": "Plan your classes.",
+                        "roles" : [ "Students" ]
+                    },
+                    {
+                        "id": "schools_colleges",
+                        "name": "Schools & Colleges",
+                        "url": "http://berkeley.edu/academics/school.shtml",
+                        "popup_description": "A list of Berkeley's schools and colleges.",
                         "roles" : [ "ALL" ]
+                    },
+                    {
+                        "id": "science_engineering_literacy",
+                        "name": "Science & Engineering Literacy",
+                        "url": "http://www.lib.berkeley.edu/sciences/cseill",
+                        "popup_description": "Programs and tools to support the teaching and research goals of faculty and students.",
+                        "roles" : [ "Students", "Faculty" ]
+                    },
+                    {
+                        "id": "study_abroad",
+                        "name": "Study Abroad",
+                        "url": "https://studyabroad-prod.berkeley.edu/",
+                        "popup_description": "Participating institutions and program information.",
+                        "roles" : [ "Students" ]
+                    },
+                    {
+                        "id": "summer_sessions",
+                        "name": "Summer Sessions",
+                        "url": "http://summer.berkeley.edu/",
+                        "popup_description": "Summer classes at UC Berkeley.",
+                        "roles" : [ "Students" ]
                     },
                     {
                         "id": "teaching_resources",
@@ -102,11 +228,39 @@ define(function() {
                 "label" : "Administrative",
                 "links" : [
                     {
+                        "id": "admissions_grad",
+                        "name": "Admissions (graduate)",
+                        "url": "http://www.grad.berkeley.edu/admissions/",
+                        "popup_description": "Admissions instructions for graduate students.",
+                        "roles" : [ "Students" ]
+                    },
+                    {
+                        "id": "admissions_undergrad",
+                        "name": "Admissions (undergraduate)",
+                        "url": "http://students.berkeley.edu/admissions/index.asp",
+                        "popup_description": "Admissions instructions for undergraduate students.",
+                        "roles" : [ "Students" ]
+                    },
+                    {
                         "id": "bear_facts",
                         "name": "Bear Facts",
                         "url": "https://bearfacts.berkeley.edu/bearfacts/student/studentMain.do?bfaction=welcome",
                         "popup_description": "Academic record, grades & transcript, bill, degree audit, loans, SLR & personal info.",
                         "roles" : [ "ALL" ]
+                    },
+                    {
+                        "id": "berkeley_facts",
+                        "name": "Berkeley facts-at-a-glance",
+                        "url": "http://berkeley.edu/about/fact.shtml",
+                        "popup_description": "Statistics on the student body, faculty, and more.",
+                        "roles" : [ "ALL" ]
+                    },
+                    {
+                        "id": "billing_payment",
+                        "name": "Billing & Payment Services (student)",
+                        "url": "http://studentbilling.berkeley.edu/carsBilling.htm",
+                        "popup_description": "CARS billing and more.",
+                        "roles" : [ "Students" ]
                     },
                     {
                         "id": "calmail",
@@ -121,6 +275,20 @@ define(function() {
                         "url": "http://career.berkeley.edu",
                         "popup_description": "Cal jobs, internships & career counseling.",
                         "roles" : [ "Students" ]
+                    },
+                    {
+                        "id": "classroom_technology",
+                        "name": "Classroom Technology services",
+                        "url": "http://ets.berkeley.edu/classroom-technology/",
+                        "popup_description": "Audio/video equipment, webcasting, video conferencing, and more.",
+                        "roles" : [ "Faculty" ]
+                    },
+                    {
+                        "id": "computing",
+                        "name": "Computing",
+                        "url": "http://www.berkeley.edu/admin/compute.shtml",
+                        "popup_description": "Campus computing resource, systems support, and IT services.",
+                        "roles" : [ "ALL" ]
                     },
                     {
                         "id": "directory",
@@ -144,6 +312,13 @@ define(function() {
                         "roles" : [ "ALL" ]
                     },
                     {
+                        "id": "fees",
+                        "name": "Fees (undergrad & grad)",
+                        "url": "http://registrar.berkeley.edu/Registration/feesched.html",
+                        "popup_description": "Latest student fee data, resident and non-resident, graduate and undergraduate.",
+                        "roles" : [ "Students" ]
+                    },
+                    {
                         "id": "finaid",
                         "name": "Financial Aid",
                         "url": "http://students.berkeley.edu/finaid",
@@ -158,10 +333,31 @@ define(function() {
                         "roles" : [ "ALL" ]
                     },
                     {
+                        "id": "international_office",
+                        "name": "International Office",
+                        "url": "http://internationaloffice.berkeley.edu/",
+                        "popup_description": "Resources and visa information for international students, faculty and staff.",
+                        "roles" : [ "ALL" ]
+                    },
+                    {
                         "id": "jobs",
                         "name": "Job Listings",
                         "url": "http://jobs.berkeley.edu/",
                         "popup_description": "Job Listings for student, staff and academic positions.",
+                        "roles" : [ "ALL" ]
+                    },
+                    {
+                        "id": "operational_excellence",
+                        "name": "Operational Excellence (OE)",
+                        "url": "http://oe.berkeley.edu/",
+                        "popup_description": "OE main initiative information site.",
+                        "roles" : [ "ALL" ]
+                    },
+                    {
+                        "id": "org_charts",
+                        "name": "Organizational Charts",
+                        "url": "http://berkeley.edu/admin/org.shtml",
+                        "popup_description": "Key administrators and organizational charts.",
                         "roles" : [ "ALL" ]
                     },
                     {
@@ -170,6 +366,20 @@ define(function() {
                         "url": "http://controller.berkeley.edu/payroll/",
                         "popup_description": "Campus payroll office: earnings statements, payroll forms, online reporting and resources.",
                         "roles" : [ "ALL" ]
+                    },
+                    {
+                        "id": "registrar",
+                        "name": "Registrar",
+                        "url": "http://registrar.berkeley.edu/",
+                        "popup_description": "Office of the Registrar, academic calendar and much more.",
+                        "roles" : [ "Faculty", "Students" ]
+                    },
+                    {
+                        "id": "shared_services_center",
+                        "name": "Shared Services Center (CSS)",
+                        "url": "http://sharedservices.berkeley.edu/",
+                        "popup_description": "Shared Services Center initiative website.",
+                        "roles" : [ "Faculty", "Staff" ]
                     },
                     {
                         "id": "staff_ombuds",
@@ -183,6 +393,13 @@ define(function() {
                         "name": "Student Ombuds",
                         "url": "http://campuslife.berkeley.edu/ombuds",
                         "popup_description": "Assistance sorting through a campus-related conflict or concern.",
+                        "roles" : [ "Students" ]
+                    },
+                    {
+                        "id": "student_orientation",
+                        "name": "Student Orientation (CalSO)",
+                        "url": "http://services.housing.berkeley.edu/NSS/Content/Welcome.html",
+                        "popup_description": "Orientation program for undergraduate freshman and transfer students and their parents.",
                         "roles" : [ "Students" ]
                     }
                 ]
@@ -202,6 +419,13 @@ define(function() {
                         "name": "Berkeley Sites (A-Z)",
                         "url": "http://www.berkeley.edu/a-z/a.shtml",
                         "popup_description": "Navigating UC Berkeley.",
+                        "roles" : [ "ALL" ]
+                    },
+                    {
+                        "id": "calbears",
+                        "name": "CalBears Athletics Calendar",
+                        "url": "http://www.calbears.com/calendar/cal-calendar.html",
+                        "popup_description": "Cal Athletics official website.",
                         "roles" : [ "ALL" ]
                     },
                     {
@@ -240,6 +464,13 @@ define(function() {
                         "roles" : [ "Faculty", "Staff" ]
                     },
                     {
+                        "id": "equity_inclusion_diversity",
+                        "name": "Equity, Inclusion & Diversity",
+                        "url": " http://diversity.berkeley.edu/",
+                        "popup_description": "E&I Division programs and resources.",
+                        "roles" : [ "ALL" ]
+                    },
+                    {
                         "id": "graduate_assembly",
                         "name": "Graduate Assembly",
                         "url": "http://ga.berkeley.edu",
@@ -252,6 +483,13 @@ define(function() {
                         "url": "http://uhs.berkeley.edu",
                         "popup_description": "Campus healthcare.",
                         "roles" : [ "ALL" ]
+                    },
+                    {
+                        "id": "osher_lifelong_learning",
+                        "name": "Osher Lifelong Learning Institute",
+                        "url": "http://olli.berkeley.edu/",
+                        "popup_description": "Courses, lectures, and special events, designed for adults age 50 and above.",
+                        "roles" : [ "Faculty", "Staff" ]
                     },
                     {
                         "id": "parking_and_transportation",
@@ -308,6 +546,13 @@ define(function() {
                         "id": "student_services",
                         "name": "Student Services",
                         "url": "http://www.berkeley.edu/students",
+                        "popup_description": "Student services and programs.",
+                        "roles" : [ "Students" ]
+                    },
+                    {
+                        "id": "transfer_center",
+                        "name": "Transfer, Re-entry & Student Parent Center",
+                        "url": "http://trsp.berkeley.edu/",
                         "popup_description": "Student services and programs.",
                         "roles" : [ "Students" ]
                     }
