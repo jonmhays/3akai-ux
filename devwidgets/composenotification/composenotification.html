@@ -66,11 +66,15 @@
 
                     <!-- REQUIRED CHECK -->
                     <div id="composenotification_required" class="fl-fix">
-                        <span class="left"><label for="cn-event-timehour" class="name"><span class="required" aria-hidden="true">*</span> __MSG__REQUIRED__</label></span>
-                        <span class="right" aria-required="true">
-                            <input class="compose-form-elm radioboxes" type="radio" name="required-check" id="cn-requiredyes" /><label for="cn-requiredyes" class="name">__MSG__YES__</label>
-                            <input class="compose-form-elm radioboxes" type="radio" name="required-check" id="cn-requiredno" /><label for="cn-requiredno" class="name">__MSG__NO__</label>
-                        </span>
+                        <div class="left"><label for="cn-event-timehour" class="name"><span class="required" aria-hidden="true">*</span> __MSG__REQUIRED__</label></div>
+                        <div class="right" aria-required="true">
+                            <div>
+                                <input class="compose-form-elm radioboxes" type="radio" name="required-check" id="cn-requiredyes" /><label for="cn-requiredyes" class="name ccd_radio_label">__MSG__YES__</label>
+                            </div>
+                            <div>
+                                <input class="compose-form-elm radioboxes" type="radio" name="required-check" id="cn-requiredno" /><label for="cn-requiredno" class="name ccd_radio_label">__MSG__NO__</label>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- CONSEQUENCES -->
@@ -91,7 +95,7 @@
 
                     <!-- DYNAMIC LIST -->
                     <div id="composenotification_dynamiclist" class="fl-fix">
-                        <span class="left" style="margin-top:6px"><label for="cn-dynamiclistselect" class="name"><span class="required" aria-hidden="true">*</span> __MSG__DYNAMIC_LIST__</label></span>
+                        <span class="left"><label for="cn-dynamiclistselect" class="name"><span class="required" aria-hidden="true">*</span> __MSG__DYNAMIC_LIST__</label></span>
                         <span class="right">
                             <select class="compose-form-elm dynamiclistselect" id="cn-dynamiclistselect" name="dynamiclistselect" aria-required="true"></select>
                             <button id="create-new-dynamic-list-button" class="new-dynamic-list-button s3d-button s3d-overlay-button grey" type="button">__MSG__CREATE_OR_EDIT_DYNAMIC_LISTS__</button>

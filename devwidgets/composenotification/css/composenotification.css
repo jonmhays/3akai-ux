@@ -32,12 +32,12 @@
 }
 
 .compose-form div {
-    margin-bottom: 8px;
+    padding-bottom: 6px;
     overflow: hidden;
 }
 
 .compose-form select {
-    border: 1px solid #CCC;
+    /*border: 1px solid #CCC;*/
 }
 
 .compose-form fieldset {
@@ -75,7 +75,7 @@
 
 #composenotification_box .compose-form , #composenotification_box .compose-form label.name {
     display: inline-block !important;
-    padding: 5px 0 0;
+    padding: 4px 0 0;
 }
 
 /* Override form field error label style from OAE */
@@ -83,21 +83,33 @@
     margin-bottom: 0px;
 }
 
-.s3d-form-field-wrapper input {
-    width:10%;
+.s3d-form-field-wrapper input[type="radio"] {
+    height: 18px;
+    width: 18px;
 }
 
+#composenotification_box .compose-form label.ccd_radio_label {
+    padding-top: 3px;
+}
 
 /* send_message_lightbox.html */
 
-.dynamiclistselect {
-    margin-top: 8px;
+#composenotification_dynamiclist select {
+    margin-top: 4px;
 }
 
 .new-dynamic-list-button {
     position: relative;
-    top: -1px;
 }
+
+#composenotification_dynamiclist .s3d-error-after {
+    width: auto;
+}
+
+#composenotification_event_time select {
+    float: none;
+}
+
 .send_message .compose-form input, .send_message .compose-form textarea {
     font-weight:normal;
 }
@@ -114,36 +126,37 @@
     height:150px; width:500px;
 }
 
-/*.s3d-error-after {
-    display:block;
-    margin-top:2px;
-}*/
-
 #send_message {font-weight:bold}
 
 .datepicker img {
     position: relative;
     top: 6px;
     margin-left: 5px;
-    margin-top: -10px;
+    margin-top: -5px;
     cursor: pointer;
 }
 
-.datepicker input
-{ width: 70px; }
+.datepicker input {
+    width: 70px;
+}
 
 #ui-datepicker-div {display: none;}
 
-#composenotification_box span.left{
-     display:block;
-     text-align:right;
-     width:140px;
-     float:left;
+#composenotification_box span.left, #composenotification_box div.left {
+    display:block;
+    text-align:right;
+    width:140px;
+    float:left;
  }
 
-#composenotification_box span.right{
+#composenotification_box span.right, #composenotification_box div.right {
     float:left;
     margin-left:10px;
+}
+
+#composenotification_box div.right div {
+    margin-bottom: 0;
+    width: 100px;
 }
 
 #composenotification_required span {

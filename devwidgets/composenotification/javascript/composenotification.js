@@ -1217,9 +1217,9 @@ require(["jquery", "/dev/lib/myb/jquery/jquery-ui-datepicker.min.js", "sakai/sak
                     // Fall-through is intentional here
                     error.insertAfter(element.next());
                     break;
-                case "event-timehour":
-                case "event-timeminute":
-                case "event-timeampm":
+                case "cn-event-timehour":
+                case "cn-event-timeminute":
+                case "cn-event-timeampm":
                     // Fall-through is intentional here
                     error.insertAfter($messageEventTimeAMPM);
                     break;
