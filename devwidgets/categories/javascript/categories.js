@@ -132,7 +132,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai){
                 if (toplevel.divider){
                     var toFillOut = 4 - (categoriesToRender.length % 4);
                     if (toFillOut !== 4) {
-                        categoriesToRender.push({"spacer": true});
+                        //categoriesToRender.push({"spacer": true}); // comment CalCentral custom
                     }
                 } else {
                     toplevel.count = 0;
