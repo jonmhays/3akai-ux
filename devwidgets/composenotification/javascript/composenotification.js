@@ -234,8 +234,8 @@ require(["jquery", "/dev/lib/myb/jquery/jquery-ui-datepicker.min.js", "sakai/sak
             // HACK: jQuery validation plugin's resetForm calls jQuery's resetForm method which in turn calls form's reset method,
             // this causes problems in our code because it resets all elements to their default values.
             // We don't need such behavior. Just hide all errors instead.
-            $("label.error", $rootElement).hide();
-            $(".error", $rootElement).removeClass("error");
+            $("span.s3d-error-after", $rootElement).hide();
+            $(".s3d-error-after", $rootElement).removeClass("s3d-error-after");
         };
 
         /**
