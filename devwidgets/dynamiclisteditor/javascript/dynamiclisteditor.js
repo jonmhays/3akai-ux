@@ -1479,8 +1479,8 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
         //////////////////////////
 
         var clearInvalids = function() {
-            $("label.error", $rootElement).hide();
-            $(".error", $rootElement).removeClass("error");
+            $("span.s3d-error-after", $rootElement).hide();
+            $(".s3d-error-after", $rootElement).removeClass("s3d-error-after");
         };
 
         var clearInvalidsInSection = function($section) {
@@ -1503,6 +1503,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
             sakai.api.Util.Forms.validate($frm, {
                 debug: debugValidation,
                 messages: errorMessagesForListNameValidation,
+                errorPlacement: errorPlacementForTemplateValidation,
                 submitHandler: submitTopForm
             }, true);
         };
@@ -1524,7 +1525,7 @@ require(["jquery","sakai/sakai.api.core", "myb/myb.api.core", "/dev/lib/myb/myb.
         };
 
         var errorPlacementForTemplateValidation = function(error, element) {
-            var elName = element.attr("name");
+            var elName = element.attr("id");
             switch(elName) {
                 default:
                     error.insertAfter(element);

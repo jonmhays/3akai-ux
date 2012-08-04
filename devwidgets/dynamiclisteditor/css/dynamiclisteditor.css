@@ -17,8 +17,6 @@
     color: #C00;
 }
 
-
-
 .dynamiclisteditor_widget .dialog_buttons {
     margin-top: 10px;
     margin-bottom: 0px;
@@ -44,7 +42,7 @@
     margin-bottom: 8px;
 }
 
-.dyn-list-description {
+.s3d-form-field-wrapper .dyn-list-description {
     width: 500px;
 }
 
@@ -67,6 +65,7 @@
 
 .dynamiclisteditor_widget input[type="text"] {
     height: 22px;
+    margin-bottom: 0;
 }
 
 .dynamiclisteditor_widget div.group_header {
@@ -232,10 +231,6 @@
 }
 /* Special programs layout */
 
-
-
-
-
 /* Student and residency status layout */
 .dynamiclisteditor_widget .student_and_residency_status_col_left{
    position: relative;
@@ -315,17 +310,7 @@
 }
 
 .dynamiclisteditor_widget #list_name {
-    width: 17em;
-}
-
-.dynamiclisteditor_widget .s3d-error-after {
-    margin-top: 3px;
-    display: block;
-    color:#cc0000;
-}
-
-.dynamiclisteditor_widget input.s3d-error-after {
-  color:black;
+    width: 500px;
 }
 
 #no_students_ever_warning_dialog, #no_students_warning_dialog
