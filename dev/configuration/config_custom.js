@@ -269,7 +269,7 @@ define(["config/config", "config/env"], function(config) {
         by_org_divider: {
             divider: true,
             title: "Colleges & Schools",
-            cssClass: "myb-cat-by-org"
+            cssClass: "myb-cat-by-colleges"
         },
         college_of_letters_science_arts_humanities: {
             title_prefix: "College of Letters & Science",
@@ -847,7 +847,11 @@ define(["config/config", "config/env"], function(config) {
         by_campus_divider: {
             divider: true,
             title: "Campus Life",
-            cssClass: "myb-cat-by-campus"
+            cssClass: "myb-cat-by-campuslife"
+        },
+        academic: {
+            title: "Academic",
+            children: {}
         },
         campus_arts: {
             title: "Arts",

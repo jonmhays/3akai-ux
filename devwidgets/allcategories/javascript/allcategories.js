@@ -38,6 +38,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai){
         var directory = sakai.config.Directory;
         var allcategoriesToRender = [];
 
+
         ////////////////////////////
         // CAROUSEL AND RENDERING //
         ////////////////////////////
@@ -67,7 +68,60 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai){
                 allcategoriesToRender.push(toplevel);
             });
             renderallcategories();
+
+            // Begin CalCentral
+            // Register event handler for tab links, initially hide Subjects and Campus Life
+            swapDivs();
+            $("ul.myb-cat-by-subject, ul.myb-cat-by-campus").hide();
+            // End CalCentral
         };
+
+        // Begin CalCentral custom - Handler to enable/disable sections on tab clicks
+        var swapDivs = function() {
+
+            // These DOM elements get shown/hidden via tab nav - these need to be defined here rather than up top, thus not reusable. Alternative?
+            var $ccColleges = $(".myb-cat-by-colleges");
+            var $ccSubjects = $(".myb-cat-by-subject");
+            var $ccCampusLife = $(".myb-cat-by-campuslife");
+
+            // Tab nav links
+            var $toggleColleges = $("a#toggleColleges");
+            var $toggleSubjects = $("a#toggleSubjects");
+            var $toggleCampusLife = $("a#toggleCampusLife");
+
+            // The tabs themselves
+            var $tabColleges = $("div#tabColleges");
+            var $tabSubjects = $("div#tabSubjects");
+            var $tabCampusLife = $("div#tabCampusLife");
+
+            // On each tab nav change, show/hide the right lists, turn off the "selected"
+            // state for all tabs, and enable for the current tab.
+
+            $($toggleColleges).on('click', function() {
+                $ccColleges.show();
+                $ccSubjects.hide();
+                $ccCampusLife.hide();
+                $('div.category_tab').removeClass('category_tab_selected');
+                $tabColleges.addClass('category_tab_selected');
+            });
+
+            $($toggleSubjects).on('click', function() {
+                $ccColleges.hide();
+                $ccSubjects.show();
+                $ccCampusLife.hide();
+                $('div.category_tab').removeClass('category_tab_selected');
+                $tabSubjects.addClass('category_tab_selected');
+            });
+
+            $($toggleCampusLife).on('click', function() {
+                $ccColleges.hide();
+                $ccSubjects.hide();
+                $ccCampusLife.show();
+                $('div.category_tab').removeClass('category_tab_selected');
+                $tabCampusLife.addClass('category_tab_selected');
+            });
+        };
+        // End CalCentral custom
 
         /**
          * Get a feed of content to display in the carousel
