@@ -45,35 +45,43 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
 	    // JSLint complains if we don't declare all our var based functions before
 	    // use...
 	    var between,
-	        checkNumberOfColumns,
+			calendarDataFileIsNotLoading,
+            calendarDataHasBeenLoaded,
+            checkNumberOfColumns,
 	        compareEventByStartDate,
 	        contractCalendarEntry,
 	        defaultingStateLoadHandler,
 	        doInit,
+            entries,
+            events,
+            eventsCurrent,
 	        expandCalendarEntry,
 	        fetchCalendarData,
+	        filterEvents,
 	        getState,
 	        groupByDay,
 	        hideLoadingIndicator,
-			icsFileIsNotLoading,
+	        icsFileIsNotLoading,
 	        isFinite,
 	        localiseDate,
+	        nextItem,
 	        notBefore,
 	        onStateAvailable,
 	        onWidgetSettingsDataSaved,
 	        onWidgetSettingsStateAvailable,
 	        paragraphBreak,
 	        parseEventDates,
-	        randomErrorTitle,
 	        rewriteHttpUrlToWebcal,
+	        rewritePathIfNeeded,
 	        rewriteWebcalUrlToHttp,
-	        runICSFileLoadTimeout,
+	        runCalendarDataLoadTimeout,
 	        settingsHandleRangeSlide,
 	        settingsSave,
 	        setupRangeSlider,
 	        showError,
 	        showLoadingIndicator,
-			updateCalendar;
+			updateCalendar,
+			urlIsGoogleFeed;
 
 	    /**
 	     * No-op function which can be called with unused function arguments whose
@@ -85,11 +93,6 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
 	     */
 	    var stopJSLintMoaningAboutThisUnusedVarWhichICanDoNothingAbout =
 	        function () {};
-
-	    // Pull require() imports into local scope
-	    // var $ = sakai_global.cccalendarfeed.imports.jquery;
-	    // var sakai = sakai_global.cccalendarfeed.imports.sakai;
-	    // var dates = sakai_global.cccalendarfeed.imports.dates;
 
 	    /**
 	     * Get an internationalisation value from the widget's bundle.
@@ -108,10 +111,11 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
 	    var ERROR_UNCONFIGURED_BODY = translationOf("ERROR_UNCONFIGURED_BODY");
 	    var ERROR_GETTING_STATE = translationOf("ERROR_GETTING_STATE");
 	    var ERROR_GETTING_FEED = translationOf("ERROR_GETTING_FEED");
+	    var ERROR_MESSAGE_TITLE = translationOf("ERROR_MESSAGE_TITLE");
 
-	    var URL_DEFAULT_TITLE = translationOf("URL_DEFAULT_TITLE");
-	    var URL_DEFAULT_URL = 'http://registrar.berkeley.edu/UCBAcadCal.ics';
-
+        events = [];
+        eventsCurrent = [];
+	    
 	    /*
 	     * This widget couldn't get through to the website. The site may by
 	     * experiencing difficulties, or there may be a problem with your internet
@@ -120,11 +124,6 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
 	     * The chances are this will resolve itself very soon. Press the retry
 	     * button and cross your fingers…
 	     */
-	    /*
-	     * Some light hearted exclamations to show at the top of the error box.
-	     */
-	    var LIGHT_HEARTED_ERROR_TITLES =
-	        translationOf("LIGHT_HEARTED_ERROR_TITLES").split("//");
 
 	    // ///////////////////////////
 	    // Configuration variables //
@@ -155,21 +154,18 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
 
 	        // To do: Needs be modified to work with VFREEBUSY instead of VEVENT.
 	        this.vevent = vevent;
-	        this.absDate = dates.buildAbsoluteDateString(vevent.DTSTART);
-	        this.dayDelta = dates.dayDelta(dates.today(), vevent.DTSTART);
+	        this.absDate = dates.buildAbsoluteDateString(vevent.startTime);
+	        this.dayDelta = dates.dayDelta(dates.today(), vevent.startTime);
 	        this.relDate = dates.buildRelativeDateString(this.dayDelta);
-	        this.time = dates.buildTimeString(vevent.DTSTART);
-	        this.summary = vevent.SUMMARY || vevent.DESCRIPTION || "";
-	        this.description = vevent.DESCRIPTION || vevent.SUMMARY || "";
-	        if (this.description === this.summary) {
-	            this.description = "";
-	        }
+	        this.time = dates.buildTimeString(vevent.startTime);
+	        this.summary = vevent.SUMMARY || "";
+	        this.url = vevent.URL || "";
+	        this.description = vevent.DESCRIPTION || "";
 	        this.description = paragraphBreak(this.description);
 
 	        // These fields may be undefined
-	        this.url = vevent.URL;
 	        this.location = vevent.LOCATION;
-	        this.contact = vevent.CONTACT;
+	        this.hasDetails = vevent.hasDetails;
 	    }
 
 	    // /////////////////////
@@ -220,36 +216,30 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
 	        };
 	    };
 
-	    randomErrorTitle = function () {
-	        var len = LIGHT_HEARTED_ERROR_TITLES.length;
-	        return LIGHT_HEARTED_ERROR_TITLES[Math.floor(Math.random() * len)];
-	    };
-
 	    /**
 	     * Shows an error message with the given error body. postInsertHook will be
 	     * called once the message has been inserted with the error body as its this
 	     * value.
 	     */
-	    showError = function (bodyHtml, postInsertHook) {
-	        var rendered = sakai.api.Util.TemplateRenderer("#template_error_msg", {
-	            title : randomErrorTitle(),
-	            body : bodyHtml
-	        });
-	        var errorElement = $("#error_msg", root);
-	        $("#error_msg", root).html(rendered).slideDown();
-	        if (postInsertHook) {
-	            postInsertHook.call(errorElement);
-	        }
-	    };
+    showError = function (bodyHtml, postInsertHook) {
+        var rendered = sakai.api.Util.TemplateRenderer("#template_error_msg", {
+            title : ERROR_MESSAGE_TITLE,
+            body : bodyHtml
+        });
+        var errorElement = $("#error_msg", root);
+        $("#error_msg", root).html(rendered).slideDown();
+        if (postInsertHook) {
+            postInsertHook.call(errorElement);
+        }
+    };
 
 	    /**
 	     * Called when the widget state becomes available to the main widget (not
 	     * settings).
 	     */
 	    onStateAvailable = function (succeeded, state) {
-
 	        // Check if the request for our state failed...
-	 	    if (!succeeded || icsFileIsNotLoading) {
+	 	    if (!succeeded || calendarDataFileIsNotLoading) {
 
 	            hideLoadingIndicator();
 
@@ -276,71 +266,163 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
 	    };
 
 	    fetchCalendarData = function () {
-	        var failure = function () {
-	            hideLoadingIndicator();
-	            showError(ERROR_GETTING_FEED, function () {
-	                // Bind the "try again" button to hide the error message
-	                // and retry the operation.
-	                $("#error_msg #error_retry_btn", root).click(function () {
+            var success;
+            var failure;
 
-	                    $("#error_msg", root).slideUp(function () {
-	                        // Once the error box has slid away, show the
-	                        // loading wheel and fetch the data again.
-	                        showLoadingIndicator();
-	                        fetchCalendarData();
-	                    });
-	                });
+    	    /**
+	         * Expected URLs can be of this form:
+	         * 'http://www.google.com/calendar/feeds/berkeley.edu_di5bkdrobcvs6hb19d0em2u2r4%40group.calendar.google.com/private-d26a6c6784dc83a309c482a7bdf987cd/basic'
+	         * 
+	         * They can be transformed by rewritePathIfNeeded as this:
+	         * 'https://www.google.com/calendar/feeds/berkeley.edu_di5bkdrobcvs6hb19d0em2u2r4%40group.calendar.google.com/private-d26a6c6784dc83a309c482a7bdf987cd/full?alt=json'
+	         */
 
-	            });
-	        };
-	        var success = function (data) {
-	            // The proxy's iCalendar post processor is broken -- it returns
-	            // 200 success when it gets a bad response from the origin
-	            // server... We'll have to attempt to detect failure here:
-	            if (!data) {
-	                return failure();
-	            }
+            _feedUrl = rewritePathIfNeeded(_feedUrl);
+            if (urlIsGoogleFeed) {
+				$.getJSON(_feedUrl, function(data){
+					if (data.feed.entry) {
+                        calendarDataHasBeenLoaded = true;
 
-	            // Hopefully the data is OK.
-	            if (data.vcalendar && data.vcalendar.vevents) {
-	                var events = data.vcalendar.vevents;
-	                _totalFeedEvents = events.length;
-                
-	                if (_totalFeedEvents === null) { 
-	                    icsFileIsNotLoading = true;
-	                } else {
-	                    _totalFeedEvents = events.length;
-	                    icsFileIsNotLoading = false;
- 
-	                    // Convert event date strings into date objects
-	                    events = $.map(events, parseEventDates);
+						entries = data.feed.entry;
+						_totalFeedEvents = entries.length;
+	
+						if (_totalFeedEvents === null) { 
+							calendarDataFileIsNotLoading = true;
+						} else {
+							_totalFeedEvents = entries.length;
+							calendarDataFileIsNotLoading = false;
+		
+							// Convert event date strings into date objects
+							$.each(entries, function(i, item){
+								events[i] = {
+									SUMMARY : item.title.$t,
+									DTSTART : item.gd$when[0].startTime,
+									DTEND : item.gd$when[0].endTime,
+									DESCRIPTION : item.content.$t || null,
+									LOCATION : item.gd$where[0].valueString  || null,
+									URL : null,
+									startTime : new Date(item.gd$when[0].startTime),
+									hasDetails : false
+								}
+	
+								events[i].hasDetails =  ((events[i].DESCRIPTION != null) || (events[i].LOCATION != null));
+								
+							});
+	
+                            filterEvents(events);
 
-	                    // Filter the events to just those happening today
-	                    var range = (_settingsDateRange || DEFAULT_DISPLAY_RANGE);
-	                    var startDate = (isFinite(range[0]) ?
-	                            dates.addDays(dates.today(), range[0]) : null);
-	                    // add one as between() excludes the upper endpoint, but the
-	                    // slider is inclusive.
-	                    var endDate = (isFinite(range[1]) ?
-	                            dates.addDays(dates.today(), range[1] + 1) : null);
-	                    events = $.grep(events, between(startDate, endDate));
+						}
+					}
+	
+				});
+				$.ajax({
+					url : _feedUrl,
+					data : {
+						feedurl : _feedUrl
+					},
+					success : success,
+					failure : failure
+				});
+			} else {
 
-	                    // Group the events into a list of groups, one for each day
-	                    _groupedDays = groupByDay(events);
+				var failure = function () {
+					hideLoadingIndicator();
+					showError(ERROR_GETTING_FEED, function () {
+						// Bind the "try again" button to hide the error message
+						// and retry the operation.
+						$("#error_msg #error_retry_btn", root).click(function () {
+	
+							$("#error_msg", root).slideUp(function () {
+								// Once the error box has slid away, show the
+								// loading wheel and fetch the data again.
+								showLoadingIndicator();
+								fetchCalendarData();
+							});
+						});
+	
+					});
+				};
+				var success = function (data) {
+					// The proxy's iCalendar post processor is broken -- it returns
+					// 200 success when it gets a bad response from the origin
+					// server... We'll have to attempt to detect failure here:
+					if (!data) {
+						return failure();
+					}
+	
+                    calendarDataHasBeenLoaded = true;
+					// Hopefully the data is OK.
+					if (data.vcalendar && data.vcalendar.vevents) {
+						var events = data.vcalendar.vevents;
+						_totalFeedEvents = events.length;
+					
+						if (_totalFeedEvents === null) { 
+							icsFileIsNotLoading = true;
+						} else {
+							_totalFeedEvents = events.length;
+							icsFileIsNotLoading = false;
+	 
+							// Convert event date strings into date objects
+							$.each(events, function(i, item){
+								events[i] = {
+									SUMMARY : item.SUMMARY,
+									DTSTART : item.DTSTART,
+									DTEND : item.DTEND || null,
+									DESCRIPTION : item.DESCRIPTION || null,
+									LOCATION : item.LOCATION || null,
+									URL : item.URL || null,
+									startTime : new Date(item.DTSTART),
+									endDate : new Date(item.DTEND),
+									hasDetails : false
+								}
+	
+								events[i].hasDetails =  ((events[i].DESCRIPTION != null) || (events[i].LOCATION != null) || (events[i].URL != null));
+							});
+								
+                            filterEvents(events);
+						}
+					}
 
-	                }
-	            }
-	            updateCalendar();
-	        };
+				};
 
-	        $.ajax({
-	            url : ICAL_PROXY_PATH,
-	            data : {
-	                feedurl : _feedUrl
-	            },
-	            success : success,
-	            failure : failure
-	        });
+					$.ajax({
+						url : ICAL_PROXY_PATH,
+						data : {
+							feedurl : _feedUrl
+						},
+      
+						error: function(a,b,c){
+							var feedError = true;
+   						},
+					    success : success,
+    					failure : failure
+					});
+			
+			}
+
+	    };
+
+
+	    filterEvents = function (events) {
+			// Filter the events to just those happening today
+			var range = (_settingsDateRange || DEFAULT_DISPLAY_RANGE);
+			var startDate = (isFinite(range[0]) ?
+					dates.addDays(dates.today(), range[0]) : null);
+			// add one as between() excludes the upper endpoint, but the
+			// slider is inclusive.
+			var endDate = (isFinite(range[1]) ?
+					dates.addDays(dates.today(), range[1] + 1) : null);
+			var j = 0;
+			$.each(events, function(i, item){							 
+				if ((item.startTime >= startDate) && (item.startTime < endDate)) {
+					eventsCurrent[j] = item;
+					j++;
+				}
+			});
+
+			// Group the events into a list of groups, one for each day
+			_groupedDays = groupByDay(eventsCurrent);
+
 	    };
 
 	    isFinite = function (dayDelta) {
@@ -348,66 +430,40 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
 	    };
 
 	    /**
-	     * Convert date strings from a JSON origionating event object into js Date
+	     * Convert date strings from a JSON originating event object into js Date
 	     * objects in the current user's prefered time zone.
 	     */
-	    parseEventDates = function (event) {
-	        event.DTSTART = localiseDate(dates.parseISO8601(event.DTSTART));
-
-			// If event.DTEND is present, store the end date. Otherwise, don't refer to it.
-			if (event.DTEND) {
-	       		event.DTEND = localiseDate(dates.parseISO8601(event.DTEND));
-			}
-		
-	        return event;
-	    };
-
 	    notBefore = function (date) {
 	        return function (event) {
 	            return event.DTSTART >= date;
 	        };
 	    };
 
-	    between = function (dateStart, dateEnd) {
-	        return function (event) {
-	            if (dateStart && dateEnd) {
-	                return event.DTSTART >= dateStart && event.DTSTART < dateEnd;
-	            }
-	            if (dateStart) {
-	                return event.DTSTART >= dateStart;
-	            }
-	            if (dateEnd) {
-	                return event.DTSTART < dateEnd;
-	            }
-	            return true;
-	        };
-	    };
-
 	    compareEventByStartDate = function (a, b) {
-	        return a.vevent.DTSTART.getTime() - b.vevent.DTSTART.getTime();
+	        return a.vevent.startTime.getTime() - b.vevent.startTime.getTime();
 	    };
 
 	    groupByDay = function (vevents) {
-	        var i, key, days = {};
-	        for (i = 0; i < vevents.length; ++i) {
-	            var event = vevents[i];
-	            // We need a string to key our obj with
-	            var dateKey = dates.stripTime(event.DTSTART).toISOString();
-	            if (!days[dateKey]) {
-	                days[dateKey] = [];
-	            }
-	            days[dateKey].push(new Event(event));
-	        }
-	        var sortedDays = [];
-	        for (key in days) {
-	            if (days.hasOwnProperty(key)) {
-	                var events = days[key];
-	                events.sort(compareEventByStartDate);
-	                sortedDays.push([ key, events ]);
-	            }
-	        }
-	        sortedDays.sort();
-	        return sortedDays;
+			var i, key, days = {};
+			for (i = 0; i < vevents.length; ++i) {
+				var event = vevents[i];
+				// We need a string to key our obj with
+				var dateKey = dates.stripTime(event.startTime).toISOString();
+				if (!days[dateKey]) {
+					days[dateKey] = [];
+				}
+				days[dateKey].push(new Event(event));
+			}
+			var sortedDays = [];
+			for (key in days) {
+				if (days.hasOwnProperty(key)) {
+					var events = days[key];
+					events.sort(compareEventByStartDate);
+					sortedDays.push([ key, events ]);
+				}
+			}
+			sortedDays.sort();
+			return sortedDays;
 	    };
 
 	    /**
@@ -431,30 +487,32 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
 
 	    /** Called when the calendar data has been updated. */
 	    updateCalendar = function () {
-
-	        var rendered = sakai.api.Util.TemplateRenderer("#agenda_template", {
-	            title : _title,
-	            webcalFeedUrl : rewriteHttpUrlToWebcal(_feedUrl),
-	            days : _groupedDays,
-	            totalFeedEvents : _totalFeedEvents,
-				isViewingAsList : true,
-				isInThreeColumnView : _isInThreeColumnView
-	        });
-
- 
-	       $(".ajax-content", root).html(rendered);
-	        $(".ajax-content .summary.compact", root).toggle(
-	            expandCalendarEntry,
-	            contractCalendarEntry
-	        );
-
-	        $(".ajax-content", root).show();
-	        hideLoadingIndicator();
-	        $("#title", root).hover(function (e) {
-	            $(e.target).children().fadeIn();
-	        }, function (e) {
-	            $(e.target).children().fadeOut();
-	        });
+            if (calendarDataHasBeenLoaded) {
+				var rendered = sakai.api.Util.TemplateRenderer("#agenda_template", {
+					title : _title,
+					//webcalFeedUrl : rewriteHttpUrlToWebcal(_feedUrl),
+					days : _groupedDays,
+					totalFeedEvents : _totalFeedEvents,
+					isInThreeColumnView : _isInThreeColumnView
+				});
+	
+				$(".ajax-content", root).html(rendered);
+	
+				$(".ajax-content .summary.compact", root).toggle(
+					expandCalendarEntry,
+					contractCalendarEntry
+				);
+	
+				$(".ajax-content", root).show();
+				hideLoadingIndicator();
+	
+				$("#title", root).hover(function (e) {
+					$(e.target).children().fadeIn();
+				}, function (e) {
+					$(e.target).children().fadeOut();
+				});
+				calendarDataHasBeenLoaded = false;
+			}
 	    };
 
 	    hideLoadingIndicator = function () {
@@ -488,7 +546,7 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
 	    settingsFormUrlField.change(function (e) {
 	        var urltext = $(e.target).val();
 	        // Help people inputting webcal:// links by rewriting them to http
-	        urltext = rewriteWebcalUrlToHttp(urltext);
+	        urltext = rewritePathIfNeeded(urltext);
 	        $(e.target).val(urltext);
 	    });
 
@@ -497,23 +555,62 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
 	    };
 
 	    rewriteHttpUrlToWebcal = function (url) {
-	        return url.replace(/^http:\/\//, "webcal://");
+            if (!urlIsGoogleFeed) {
+				// This causes trouble for the Validator default url rule.
+				// To do: Write a more expansive rule for this part of html:
+				//<input type="text" id="cccalendarfeed_settings_txtUrl"
+                //    name="rss_settings_txtUrl"
+                //    class="required s3d-input-full-width" />
+
+		        return url.replace(/^https:\/\//, "webcal://");
+			} else {
+    			return url;			
+			}
 	    };
 
-	    onWidgetSettingsStateAvailable = function (success, state) {
+        // The XML string that Google Calendar supplies needs to be edited to supply JSON.
+        rewritePathIfNeeded = function (url) {
+            
+            var googlePrefix1_pattern = /^http:\/\/www.google.com\//i;
+            var googlePrefix2_pattern = /^https:\/\/www.google.com\//i;
+
+            var googleICALPrefix_pattern = /^http:\/\/www.google.com\/calendar\/ical\//i;
+            var googleICALSuffix_pattern = /\/basic.ics$/i;
+            
+            var googleXMLPrefix_pattern = /^http:\/\/www.google.com\/calendar\/feeds\//i;
+            var googleXMLSuffix_pattern = /\/basic$/i;
+
+            var googlePrefix_replace = 'https://www.google.com/calendar/feeds/';
+            var googleSuffix_replace = '/full?alt=json&orderby=starttime&singleevents=true&sortorder=ascending';
+                        
+//var url1 = url;
+            if (url.match(googlePrefix1_pattern) || url.match(googlePrefix2_pattern)) {
+                urlIsGoogleFeed = true;
+            } else {
+                // Assume that URL is a static ics file feed.
+                urlIsGoogleFeed = false;
+            }
+
+			if (urlIsGoogleFeed) {
+				if (url.match(googleICALPrefix_pattern)) {
+					// Assume that URL is ical from Google Calendar.
+					url = url.replace(googleICALPrefix_pattern, googlePrefix_replace);
+					url = url.replace(googleICALSuffix_pattern, googleSuffix_replace);
+				} else if (url.match(googleXMLPrefix_pattern)) {
+					// Assume that URL is XML from Google Calendar.
+					url = url.replace(googleXMLPrefix_pattern, googlePrefix_replace);
+					url = url.replace(googleXMLSuffix_pattern, googleSuffix_replace);
+				}
+			}
+
+            return url;
+        };
+
+        onWidgetSettingsStateAvailable = function (success, state) {
 	        var title, url;
 	        if (success) {
-	           // If title or URL have not been defined, use defaults. 
-	           if (state.title) {
-	                title = state.title;
-	            } else {
-	                title = URL_DEFAULT_TITLE;
-	            }
-	            if (state.url) {
-	                url = state.url;
-	            } else {
-	                url = URL_DEFAULT_URL;
-	            }
+                title = state.title;
+                url = state.url;
 	            if (state.daysFrom && state.daysTo) {
 	                _settingsDateRange = [ state.daysFrom, state.daysTo ];
 	            }
@@ -585,14 +682,16 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
 	        );
 	    };
 
-	    runICSFileLoadTimeout = function() {
-		    icsFileIsNotLoading = false;
+	    runCalendarDataLoadTimeout = function() {
+		    calendarDataFileIsNotLoading = false;
 	        setTimeout(function() {
 	            // If file has not loaded by now, show error message.
 			   if (_totalFeedEvents === null) {
-	               icsFileIsNotLoading = true;
+	               calendarDataFileIsNotLoading = true;
 	               getState(onStateAvailable);
-	          }
+	           }
+
+	           updateCalendar();
 	        }, 3000);
 	    };
 
@@ -605,22 +704,31 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
 	     */
 	    doInit = function () {
 
-	        //checkNumberOfColumns();
-	        _isInThreeColumnView = false;
-	        if (showSettings) {
-	            // Setup validation/save handler on save button
-	           var validateOpts = {
-	                submitHandler : settingsSave,
+            _isInThreeColumnView = false;
+            calendarDataHasBeenLoaded = false;
+            if (showSettings) {
+                // Setup validation/save handler on save button
+                var validateOpts = {
+                    submitHandler : settingsSave,
 					methods: {
 	                   "checkICS" : {
 	                        'method' : function(value, element) {
 	                            var icsPattern = /\.ics$/i;
 	                            return value.match(icsPattern);
 	                        },
-	                    'text' : "File extension is not \".ics\"."
-	                }
-	            }
-	           };
+	                        'text' : "File extension must be \".ics\"."
+	                    },
+                        "checkJsonSuffix" : {
+                            'method' : function(value, element) {
+                                var basicSuffixPattern = /\/basic$/i;
+                                var altJsonSuffixPattern = /\/full\?alt=json$/i;
+                                return (value.match(basicSuffixPattern) || value.match(altJsonSuffixPattern));
+                                },
+                            'text' : "Path must end with either \"/basic\" or \"/full/?alt=json\"."
+                        }
+                    }
+                };
+
 	            sakai.api.Util.Forms.validate(settingsForm, validateOpts, true);
 
 	            $("#cccalendarfeed_settings_save", root).click(function () {
@@ -649,7 +757,7 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
 	            showLoadingIndicator();
 
 	 			// Start timer, to trap for invalid path resulting in ics file being unable to load.
-	            runICSFileLoadTimeout();
+	            runCalendarDataLoadTimeout();
 
 	        }
 	    };

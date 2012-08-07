@@ -62,6 +62,13 @@
 	font-size: 16px;
 }
 
+.error-content {
+	color: inherit;
+	font-weight: normal;
+	margin-bottom: 6px;
+	font-size: 12px;
+}
+
 /*
  * Widget Container CSS
  */
@@ -106,13 +113,6 @@ table { margin: 0; }
 	vertical-align: top;
 }
 
-
-.cccalendarfeed_instruction {
-	color: #999;
-	font-size: 9px;
-	margin-top: -4px;
-	margin-bottom: -10px;
-}
 
 /* Agenda Table */
 

@@ -10,13 +10,8 @@
     <!-- event_index must be coerced by using '==' when grouping events together under a single day. Do not use '===' -->
     <div id="agenda_template" style="display: none;"><!--
       <div>
-          <p class="displayprofilesection_generalinfo_example cccalendarfeed_instruction">__MSG__EDIT_URL_SETTINGS__</p>
       <h1 id="title" class="header1 lecture-subject">
         ${title}
-        <a style="display: none;" href="${webcalFeedUrl}"
-           title="__MSG__WEBCAL_LINK_TITLE__">
-          <img src="/devwidgets/cccalendarfeed/images/external.png">
-        </a>
       </h1>
       <div id="cccalendarfeed_lectures">
         <table id="agenda">
@@ -34,13 +29,8 @@
                     {if event_index == 0}
                         {if isInThreeColumnView}
                             <td 
-	                        {if event.dayDelta < 2 && event.dayDelta >= -5}
-	                            class="date relative"
-	                            title="${event.absDate}">${event.relDate}
-	                        {else}
 	                            class="date absolute"
 	                            title="${event.relDate}">${event.absDate}
- 		                    {/if}
                             </td>
                             <td>
                             </td>
@@ -48,15 +38,9 @@
                             <tr>
                        {else}
                             <td rowspan="${events.length}"
-                            {if event.dayDelta < 2 && event.dayDelta >= -5}
-                                class="date relative"
-                                title="${event.absDate}">${event.relDate}
-                                </td>
-                            {else}
                                 class="date absolute"
                                 title="${event.relDate}">${event.absDate}
-                                </td>
-                             {/if}
+                            </td>
 		                {/if}
                     {/if}
                     {if isInThreeColumnView}
@@ -64,11 +48,18 @@
                     {else}
                         <td class="time-wide">${event.time}</td>
                     {/if}
-	                   <td class="description">
-	                    <div class="summary compact link expandable">
-	                        ${event.summary}
-	                    </div>
-                   <div class="full">
+                    {if event.hasDetails}
+	                    <td class="description">
+	                        <div class="summary compact link expandable">
+	                            ${event.summary}
+	                        </div>
+	                {else}
+	                    <td class="description">
+	                        <div class="summary">
+	                            ${event.summary}
+	                        </div>
+                    {/if}
+                    <div class="full">
                     {for para in event.description}
                         <p>${para}</p>
                     {/for}
@@ -86,7 +77,7 @@
                             </td>
                         </tr>
                     {/if}
-                    {if event.location}
+                    {if event.location != null}
                       <tr>
                           <td>
                               <span class="label">
@@ -125,6 +116,7 @@
       </div>
  --></div>
 
+
  <!-- MAIN VIEW -->
  <div id="cccalendarfeed_main" style="display:none;">
    <div class="loading" style="display: none;">
@@ -136,7 +128,7 @@
    <div id="template_error_msg"><!--
         <div class="info-box error-box error_container">
           <h4 class="info-title">${title}</h4>
-      	  ${body}
+             ${body}
         </div>
    --></div>
     </div>
@@ -160,7 +152,7 @@
           </label>
           <input type="text" id="cccalendarfeed_settings_txtUrl"
                  name="rss_settings_txtUrl"
-                 class="required url checkICS s3d-input-full-width" />
+                 class="required s3d-input-full-width" />
 
           <label class="s3d-input-label s3d-input-label-above">
             __MSG__SETTINGS_FORM_LABEL_CALENDAR_DISPLAY_RANGE__:
@@ -191,6 +183,7 @@
     </div>
   </div>
 </div>
+
 
 <!-- JAVASCRIPT -->
 <script type="text/javascript" src="/devwidgets/cccalendarfeed/javascript/cccalendarfeed.js"></script>

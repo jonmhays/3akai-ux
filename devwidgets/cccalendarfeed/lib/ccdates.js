@@ -46,28 +46,28 @@ define(function () {
     /*jslint maxlen: 80 */
 
     var DAYS = {
-        "0" : "Mon",
-        "1" : "Tue",
-        "2" : "Wed",
-        "3" : "Thu",
-        "4" : "Fri",
-        "5" : "Sat",
-        "6" : "Sun"
+        "0" : "Sunday",
+        "1" : "Monday",
+        "2" : "Tuesday",
+        "3" : "Wednesday",
+        "4" : "Thursday",
+        "5" : "Friday",
+        "6" : "Saturday"
     };
 
     var MONTHS = {
-        "0" : "Jan",
-        "1" : "Feb",
-        "2" : "Mar",
-        "3" : "Apr",
+        "0" : "January",
+        "1" : "February",
+        "2" : "March",
+        "3" : "April",
         "4" : "May",
-        "5" : "Jun",
-        "6" : "Jul",
-        "7" : "Aug",
-        "8" : "Sep",
-        "9" : "Oct",
-        "10" : "Nov",
-        "11" : "Dec"
+        "5" : "June",
+        "6" : "July",
+        "7" : "August",
+        "8" : "September",
+        "9" : "October",
+        "10" : "November",
+        "11" : "December"
     };
 
     // Length of one day in milliseconds
@@ -231,7 +231,8 @@ define(function () {
         var dayName = DAYS[date.getDay()];
         var dayNumber = date.getDate();
         var monthName = MONTHS[date.getMonth()];
-        return dayName + " " + dayNumber + " " + monthName;
+        var yearName = date.getFullYear();
+        return dayName + ", " + monthName + " " + dayNumber + ", " + yearName;
     };
 
     /**
