@@ -72,7 +72,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai){
             // Begin CalCentral
             // Register event handler for tab links, initially hide Subjects and Campus Life
             swapDivs();
-            $("ul.myb-cat-by-subject, ul.myb-cat-by-campus").hide();
+            $(".myb-cat-by-subject, .myb-cat-by-campuslife").hide();
             // End CalCentral
         };
 
