@@ -70,7 +70,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai){
             renderallcategories();
 
             // Begin CalCentral
-            // Register event handler for tab links, initially hide Subjects and Campus Life
+            // Register event handler for tabs; initially hide Subjects and Campus Life
             swapDivs();
             $(".myb-cat-by-subject, .myb-cat-by-campuslife").hide();
             // End CalCentral
@@ -79,46 +79,44 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai){
         // Begin CalCentral custom - Handler to enable/disable sections on tab clicks
         var swapDivs = function() {
 
-            // These DOM elements get shown/hidden via tab nav - these need to be defined here rather than up top, thus not reusable. Alternative?
+            // These DOM elements get shown/hidden via tab nav
             var $ccColleges = $(".myb-cat-by-colleges");
             var $ccSubjects = $(".myb-cat-by-subject");
             var $ccCampusLife = $(".myb-cat-by-campuslife");
 
-            // Tab nav links
-            var $toggleColleges = $("a#toggleColleges");
-            var $toggleSubjects = $("a#toggleSubjects");
-            var $toggleCampusLife = $("a#toggleCampusLife");
-
             // The tabs themselves
-            var $tabColleges = $("div#tabColleges");
-            var $tabSubjects = $("div#tabSubjects");
-            var $tabCampusLife = $("div#tabCampusLife");
+            var $tabColleges = $("button#tabColleges");
+            var $tabSubjects = $("button#tabSubjects");
+            var $tabCampusLife = $("button#tabCampusLife");
 
-            // On each tab nav change, show/hide the right lists, turn off the "selected"
-            // state for all tabs, and enable for the current tab.
+            // Initially select the Colleges tab
+            $tabColleges.addClass('s3d-tabs-active');
 
-            $($toggleColleges).on('click', function() {
+            // On each tab nav change, show/hide appropriate lists, turn off "selected"
+            // state for all tabs, and enable highlighting for current tab.
+
+            $($tabColleges).on('click', function() {
                 $ccColleges.show();
                 $ccSubjects.hide();
                 $ccCampusLife.hide();
-                $('div.category_tab').removeClass('category_tab_selected');
-                $tabColleges.addClass('category_tab_selected');
+                $('button.s3d-link-button').removeClass('s3d-tabs-active');
+                $tabColleges.addClass('s3d-tabs-active');
             });
 
-            $($toggleSubjects).on('click', function() {
+            $($tabSubjects).on('click', function() {
                 $ccColleges.hide();
                 $ccSubjects.show();
                 $ccCampusLife.hide();
-                $('div.category_tab').removeClass('category_tab_selected');
-                $tabSubjects.addClass('category_tab_selected');
+                $('button.s3d-link-button').removeClass('s3d-tabs-active');
+                $tabSubjects.addClass('s3d-tabs-active');
             });
 
-            $($toggleCampusLife).on('click', function() {
+            $($tabCampusLife).on('click', function() {
                 $ccColleges.hide();
                 $ccSubjects.hide();
                 $ccCampusLife.show();
-                $('div.category_tab').removeClass('category_tab_selected');
-                $tabCampusLife.addClass('category_tab_selected');
+                $('button.s3d-link-button').removeClass('s3d-tabs-active');
+                $tabCampusLife.addClass('s3d-tabs-active');
             });
         };
         // End CalCentral custom
