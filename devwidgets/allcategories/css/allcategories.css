@@ -143,6 +143,11 @@
     top:8px;
 }
 
+/* Prevent FireFox from showing scrollbars in explore_navigation */
+#explore_navigation {
+    overflow:hidden;
+}
+
 /* Drop shadow on explore_content interferes with tab UI */
 #explore_content {
     background: none;
