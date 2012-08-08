@@ -32,6 +32,10 @@ require(['jquery', 'sakai/sakai.api.core'], function($, sakai) {
         var doInit = function() {
             if (sakai.config.enableBranding) {
                 $brandingWidget.show();
+                $brandingWidget.css('cursor', 'pointer');
+                $brandingWidget.on('click', function() {
+                    document.location.href = document.location.protocol + '//' + document.location.hostname + ':' + document.location.port + '/index';
+                });
             }
         };
 
