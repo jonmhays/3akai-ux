@@ -275,97 +275,97 @@ define(["config/config", "config/env"], function(config) {
             title_prefix: "College of Letters & Science",
             title: "Arts & Humanities",
             children: {
-                ancient_history_mediterranean_archaeology: {
+                science_arts_humanities_ancient_history_mediterranean_archaeology: {
                     title: "Ancient History & Mediterranean Archaeology"
                 },
-                art_history: {
+                science_arts_humanities_art_history: {
                     title: "Art History"
                 },
-                art_practice: {
+                science_arts_humanities_art_practice: {
                     title: "Art Practice"
                 },
-                arts_research_center: {
+                science_arts_humanities_arts_research_center: {
                     title: "Arts Research Center"
                 },
-                berkeley_language_center: {
+                science_arts_humanities_berkeley_language_center: {
                     title: "Berkeley Language Center"
                 },
-                berkeley_war_crimes_studies_center: {
+                science_arts_humanities_berkeley_war_crimes_studies_center: {
                     title: "Berkeley War Crimes Studies Center"
                 },
-                buddhist_studies: {
+                science_arts_humanities_buddhist_studies: {
                     title: "Buddhist Studies"
                 },
-                celtic_studies: {
+                science_arts_humanities_celtic_studies: {
                     title: "Celtic Studies"
                 },
-                center_for_new_music_audio_technologies: {
+                science_arts_humanities_center_for_new_music_audio_technologies: {
                     title: "Center for New Music & Audio Technologies"
                 },
-                classics: {
+                science_arts_humanities_classics: {
                     title: "Classics"
                 },
-                comparative_literature: {
+                science_arts_humanities_comparative_literature: {
                     title: "Comparative Literature"
                 },
-                dutch_studies: {
+                science_arts_humanities_dutch_studies: {
                     title: "Dutch Studies"
                 },
-                east_asian_languages_cultures: {
+                science_arts_humanities_east_asian_languages_cultures: {
                     title: "East Asian Languages & Cultures"
                 },
-                english: {
+                science_arts_humanities_english: {
                     title: "English"
                 },
-                film_media: {
+                science_arts_humanities_film_media: {
                     title: "Film & Media"
                 },
-                french: {
+                science_arts_humanities_french: {
                     title: "French"
                 },
-                german: {
+                science_arts_humanities_german: {
                     title: "German"
                 },
-                italian_studies: {
+                science_arts_humanities_italian_studies: {
                     title: "Italian Studies"
                 },
-                jewish_studies: {
+                science_arts_humanities_jewish_studies: {
                     title: "Jewish Studies"
                 },
-                medieval_studies: {
+                science_arts_humanities_medieval_studies: {
                     title: "Medieval Studies"
                 },
-                music: {
+                science_arts_humanities_music: {
                     title: "Music"
                 },
-                near_eastern_studies: {
+                science_arts_humanities_near_eastern_studies: {
                     title: "Near Eastern Studies"
                 },
-                philosophy: {
+                science_arts_humanities_philosophy: {
                     title: "Philosophy"
                 },
-                rhetoric: {
+                science_arts_humanities_rhetoric: {
                     title: "Rhetoric"
                 },
-                romance_languages_literature: {
+                science_arts_humanities_romance_languages_literature: {
                     title: "Romance Languages & Literature"
                 },
-                scandinavian: {
+                science_arts_humanities_scandinavian: {
                     title: "Scandinavian"
                 },
-                slavic_languages_and_literature: {
+                science_arts_humanities_slavic_languages_and_literature: {
                     title: "Slavic Languages and Literature"
                 },
-                south_southeast_asian_studies: {
+                science_arts_humanities_south_southeast_asian_studies: {
                     title: "South & Southeast Asian Studies"
                 },
-                spanish_portugese: {
+                science_arts_humanities_spanish_portugese: {
                     title: "Spanish & Portugese"
                 },
-                theater_dance_performance_studies: {
+                science_arts_humanities_theater_dance_performance_studies: {
                     title: "Theater, Dance & Performance Studies"
                 },
-                townsend_center_for_the_humanities: {
+                science_arts_humanities_townsend_center_for_the_humanities: {
                     title: "Townsend Center for the Humanities"
                 }
             }
@@ -375,28 +375,28 @@ define(["config/config", "config/env"], function(config) {
             title_prefix: "College of Letters & Science",
             title: "Biological Sciences",
             children: {
-                biochemistry_biophysics_structural_biology: {
+                science_biological_sciences_biochemistry_biophysics_structural_biology: {
                     title: "Biochemistry, Biophysics & Structural Biology"
                 },
-                cell_developmental_biology: {
+                science_biological_sciences_cell_developmental_biology: {
                     title: "Cell & Developmental Biology"
                 },
-                genetics_geonomics_development: {
+                science_biological_sciences_genetics_geonomics_development: {
                     title: "Genetics, Geonomics & Development"
                 },
-                immunology_pathogenesis: {
+                science_biological_sciences_immunology_pathogenesis: {
                     title: "Immunology & Pathogenesis"
                 },
-                integrative_biology: {
+                science_biological_sciences_integrative_biology: {
                     title: "Integrative Biology"
                 },
-                molecular_and_cell_biology: {
+                science_biological_sciences_molecular_and_cell_biology: {
                     title: "Molecular and Cell Biology"
                 },
-                neurobiology: {
+                science_biological_sciences_neurobiology: {
                     title: "Neurobiology"
                 },
-                physical_education: {
+                science_biological_sciences_physical_education: {
                     title: "Physical Education"
                 }
             }
@@ -405,28 +405,28 @@ define(["config/config", "config/env"], function(config) {
             title_prefix: "Haas School of",
             title: "Business",
             children: {
-                accounting: {
+                haas_accounting: {
                     title: "Accounting"
                 },
-                business_public_policy: {
+                haas_business_public_policy: {
                     title: "Business & Public Policy"
                 },
-                economic_analysis_policy: {
+                haas_economic_analysis_policy: {
                     title: "Economic Analysis & Policy"
                 },
-                finance: {
+                haas_finance: {
                     title: "Finance"
                 },
-                management_of_organizations: {
+                haas_management_of_organizations: {
                     title: "Management of Organizations"
                 },
-                marketing: {
+                haas_marketing: {
                     title: "Marketing"
                 },
-                operations_information_technology_management: {
+                haas_operations_information_technology_management: {
                     title: "Operations & Information Technology Management"
                 },
-                real_estate: {
+                haas_real_estate: {
                     title: "Real Estate"
                 }
             }
@@ -435,16 +435,16 @@ define(["config/config", "config/env"], function(config) {
             title_prefix: "College of",
             title: "Chemistry",
             children: {
-                chemical_biomolecular_engineering: {
+                college_of_chemistry_chemical_biomolecular_engineering: {
                     title: "Chemical & Biomolecular Engineering"
                 },
-                chemistry: {
+                college_of_chemistry_chemistry: {
                     title: "Chemistry"
                 },
-                materials_science_engineering: {
+                college_of_chemistry_materials_science_engineering: {
                     title: "Materials Science & Engineering"
                 },
-                nuclear_engineering: {
+                college_of_chemistry_nuclear_engineering: {
                     title: "Nuclear Engineering"
                 }
             }
@@ -453,10 +453,10 @@ define(["config/config", "config/env"], function(config) {
             title_prefix: "Graduate School of",
             title: "Education",
             children: {
-                education: {
+                graduate_school_of_education_education: {
                     title: "Education"
                 },
-                science_mathematics_education: {
+                graduate_school_of_education_science_mathematics_education: {
                     title: "Science & Mathematics Education"
                 }
             }
@@ -465,40 +465,40 @@ define(["config/config", "config/env"], function(config) {
             title_prefix: "College of",
             title: "Engineering",
             children: {
-                applied_science_technology: {
+                college_of_engineering_applied_science_technology: {
                     title: "Applied Science & Technology"
                 },
-                bioengineering: {
+                college_of_engineering_bioengineering: {
                     title: "Bioengineering"
                 },
-                civil_environmental_engineering: {
+                college_of_engineering_civil_environmental_engineering: {
                     title: "Civil & Environmental Engineering"
                 },
-                computational_genomic_biology: {
+                college_of_engineering_computational_genomic_biology: {
                     title: "Computational & Genomic Biology "
                 },
-                computer_science: {
+                college_of_engineering_computer_science: {
                     title: "Computer Science"
                 },
-                electrical_engineering: {
+                college_of_engineering_electrical_engineering: {
                     title: "Electrical Engineering"
                 },
-                engineering: {
+                college_of_engineering_engineering: {
                     title: "Engineering"
                 },
-                industrial_engineering_operations_research: {
+                college_of_engineering_industrial_engineering_operations_research: {
                     title: "Industrial Engineering & Operations Research"
                 },
-                materials_science_engineering: {
+                college_of_engineering_materials_science_engineering: {
                     title: "Materials Science & Engineering "
                 },
-                mechanical_engineering: {
+                college_of_engineering_mechanical_engineering: {
                     title: "Mechanical Engineering"
                 },
-                nanoscale_science_engineering: {
+                college_of_engineering_nanoscale_science_engineering: {
                     title: "Nanoscale Science & Engineering"
                 },
-                ocean_engineering: {
+                college_of_engineering_ocean_engineering: {
                     title: "Ocean Engineering"
                 }
             }
@@ -507,19 +507,19 @@ define(["config/config", "config/env"], function(config) {
             title_prefix: "College of",
             title: "Environmental Design",
             children: {
-                architecture: {
+                ced_architecture: {
                     title: "Architecture"
                 },
-                city_regional_planning: {
+                ced_city_regional_planning: {
                     title: "City & Regional Planning"
                 },
-                environmental_design: {
+                ced_environmental_design: {
                     title: "Environmental Design"
                 },
-                landscape_architecture: {
+                ced_landscape_architecture: {
                     title: "Landscape Architecture"
                 },
-                visual_studies: {
+                ced_visual_studies: {
                     title: "Visual Studies"
                 }
             }
@@ -528,25 +528,25 @@ define(["config/config", "config/env"], function(config) {
             title_prefix: "School of",
             title: "Information",
             children: {
-                human_computer_interaction: {
+                school_of_information_human_computer_interaction: {
                     title: "Human-Computer Interaction"
                 },
-                information_communication_technologies_development: {
+                school_of_information_information_communication_technologies_development: {
                     title: "Information & Communication Technologies & Development"
                 },
-                information_economics_policy: {
+                school_of_information_information_economics_policy: {
                     title: "Information Economics & Policy"
                 },
-                information_law_policy: {
+                school_of_information_information_law_policy: {
                     title: "Information Law & Policy"
                 },
-                information_organization_retrieval: {
+                school_of_information_information_organization_retrieval: {
                     title: "Information Organization & Retrieval"
                 },
-                information_systems_design: {
+                school_of_information_information_systems_design: {
                     title: "Information Systems Design"
                 },
-                social_aspects_of_information: {
+                school_of_information_social_aspects_of_information: {
                     title: "Social Aspects of Information"
                 }
             }
@@ -554,10 +554,10 @@ define(["config/config", "config/env"], function(config) {
         interdepartmental_graduate_programs: {
             title: "Interdepartmental Graduate Programs",
             children: {
-                comparative_biochemistry: {
+                interdepartmental_graduate_programs_comparative_biochemistry: {
                     title: "Comparative Biochemistry"
                 },
-                energy_resources_group: {
+                interdepartmental_graduate_programs_energy_resources_group: {
                     title: "Energy & Resources Group"
                 }
             }
@@ -566,40 +566,40 @@ define(["config/config", "config/env"], function(config) {
             title_prefix: "Graduate School of",
             title: "Journalism",
             children: {
-                business_reporting: {
+                jschool_business_reporting: {
                     title: "Business Reporting"
                 },
-                documentary: {
+                jschool_documentary: {
                     title: "Documentary"
                 },
-                environmental_science_journalism: {
+                jschool_environmental_science_journalism: {
                     title: "Environmental & Science Journalism"
                 },
-                international_reporting: {
+                jschool_international_reporting: {
                     title: "International Reporting"
                 },
-                investigative_reporting: {
+                jschool_investigative_reporting: {
                     title: "Investigative Reporting"
                 },
-                magazine: {
+                jschool_magazine: {
                     title: "Magazine"
                 },
-                new_media: {
+                jschool_new_media: {
                     title: "New Media"
                 },
-                newspaper: {
+                jschool_newspaper: {
                     title: "Newspaper"
                 },
-                photojournalism: {
+                jschool_photojournalism: {
                     title: "Photojournalism"
                 },
-                political_reporting: {
+                jschool_political_reporting: {
                     title: "Political Reporting"
                 },
-                radio: {
+                jschool_radio: {
                     title: "Radio"
                 },
-                television: {
+                jschool_television: {
                     title: "Television"
                 }
             }
@@ -608,28 +608,28 @@ define(["config/config", "config/env"], function(config) {
             title_prefix: "School of",
             title: "Law",
             children: {
-                business_law_economics: {
+                school_of_law_business_law_economics: {
                     title: "Business, Law & Economics"
                 },
-                comparative_legal_studies: {
+                school_of_law_comparative_legal_studies: {
                     title: "Comparative Legal Studies"
                 },
-                environmental_law: {
+                school_of_law_environmental_law: {
                     title: "Environmental Law"
                 },
-                international_legal_studies: {
+                school_of_law_international_legal_studies: {
                     title: "International Legal Studies"
                 },
-                law: {
+                school_of_law_law: {
                     title: "Law"
                 },
-                law_technology: {
+                school_of_law_law_technology: {
                     title: "Law & Technology"
                 },
-                legal_studies: {
+                school_of_law_legal_studies: {
                     title: "Legal Studies"
                 },
-                social_justice: {
+                school_of_law_social_justice: {
                     title: "Social Justice"
                 }
             }
@@ -638,16 +638,16 @@ define(["config/config", "config/env"], function(config) {
             title_prefix: "College of Letters & Science",
             title: "Mathematical & Physical Sciences",
             children: {
-                astronomy: {
+                mathematical_physical_sciences_astronomy: {
                     title: "Astronomy"
                 },
-                earth_planetary_science: {
+                mathematical_physical_sciences_earth_planetary_science: {
                     title: "Earth & Planetary Science"
                 },
-                physics: {
+                mathematical_physical_sciences_physics: {
                     title: "Physics"
                 },
-                statistics: {
+                mathematical_physical_sciences_statistics: {
                     title: "Statistics"
                 }
             }
@@ -656,22 +656,22 @@ define(["config/config", "config/env"], function(config) {
             title_prefix: "College of",
             title: "Natural Resources",
             children: {
-                agricultural_resource_economics: {
+                cnr_agricultural_resource_economics: {
                     title: "Agricultural & Resource Economics"
                 },
-                environmental_science_policy_management: {
+                cnr_environmental_science_policy_management: {
                     title: "Environmental Science Policy & Management"
                 },
-                environmental_economics_policy: {
+                cnr_environmental_economics_policy: {
                     title: "Environmental Economics & Policy"
                 },
-                natural_resources: {
+                cnr_natural_resources: {
                     title: "Natural Resources"
                 },
-                nutritional_sciences_toxicology: {
+                cnr_nutritional_sciences_toxicology: {
                     title: "Nutritional Sciences & Toxicology"
                 },
-                plant_microbial_biology: {
+                cnr_plant_microbial_biology: {
                     title: "Plant & Microbial Biology"
                 }
             }
@@ -680,10 +680,10 @@ define(["config/config", "config/env"], function(config) {
             title_prefix: "School of",
             title: "Optometry",
             children: {
-                optometry: {
+                school_of_optometry_optometry: {
                     title: "Optometry"
                 },
-                vision_science: {
+                school_of_optometry_vision_science: {
                     title: "Vision Science"
                 }
             }
@@ -692,37 +692,37 @@ define(["config/config", "config/env"], function(config) {
             title_prefix: "School of",
             title: "Public Health",
             children: {
-                biostatistics: {
+                school_of_public_health_biostatistics: {
                     title: "Biostatistics"
                 },
-                environmental_health_sciences: {
+                school_of_public_health_environmental_health_sciences: {
                     title: "Environmental Health Sciences"
                 },
-                epidemiology: {
+                school_of_public_health_epidemiology: {
                     title: "Epidemiology"
                 },
-                health_medical_services: {
+                school_of_public_health_health_medical_services: {
                     title: "Health & Medical Services"
                 },
-                health_social_behavior: {
+                school_of_public_health_health_social_behavior: {
                     title: "Health & Social Behavior"
                 },
-                health_policy_management: {
+                school_of_public_health_health_policy_management: {
                     title: "Health Policy & Management"
                 },
-                health_services_policy_analysis: {
+                school_of_public_health_health_services_policy_analysis: {
                     title: "Health Services & Policy Analysis"
                 },
-                infectious_disease_vaccinology: {
+                school_of_public_health_infectious_disease_vaccinology: {
                     title: "Infectious Disease & Vaccinology"
                 },
-                maternal_child_health: {
+                school_of_public_health_maternal_child_health: {
                     title: "Maternal & Child Health"
                 },
-                public_health: {
+                school_of_public_health_public_health: {
                     title: "Public Health"
                 },
-                public_health_nutrition: {
+                school_of_public_health_public_health_nutrition: {
                     title: "Public Health Nutrition"
                 }
             }
@@ -731,7 +731,7 @@ define(["config/config", "config/env"], function(config) {
             title_prefix: "Goldman School of",
             title: "Public Policy",
             children: {
-                public_policy: {
+                public_policy_public_policy: {
                     title: "Public Policy"
                 }
             }
@@ -740,40 +740,40 @@ define(["config/config", "config/env"], function(config) {
             title_prefix: "College of Letters & Science",
             title: "Social Sciences",
             children: {
-                african_american_studies: {
+                science_social_sciences_african_american_studies: {
                     title: "African American Studies"
                 },
-                anthropology: {
+                science_social_sciences_anthropology: {
                     title: "Anthropology"
                 },
-                demography: {
+                science_social_sciences_demography: {
                     title: "Demography"
                 },
-                economics: {
+                science_social_sciences_economics: {
                     title: "Economics"
                 },
-                ethnic_studies: {
+                science_social_sciences_ethnic_studies: {
                     title: "Ethnic Studies"
                 },
-                gender_and_womens_studies: {
+                science_social_sciences_gender_and_womens_studies: {
                     title: "Gender and Women's Studies"
                 },
-                geography: {
+                science_social_sciences_geography: {
                     title: "Geography"
                 },
-                history: {
+                science_social_sciences_history: {
                     title: "History"
                 },
-                linguistics: {
+                science_social_sciences_linguistics: {
                     title: "Linguistics"
                 },
-                political_science: {
+                science_social_sciences_political_science: {
                     title: "Political Science"
                 },
-                psychology: {
+                science_social_sciences_psychology: {
                     title: "Psychology"
                 },
-                sociology: {
+                science_social_sciences_sociology: {
                     title: "Sociology"
                 }
             }
@@ -782,7 +782,7 @@ define(["config/config", "config/env"], function(config) {
             title_prefix: "School of",
             title: "Social Welfare",
             children: {
-                social_welfare: {
+                school_of_social_welfare_social_welfare: {
                     title: "Social Welfare"
                 }
             }
@@ -790,52 +790,52 @@ define(["config/config", "config/env"], function(config) {
         undergraduate_interdisciplinary_studies: {
             title: "Undergraduate & Interdisciplinary Studies",
             children: {
-                american_studies: {
+                undergraduate_interdisciplinary_studies_american_studies: {
                     title: "American Studies"
                 },
-                asian_studies: {
+                undergraduate_interdisciplinary_studies_asian_studies: {
                     title: "Asian Studies"
                 },
-                cognitive_science: {
+                undergraduate_interdisciplinary_studies_cognitive_science: {
                     title: "Cognitive Science"
                 },
-                creative_writing: {
+                undergraduate_interdisciplinary_studies_creative_writing: {
                     title: "Creative Writing"
                 },
-                college_writing_program: {
+                undergraduate_interdisciplinary_studies_college_writing_program: {
                     title: "College Writing Program"
                 },
-                development_studies: {
+                undergraduate_interdisciplinary_studies_development_studies: {
                     title: "Development Studies"
                 },
-                disability_studies: {
+                undergraduate_interdisciplinary_studies_disability_studies: {
                     title: "Disability Studies"
                 },
-                environmental_sciences: {
+                undergraduate_interdisciplinary_studies_environmental_sciences: {
                     title: "Environmental Sciences"
                 },
-                interdisciplinary_studies: {
+                undergraduate_interdisciplinary_studies_interdisciplinary_studies: {
                     title: "Interdisciplinary Studies"
                 },
-                latin_american_studies: {
+                undergraduate_interdisciplinary_studies_latin_american_studies: {
                     title: "Latin American Studies"
                 },
-                media_studies: {
+                undergraduate_interdisciplinary_studies_media_studies: {
                     title: "Media Studies"
                 },
-                middle_eastern_studies: {
+                undergraduate_interdisciplinary_studies_middle_eastern_studies: {
                     title: "Middle Eastern Studies"
                 },
-                military_affairs: {
+                undergraduate_interdisciplinary_studies_military_affairs: {
                     title: "Military Affairs"
                 },
-                peace_conflict_studies: {
+                undergraduate_interdisciplinary_studies_peace_conflict_studies: {
                     title: "Peace & Conflict Studies"
                 },
-                political_economy_of_industrial_societies: {
+                undergraduate_interdisciplinary_studies_political_economy_of_industrial_societies: {
                     title: "Political Economy of Industrial Societies"
                 },
-                religious_studies: {
+                undergraduate_interdisciplinary_studies_religious_studies: {
                     title: "Religious Studies"
                 }
             }
@@ -849,7 +849,7 @@ define(["config/config", "config/env"], function(config) {
             title: "Campus Life",
             cssClass: "myb-cat-by-campuslife"
         },
-        academic: {
+        campus_academic: {
             title: "Academic",
             children: {}
         },
