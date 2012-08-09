@@ -69,7 +69,7 @@ define(["config/config", "config/env"], function(config) {
     config.defaultprivstructure.structure0.notifications = {
         "_title": "__MSG__MY_NOTIFICATIONS__",
         "_ref": "id1165301022",
-        "_order": 2,
+        "_order": 3,
         "_canEdit": true,
         "_canSubedit": true,
         "_nonEditable": true,
@@ -129,7 +129,7 @@ define(["config/config", "config/env"], function(config) {
     config.defaultprivstructure.structure0.dynlists = {
             "_title": "__MSG__MY_DYNAMIC_LISTS__",
             "_ref": "id1307386414",
-            "_order": 3,
+            "_order": 4,
             "_canEdit": true,
             "_canSubedit": true,
             "_nonEditable": true
@@ -1175,41 +1175,41 @@ define(["config/config", "config/env"], function(config) {
         'name': 'mysakai2'
     });
 
-	config.defaultprivstructure.structure0['sakai2sites'] =  {
-	    '_ref': '${refid}2345',
-	    '_title': 'My bSpace sites',
-	    '_order': 2,
-	    '_canEdit': true,
-	    '_reorderOnly': true,
-	    '_nonEditable': true,
-	    'main': {
-	        '_ref': '${refid}2345',
-	        '_order': 0,
-	        '_title': 'My Sakai 2 sites'
-	    }
-	};
+    config.defaultprivstructure.structure0['sakai2sites'] =  {
+        '_ref': '${refid}2345',
+        '_title': 'My bSpace sites',
+        '_order': 2,
+        '_canEdit': true,
+        '_reorderOnly': true,
+        '_nonEditable': true,
+        'main': {
+            '_ref': '${refid}2345',
+            '_order': 0,
+            '_title': 'My Sakai 2 sites'
+        }
+    };
 
-	config.defaultprivstructure['${refid}2345'] = {
-	    'rows': [
-	        {
-	            'id': 'id8965114',
-	            'columns': [
-	                {
-	                    'width': 1,
-	                    'elements': [
-	                        {
-	                            'id': '${refid}2346',
-	                            'type': 'searchsakai2'
-	                        }
-	                    ]
-	                }
-	            ]
-	        }
-	    ]
-	};
+    config.defaultprivstructure['${refid}2345'] = {
+        'rows': [
+            {
+                'id': 'id8965114',
+                'columns': [
+                    {
+                        'width': 1,
+                        'elements': [
+                            {
+                                'id': '${refid}2346',
+                                'type': 'searchsakai2'
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
 
     // adds the My Sakai 2 Sites menu item to the Me menu
-	config.Navigation[0].subnav.splice(2,0, {
+    config.Navigation[0].subnav.splice(2,0, {
         'url': '/me#l=sakai2sites',
         'id': 'subnavigation_sakai2_link',
         'label': 'MY_SAKAI2_SITES'
