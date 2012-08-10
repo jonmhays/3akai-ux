@@ -513,7 +513,6 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
                     totalFeedEvents : _totalFeedEvents,
                     isInThreeColumnView : _isInThreeColumnView
                 });
-console.log('4 _isInThreeColumnView = ' + _isInThreeColumnView);
     
                 $(".ajax-content", root).html(rendered);
     
@@ -543,7 +542,6 @@ console.log('4 _isInThreeColumnView = ' + _isInThreeColumnView);
         };
 
         adjustWelcomeContentForColumnWidth = function () {
-console.log('3 _isInThreeColumnView = ' + _isInThreeColumnView);
             if (_isInThreeColumnView) {
                 //$(".cccalendarfeed_widget .info-box").addClass('three-column-width');
                 $(".cccalendarfeed_widget .info-box").css("width","80px");
