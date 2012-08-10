@@ -14,105 +14,97 @@
         ${title}
       </h1>
       <div id="cccalendarfeed_lectures">
-        <table id="agenda">
-        {if days.length === 0 && totalFeedEvents > 0}
-          <div class="info-box warning-box">
-            <h4 class="info-title">__MSG__ALL_FILTERED_TITLE__</h4>
-            <p>__MSG__ALL_FILTERED_MESSAGE__</p>
-          </div>
-        {/if}
-        {for day in days}
-            {var events = day[1]}
-                <tbody>
-                {for event in events}
-                    <tr class="agenda-row">
-                    {if event_index == 0}
+          <table id="agenda">
+          {if days.length === 0 && totalFeedEvents > 0}
+              <div class="info-box warning-box">
+                  <h4 class="info-title">__MSG__ALL_FILTERED_TITLE__</h4>
+                  <p>__MSG__ALL_FILTERED_MESSAGE__</p>
+              </div>
+          {/if}
+            {for day in days}
+                {var events = day[1]}
+                    <tbody>
+                    {for event in events}
+                        <tr class="agenda-row">
+                        {if event_index == 0}
+							<td 
+								class="date absolute"
+								title="${event.relDate}">${event.absDate}
+							</td>
+							<td>
+							</td>
+							</tr>
+							<tr>
+                        {/if}
                         {if isInThreeColumnView}
-                            <td 
-	                            class="date absolute"
-	                            title="${event.relDate}">${event.absDate}
-                            </td>
-                            <td>
-                            </td>
-                            </tr>
+                            <td class="time-narrow">${event.time}
+                        {else}
+                            <td class="time-wide">${event.time}</td>
+                        {/if}
+                        {if event.hasDetails}
+                            <td class="description">
+                                <div class="summary compact link expandable">
+                                    ${event.summary}
+                                </div>
+                        {else}
+                            <td class="description">
+                                <div class="summary">
+                                    ${event.summary}
+                                </div>
+                        {/if}
+                        <div class="full">
+                        {for para in event.description}
+                            <p>${para}</p>
+                        {/for}
+                        <table class="info-block">
+                        {if event.url}
                             <tr>
-                       {else}
-                            <td rowspan="${events.length}"
-                                class="date absolute"
-                                title="${event.relDate}">${event.absDate}
-                            </td>
-		                {/if}
-                    {/if}
-                    {if isInThreeColumnView}
-                        <td class="time-narrow">${event.time}
-                    {else}
-                        <td class="time-wide">${event.time}</td>
-                    {/if}
-                    {if event.hasDetails}
-	                    <td class="description">
-	                        <div class="summary compact link expandable">
-	                            ${event.summary}
-	                        </div>
-	                {else}
-	                    <td class="description">
-	                        <div class="summary">
-	                            ${event.summary}
-	                        </div>
-                    {/if}
-                    <div class="full">
-                    {for para in event.description}
-                        <p>${para}</p>
-                    {/for}
-                    <table class="info-block">
-                    {if event.url}
+                                <td>
+                                    <span class="label">
+                                    __MSG__EVENT_DETAIL_LABEL_URL__:&nbsp;
+                                    </span>
+                                </td>
+                                <td>
+                                    <a target="_blank" href="${event.url}"
+                                    class="value link">${event.url}</a>
+                                </td>
+                            </tr>
+                        {/if}
+                        {if event.location != null}
+                          <tr>
+                              <td>
+                                  <span class="label">
+                                  __MSG__EVENT_DETAIL_LABEL_LOCATION__:&nbsp;
+                                  </span>
+                              </td>
+                              <td>
+                                  <a target="_blank"
+                                  href="http://maps.google.co.uk/maps?q=${encodeURIComponent(event.location)}"
+                                 class="value link">${event.location}</a>
+                              </td>
+                          </tr>
+                        {/if}
+                        {if event.contact}
                         <tr>
-                            <td>
-                                <span class="label">
-                                __MSG__EVENT_DETAIL_LABEL_URL__:
-                                </span>
-                            </td>
-                            <td>
-                                <a target="_blank" href="${event.url}"
-                                class="value link">${event.url}</a>
-                            </td>
+                          <td>
+                            <span class="label">
+                              __MSG__EVENT_DETAIL_LABEL_CONTACT__:
+                            </span>
+                          </td>
+                          <td>
+                            <span class="value">${event.contact}</span>
+                          </td>
                         </tr>
-                    {/if}
-                    {if event.location != null}
-                      <tr>
-                          <td>
-                              <span class="label">
-                              __MSG__EVENT_DETAIL_LABEL_LOCATION__:
-                              </span>
-                          </td>
-                          <td>
-                              <a target="_blank"
-                              href="http://maps.google.co.uk/maps?q=${encodeURIComponent(event.location)}"
-                             class="value link">${event.location}</a>
-                          </td>
-                      </tr>
-                    {/if}
-                    {if event.contact}
-                    <tr>
-                      <td>
-                        <span class="label">
-                          __MSG__EVENT_DETAIL_LABEL_CONTACT__:
-                        </span>
-                      </td>
-                      <td>
-                        <span class="value">${event.contact}</span>
-                      </td>
-                    </tr>
-                    {/if}
-                  </table>
-
-                </div>
-              </td>
-            </tr>
-          {/for}
-          </tbody>
-        {/for}
-        </table>
-      </div>
+                        {/if}
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+              {/for}
+              </tbody>
+            {/for}
+            </table>
+          </div>
       </div>
  --></div>
 
@@ -131,6 +123,32 @@
              ${body}
         </div>
    --></div>
+   <div id="template_welcome_msg"><!--
+          <div class="info-box welcome-box">
+            <h4 class="info-title">__MSG__WELCOME_MESSAGE_TITLE__</h4>
+            <p>__MSG__WELCOME_MESSAGE_BODY1__</p>
+            {if isInThreeColumnView}
+                <textarea class="three-column-width" readonly="readonly">__MSG__WELCOME_MESSAGE_BODY2__</textarea>
+            {else}
+				{if isInTwoColumnView}
+					<textarea class="two-column-width" readonly="readonly">__MSG__WELCOME_MESSAGE_BODY2__</textarea>
+                {else}
+				    <textarea class="one-column-width" readonly="readonly">__MSG__WELCOME_MESSAGE_BODY2__</textarea>
+				{/if}
+			{/if}
+            <p>&nbsp;</p><p>__MSG__WELCOME_MESSAGE_BODY3__</p>
+            {if isInThreeColumnView}
+                <textarea class="three-column-width" readonly="readonly">__MSG__WELCOME_MESSAGE_BODY4__</textarea>
+            {else}
+				{if isInTwoColumnView}
+					<textarea class="two-column-width" readonly="readonly">__MSG__WELCOME_MESSAGE_BODY4__</textarea>
+                {else}
+				    <textarea class="one-column-width" readonly="readonly">__MSG__WELCOME_MESSAGE_BODY4__</textarea>
+				{/if}
+			{/if}
+            <p>&nbsp;</p><p>__MSG__WELCOME_MESSAGE_BODY5__</p>
+          </div>
+   --></div>
     </div>
     <!-- SETTINGS VIEW -->
     <div id="cccalendarfeed_settings" style="display:none;">
@@ -144,7 +162,7 @@
           </label>
           <input type="text" id="cccalendarfeed_settings_txtTitle"
                  name="rss_settings_txtTitle"
-                 class="required s3d-input-full-width" />
+                 class="s3d-input-full-width" />
 
           <label for="cccalendarfeed_settings_txtUrl"
                  class="s3d-input-label s3d-input-label-above">
@@ -152,7 +170,7 @@
           </label>
           <input type="text" id="cccalendarfeed_settings_txtUrl"
                  name="rss_settings_txtUrl"
-                 class="required s3d-input-full-width" />
+                 class="s3d-input-full-width" />
 
           <label class="s3d-input-label s3d-input-label-above">
             __MSG__SETTINGS_FORM_LABEL_CALENDAR_DISPLAY_RANGE__:

@@ -173,14 +173,17 @@ define(function () {
         }
 
         // Berkeley additions for US time
+        if (hour >= 12) {
+            meridiemSuffix = 'pm';
+        }
+
         if (hour > 12) {
             hour -= 12;
-            meridiemSuffix = 'pm';
-	    } else if (hour == 0) {
+ 	    } else if (hour == 0) {
 		    hour = 12;
 		}
  
-        return hour + ":" + minute + meridiemSuffix;
+       return hour + ":" + minute + meridiemSuffix;
     };
 
     /**
@@ -235,7 +238,21 @@ define(function () {
         return dayName + ", " + monthName + " " + dayNumber + ", " + yearName;
     };
 
-    /**
+	function padLeftWithZeros(value, length) {
+		var newString = new String(value);
+		while (newString.length < length)
+			newString = '0' + newString;
+		return newString;
+	};
+
+     var convertDateToQueryString = function (date) {
+        var dateNum = padLeftWithZeros(date.getDate() + 1, 2);
+        var monthNum = padLeftWithZeros(date.getMonth() + 1, 2);
+        var yearNum = date.getFullYear();
+        return yearNum + "-" + monthNum + "-" + dateNum;
+    };
+
+   /**
      * Add some days to a date.
      *
      * @param date
@@ -260,6 +277,7 @@ define(function () {
         buildAbsoluteDateString: buildAbsoluteDateString,
         buildVeryRelativeDateString: buildVeryRelativeDateString,
         buildRelativeDateString: buildRelativeDateString,
-        buildTimeString: buildTimeString
+        buildTimeString: buildTimeString,
+        convertDateToQueryString: convertDateToQueryString
     };
 });

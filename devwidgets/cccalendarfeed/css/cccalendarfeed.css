@@ -52,6 +52,12 @@
 	color: #9E8E1E;
 }
 
+.cccalendarfeed_widget .welcome-box {
+	background-color: #DBFFE8;
+	border: 1px solid #EEEAD3;
+	color: #226C3B;
+}
+
 .info-box .error_content {
 	padding: 0.5em 1.5em 1.5em 1.5em;
 }
@@ -224,7 +230,7 @@ table { margin: 0; }
 #cccalendarfeed_settings_form label.s3d-input-label-above, #cccalendarfeed_settings_form input {
 	float: none;
 	margin: 0 0 10px;
-	width: 98%;
+	width: 90%;
 }
 
 #cccalendarfeed_settings_form label.s3d-input-label-above {
@@ -294,11 +300,42 @@ table { margin: 0; }
 
 .cccalendarfeed_widget .date-slider-wrapper {
 	float: none;
-	width: 98%;	
+	width: 90%;	
 	padding: 5px;
 	margin: 5px 0 0;
 	clear: both;
 	border: 1px solid #666;
+}
+
+.cccalendarfeed_widget .one-column-width {
+	width: 685px;
+	background-color: #E4FFEE;
+	readonly: "readonly"
+}
+
+.cccalendarfeed_widget .two-column-width {
+	width: 300px;
+	background-color: #E4FFEE;
+	readOnly: true;
+}
+
+.cccalendarfeed_widget .three-column-width {
+	width: 180px;
+	height: 80px;
+	background-color: #E4FFEE;
+	readOnly: true;
+}
+
+.cccalendarfeed_widget .one-column-input {
+	width: 685px;
+}
+
+.cccalendarfeed_widget .two-column-input {
+	width: 300px;
+}
+
+.cccalendarfeed_widget .three-column-input {
+	width: 180px;
 }
 
 .loading {
