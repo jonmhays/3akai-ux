@@ -136,6 +136,15 @@
     font-weight: normal;
 }
 
+.s3d-tabs button {
+    color:white;
+    background-color: #2F74A6;
+}
+
+.s3d-tabs button:focus, .s3d-tabs button:hover {
+    color: white;
+}
+
 /* Force tabs to bottom of explore_navigation div */
 #explore_navigation .sectiontabs {
     margin-left: -8px;
