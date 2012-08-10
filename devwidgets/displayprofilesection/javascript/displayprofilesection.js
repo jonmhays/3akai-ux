@@ -357,7 +357,7 @@ require(["jquery", "sakai/sakai.api.core", "underscore"], function($, sakai, _) 
                             });
                             //additional checking for the about me section for the tags
                             if (noData && !editing && widgetData.sectionid === 'aboutme') {
-                                if (data["sakai:tags"].length) {
+                                if (data["sakai:tags"] && data["sakai:tags"].length) {
                                     noData = false;
                                 }
                             }
