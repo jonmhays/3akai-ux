@@ -110,8 +110,8 @@
 }
 
 
-.myb-cat-by-colleges .allcategories_item .allcategories_item_header,
-.myb-cat-by-campuslife .allcategories_item .allcategories_item_header {
+/* Blue gradient item headers rather than OAE black */
+.allcategories_item .allcategories_item_header {
     background: #012955 !important;
     background: -webkit-linear-gradient(top, #3b5d86, #012955) !important;
     background: -moz-linear-gradient(top, #3b5d86, #012955) !important;
@@ -141,6 +141,11 @@
     margin-left: -8px;
     position:relative;
     top:8px;
+}
+
+/* Suppress bottom border of what appears to be explore_navigation but is actually s3d-page-header */
+.s3d-page-header {
+    border-bottom: none;
 }
 
 /* Prevent FireFox from showing scrollbars in explore_navigation */
