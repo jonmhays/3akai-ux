@@ -37,9 +37,17 @@
 							<tr>
                         {/if}
                         {if isInThreeColumnView}
-                            <td class="time-narrow">${event.time}
+                            {if event.isAllDay}
+                                <td class="time-narrow">__MSG__ALL_DAY__
+                            {else}
+                                <td class="time-narrow">${event.time}
+                            {/if}
                         {else}
-                            <td class="time-wide">${event.time}</td>
+                            {if event.isAllDay}
+                                <td class="time-wide">__MSG__ALL_DAY__
+                            {else}
+                                <td class="time-wide">${event.time}
+                            {/if}
                         {/if}
                         {if event.hasDetails}
                             <td class="description">

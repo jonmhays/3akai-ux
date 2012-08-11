@@ -77,7 +77,8 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
             paragraphBreak,
             parseEventDates,
             rewriteHttpUrlToWebcal,
-            rewritePathIfNeeded,
+            transformedURL,
+            transformPathIfNeeded,
             rewriteWebcalUrlToHttp,
             runCalendarDataLoadTimeout,
             setStartAndEndDates,
@@ -117,6 +118,7 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
         var MIN_SLIDER_DATE = -61;
         var MAX_SLIDER_DATE = 61;
 
+        var ALL_DAY = translationOf("ALL_DAY");
         var ERROR_UNCONFIGURED_BODY = translationOf("ERROR_UNCONFIGURED_BODY");
         var ERROR_GETTING_STATE = translationOf("ERROR_GETTING_STATE");
         var ERROR_GETTING_FEED = translationOf("ERROR_GETTING_FEED");
@@ -183,6 +185,7 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
             // These fields may be undefined
             this.location = vevent.LOCATION;
             this.hasDetails = vevent.hasDetails;
+            this.isAllDay = vevent.isAllDay;
         }
 
         // /////////////////////
@@ -289,59 +292,74 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
         };
 
         fetchCalendarData = function () {
-            var success;
-            var failure;
 
             /**
-             * Expected URLs can be of this form:
-             * 'http://www.google.com/calendar/feeds/berkeley.edu_di5bkdrobcvs6hb19d0em2u2r4%40group.calendar.google.com/private-d26a6c6784dc83a309c482a7bdf987cd/basic'
+             * Expected URLs can have structures like this:
+             * 'http://www.google.com/calendar/feeds/ ... /private- ... /basic'
              * 
-             * They can be transformed by rewritePathIfNeeded as this:
-             * 'https://www.google.com/calendar/feeds/berkeley.edu_di5bkdrobcvs6hb19d0em2u2r4%40group.calendar.google.com/private-d26a6c6784dc83a309c482a7bdf987cd/full?alt=json'
+             * They can be transformed by transformPathIfNeeded into this:
+             * 'https://www.google.com/calendar/feeds/ ... /private-.. /full?alt=json'
+             * with filters for date range, etc. added.
              */
 
-            _feedUrl = rewritePathIfNeeded(_feedUrl);
+            setStartAndEndDates();
+            transformedURL = transformPathIfNeeded(_feedUrl);
             if (urlIsGoogleFeed) {
-                $.getJSON(_feedUrl, function(data){
-                    if (data.feed.entry) {
-                        calendarDataHasBeenLoaded = true;
+                var failure = function (data) {
+					// Addressed by calling runCalendarDataLoadTimeout();
+					// in doInit's Main view section
+                };
+                var success = function (data) {
+					$.getJSON(transformedURL, function(data){
+						if (data.feed.entry) {
+							
+							calendarDataHasBeenLoaded = true;
+	
+							entries = data.feed.entry;
+							_totalFeedEvents = entries.length;
+	   
+							if (_totalFeedEvents === null) { 
+								calendarDataFileIsNotLoading = true;
+							} else {
+								_totalFeedEvents = entries.length;
+								calendarDataFileIsNotLoading = false;
 
-                        entries = data.feed.entry;
-                        _totalFeedEvents = entries.length;
-   
-                        if (_totalFeedEvents === null) { 
-                            calendarDataFileIsNotLoading = true;
-                        } else {
-                            _totalFeedEvents = entries.length;
-                            calendarDataFileIsNotLoading = false;
-        
-                            // Convert event date strings into date objects
-                            $.each(entries, function(i, item){
-                                events[i] = {
-                                    SUMMARY : item.title.$t,
-                                    DTSTART : item.gd$when[0].startTime,
-                                    DTEND : item.gd$when[0].endTime,
-                                    DESCRIPTION : item.content.$t || null,
-                                    LOCATION : item.gd$where[0].valueString  || null,
-                                    URL : null,
-                                    startTime : new Date(item.gd$when[0].startTime),
-                                    hasDetails : false
-                                }
-    
-                                events[i].hasDetails =  ((events[i].DESCRIPTION != null) || (events[i].LOCATION != null));
-                                
-                            });
-    
-                            filterEvents(events);
+								// Convert event date strings into date objects
+								$.each(entries, function(i, item){
+									events[i] = {
+										SUMMARY : item.title.$t,
+										DTSTART : item.gd$when[0].startTime,
+										DTEND : item.gd$when[0].endTime,
+										DESCRIPTION : item.content.$t || null,
+										LOCATION : item.gd$where[0].valueString  || null,
+										URL : null,
+										startTime : new Date(item.gd$when[0].startTime),
+										hasDetails : false,
+										isAllDay : false
+									}
+		
+									if ((item.gd$when[0].startTime.length === 10) && (item.gd$when[0].endTime.length === 10)) {
+										events[i].isAllDay = true;
+										// Have All Day events appear on correct date, at top of each day.
+			                            events[i].startTime = new Date(events[i].startTime.getFullYear(), events[i].startTime.getMonth(), events[i].startTime.getDate() + 1);
+									}
 
-                        }
-                    }
-    
-                });
+									events[i].hasDetails =  ((events[i].DESCRIPTION != null) || (events[i].LOCATION != null));
+									
+								});
+		
+								filterEvents(events);
+	
+							}
+						}
+		
+					});
+				};
+
                 $.ajax({
-                    url : _feedUrl,
+                    url : transformedURL,
                     data : {
-                        feedurl : _feedUrl
+                        transformedURL : transformedURL
                     },
                     success : success,
                     failure : failure
@@ -397,10 +415,12 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
                                     URL : item.URL || null,
                                     startTime : new Date(item.DTSTART),
                                     endDate : new Date(item.DTEND),
-                                    hasDetails : false
-                                }
+                                    hasDetails : false,
+ 									isAllDay : false
+                               }
     
                                 events[i].hasDetails = ((events[i].DESCRIPTION != null) || (events[i].LOCATION != null) || (events[i].URL != null));
+
                             });
                                 
                             filterEvents(events);
@@ -543,10 +563,8 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
 
         adjustWelcomeContentForColumnWidth = function () {
             if (_isInThreeColumnView) {
-                //$(".cccalendarfeed_widget .info-box").addClass('three-column-width');
                 $(".cccalendarfeed_widget .info-box").css("width","80px");
             } else {
-                //$(".cccalendarfeed_widget .info-box").addClass('one-or-two-column-width');
                 $(".cccalendarfeed_widget .info-box").css("width","400px");
             }
         };
@@ -554,7 +572,6 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
         /**
          * Shows a welcome message on initial startup.
          */
-        //showWelcome = function (bodyHtml, postInsertHook) {
         showWelcome = function (postInsertHook) {
               var rendered = sakai.api.Util.TemplateRenderer("#template_welcome_msg", {
                   isInOneColumnView : _isInOneColumnView,
@@ -584,17 +601,6 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
             expanded.slideUp();
         };
 
-        /**
-         * Watch for value changes to the settings URL field in order to rewrite
-         * webcal:// urls to http://.
-         */
-        settingsFormUrlField.change(function (e) {
-            var urltext = $(e.target).val();
-            // Help people inputting webcal:// links by rewriting them to http
-            urltext = rewritePathIfNeeded(urltext);
-            $(e.target).val(urltext);
-        });
-
         rewriteWebcalUrlToHttp = function (url) {
             return url.replace(/^webcal:\/\//, "http://");
         };
@@ -608,7 +614,7 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
         };
 
         // The XML string that Google Calendar supplies needs to be edited to supply JSON.
-        rewritePathIfNeeded = function (url) {
+        transformPathIfNeeded = function (url) {
                         
             var googlePrefix1_pattern = /^http:\/\/www.google.com\//i;
             var googlePrefix2_pattern = /^https:\/\/www.google.com\//i;
@@ -620,7 +626,6 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
             var googleXMLSuffix_pattern = /\/basic$/i;
 
             var googlePrefix_replace = 'https://www.google.com/calendar/feeds/';
-            //var googleSuffix_replace = '/full?alt=json&orderby=starttime&singleevents=true&sortorder=ascending';
             var googleSuffix_replace = fullQuery;
                         
             if (url.match(googlePrefix1_pattern) || url.match(googlePrefix2_pattern)) {
@@ -647,17 +652,18 @@ require(['jquery', 'sakai/sakai.api.core', '/devwidgets/cccalendarfeed/lib/ccdat
 
         onWidgetSettingsStateAvailable = function (success, state) {
             var title, url;
-checkNumberOfColumns();
+            checkNumberOfColumns();
             if (success) {
-                title = state.title;
                 url = state.url;
-                if (state.daysFrom && state.daysTo) {
-                    _settingsDateRange = [ state.daysFrom, state.daysTo ];
-                }
-setStartAndEndDates();
+				title = state.title;
+				_title = title;
+                //if (state.daysFrom && state.daysTo) {
+                    // When Settings is shown next, sliders will be set to these values.
+                _settingsDateRange = [ state.daysFrom, state.daysTo ];
             } else {
                 alert(translationOf("SETTINGS_ERROR_FETCHING_WIDGET_STATE"));
             }
+
             settingsFormTitleField.val(title || "");
             settingsFormUrlField.val(url || "");
             isInitialLaunch = ((state.url) ? false : true);
@@ -708,13 +714,11 @@ setStartAndEndDates();
         settingsHandleRangeSlide = function (event, ui) {
             stopJSLintMoaningAboutThisUnusedVarWhichICanDoNothingAbout(event);
             _settingsDateRange = ui.values;
+
             var from = ui.values[0];
             var to = ui.values[1];
-
-            var fromString = !isFinite(from) ? "any date in the past"
-                    : dates.buildVeryRelativeDateString(from);
-            var toString = !isFinite(to) ? "any date in the future"
-                    : dates.buildVeryRelativeDateString(to);
+			var fromString = dates.buildVeryRelativeDateString(from);
+			var toString = dates.buildVeryRelativeDateString(to);
 
             $("#cccalendarfeed_settings_daterangeslider_label .from", root).text(
                 fromString
@@ -732,21 +736,47 @@ setStartAndEndDates();
             var endStartQuery = 'T00:00:00';
             var beginEndQuery = '&start-max=';
             var endEndQuery = 'T23:59:59';
-            var maxResults = 50;
+            // Range is from -61 to + 61 days = 122 days maximum
+            // 122 days * 8 events/ day = 976 events total.
+            var maxResults = 'max-results=1000';
+            var singleEvents = 'singleevents=true';
+            var addToStart;
+            var addToEnd;
 
-            startDate = (isFinite(_settingsDateRange[0]) ? dates.addDays(dates.today(), _settingsDateRange[0]) : null);
-            endDate = (isFinite(_settingsDateRange[1]) ? dates.addDays(dates.today(), _settingsDateRange[1] + 1) : null);
-            
-            startQuery = dates.convertDateToQueryString(startDate);
-            startQuery = beginStartQuery + startQuery + endStartQuery;
-            
-            endQuery = dates.convertDateToQueryString(endDate);
+	        if (_settingsDateRange && _settingsDateRange[0]) {
+                if (_settingsDateRange[0]) {
+                    addToStart = _settingsDateRange[0];
+                } else {
+	                addToStart = DEFAULT_DISPLAY_RANGE[0];
+                }
+                startDate = dates.addDays(dates.today(), addToStart);
+            } else {
+                addToStart = 0;
+                startDate = dates.today();
+            }
+
+	        if (_settingsDateRange && _settingsDateRange[1]) {
+                if (_settingsDateRange[1]) {
+                    addToEnd = _settingsDateRange[1];
+                } else {
+                    addToEnd = DEFAULT_DISPLAY_RANGE[1];
+                }
+                endDate = dates.addDays(dates.today(), addToEnd);
+            } else {
+                addToEnd = 0;
+                endDate = dates.today();
+            }
+
+           startQuery = dates.convertDateToQueryString(startDate);
+           startQuery = beginStartQuery + startQuery + endStartQuery;
+
+			endDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() + 1);
+			endQuery = dates.convertDateToQueryString(endDate);
             endQuery = beginEndQuery + endQuery + endEndQuery;
             
-            fullQuery = '/full?alt=json&singleevents=true&max-results=' + maxResults + '&' + startQuery + endQuery;
+            fullQuery = '/full?alt=json&' + startQuery + endQuery + '&' + maxResults + '&' + singleEvents;
 
         }
-        
         
         runCalendarDataLoadTimeout = function() {
             calendarDataFileIsNotLoading = false;
@@ -781,7 +811,6 @@ setStartAndEndDates();
 
             _isInThreeColumnView = false;
             calendarDataHasBeenLoaded = false;
-//setStartAndEndDates();
 
             if (showSettings) {
                 // Setup validation/save handler on save button

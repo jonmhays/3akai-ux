@@ -246,7 +246,7 @@ define(function () {
 	};
 
      var convertDateToQueryString = function (date) {
-        var dateNum = padLeftWithZeros(date.getDate() + 1, 2);
+        var dateNum = padLeftWithZeros(date.getDate(), 2);
         var monthNum = padLeftWithZeros(date.getMonth() + 1, 2);
         var yearNum = date.getFullYear();
         return yearNum + "-" + monthNum + "-" + dateNum;
@@ -262,7 +262,7 @@ define(function () {
      */
     var addDays = function (date, days) {
         var millis = date.getTime();
-        millis += days * DAY_MILLIS;
+        millis = millis + (days * DAY_MILLIS);
         return new Date(millis);
     };
 
