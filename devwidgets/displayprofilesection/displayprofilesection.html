@@ -205,7 +205,7 @@
             {if editing}
                 <select class="user_permissions" data-sakai-profile-section="${sectionid}" data-original-selection="${privacySetting}">
                     <option value="anonymous" {if privacySetting === 'anonymous'} selected="true" {/if}>${decryptPermission('anonymous')}</option>
-                    <option value="everybody" {if privacySetting === 'everyone'} selected="true" {/if}>${decryptPermission('everybody')}</option>
+                    <option value="everyone" {if privacySetting === 'everyone' || privacySetting === 'everybody'} selected="true" {/if}>${decryptPermission('everyone')}</option>
                     <option value="contacts" {if privacySetting === 'contacts'} selected="true" {/if}>${decryptPermission('contacts')}</option>
                     <option value="private" {if privacySetting === 'private'} selected="true" {/if}>${decryptPermission('private')}</option>
                 </select>

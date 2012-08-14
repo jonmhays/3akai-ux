@@ -69,7 +69,7 @@ define(["config/config", "config/env"], function(config) {
     config.defaultprivstructure.structure0.notifications = {
         "_title": "__MSG__MY_NOTIFICATIONS__",
         "_ref": "id1165301022",
-        "_order": 2,
+        "_order": 3,
         "_canEdit": true,
         "_canSubedit": true,
         "_nonEditable": true,
@@ -129,7 +129,7 @@ define(["config/config", "config/env"], function(config) {
     config.defaultprivstructure.structure0.dynlists = {
             "_title": "__MSG__MY_DYNAMIC_LISTS__",
             "_ref": "id1307386414",
-            "_order": 3,
+            "_order": 4,
             "_canEdit": true,
             "_canSubedit": true,
             "_nonEditable": true
@@ -269,573 +269,573 @@ define(["config/config", "config/env"], function(config) {
         by_org_divider: {
             divider: true,
             title: "Colleges & Schools",
-            cssClass: "myb-cat-by-org"
+            cssClass: "myb-cat-by-colleges"
         },
-        college_of_letters_science_arts_humanities: {
+        collegeoflettersscienceartshumanities: {
             title_prefix: "College of Letters & Science",
             title: "Arts & Humanities",
             children: {
-                ancient_history_mediterranean_archaeology: {
+                scienceartshumanitiesancienthistorymediterraneanarchaeology: {
                     title: "Ancient History & Mediterranean Archaeology"
                 },
-                art_history: {
+                scienceartshumanitiesarthistory: {
                     title: "Art History"
                 },
-                art_practice: {
+                scienceartshumanitiesartpractice: {
                     title: "Art Practice"
                 },
-                arts_research_center: {
+                scienceartshumanitiesartsresearchcenter: {
                     title: "Arts Research Center"
                 },
-                berkeley_language_center: {
+                scienceartshumanitiesberkeleylanguagecenter: {
                     title: "Berkeley Language Center"
                 },
-                berkeley_war_crimes_studies_center: {
+                scienceartshumanitiesberkeleywarcrimesstudiescenter: {
                     title: "Berkeley War Crimes Studies Center"
                 },
-                buddhist_studies: {
+                scienceartshumanitiesbuddhiststudies: {
                     title: "Buddhist Studies"
                 },
-                celtic_studies: {
+                scienceartshumanitiescelticstudies: {
                     title: "Celtic Studies"
                 },
-                center_for_new_music_audio_technologies: {
+                scienceartshumanitiescenterfornewmusicaudiotechnologies: {
                     title: "Center for New Music & Audio Technologies"
                 },
-                classics: {
+                scienceartshumanitiesclassics: {
                     title: "Classics"
                 },
-                comparative_literature: {
+                scienceartshumanitiescomparativeliterature: {
                     title: "Comparative Literature"
                 },
-                dutch_studies: {
+                scienceartshumanitiesdutchstudies: {
                     title: "Dutch Studies"
                 },
-                east_asian_languages_cultures: {
+                scienceartshumanitieseastasianlanguagescultures: {
                     title: "East Asian Languages & Cultures"
                 },
-                english: {
+                scienceartshumanitiesenglish: {
                     title: "English"
                 },
-                film_media: {
+                scienceartshumanitiesfilmmedia: {
                     title: "Film & Media"
                 },
-                french: {
+                scienceartshumanitiesfrench: {
                     title: "French"
                 },
-                german: {
+                scienceartshumanitiesgerman: {
                     title: "German"
                 },
-                italian_studies: {
+                scienceartshumanitiesitalianstudies: {
                     title: "Italian Studies"
                 },
-                jewish_studies: {
+                scienceartshumanitiesjewishstudies: {
                     title: "Jewish Studies"
                 },
-                medieval_studies: {
+                scienceartshumanitiesmedievalstudies: {
                     title: "Medieval Studies"
                 },
-                music: {
+                scienceartshumanitiesmusic: {
                     title: "Music"
                 },
-                near_eastern_studies: {
+                scienceartshumanitiesneareasternstudies: {
                     title: "Near Eastern Studies"
                 },
-                philosophy: {
+                scienceartshumanitiesphilosophy: {
                     title: "Philosophy"
                 },
-                rhetoric: {
+                scienceartshumanitiesrhetoric: {
                     title: "Rhetoric"
                 },
-                romance_languages_literature: {
+                scienceartshumanitiesromancelanguagesliterature: {
                     title: "Romance Languages & Literature"
                 },
-                scandinavian: {
+                scienceartshumanitiesscandinavian: {
                     title: "Scandinavian"
                 },
-                slavic_languages_and_literature: {
+                scienceartshumanitiesslaviclanguagesandliterature: {
                     title: "Slavic Languages and Literature"
                 },
-                south_southeast_asian_studies: {
+                scienceartshumanitiessouthsoutheastasianstudies: {
                     title: "South & Southeast Asian Studies"
                 },
-                spanish_portugese: {
+                scienceartshumanitiesspanishportugese: {
                     title: "Spanish & Portugese"
                 },
-                theater_dance_performance_studies: {
+                scienceartshumanitiestheaterdanceperformancestudies: {
                     title: "Theater, Dance & Performance Studies"
                 },
-                townsend_center_for_the_humanities: {
+                scienceartshumanitiestownsendcenterforthehumanities: {
                     title: "Townsend Center for the Humanities"
                 }
             }
 
         },
-        college_of_letters_science_biological_sciences: {
+        collegeofletterssciencebiologicalsciences: {
             title_prefix: "College of Letters & Science",
             title: "Biological Sciences",
             children: {
-                biochemistry_biophysics_structural_biology: {
+                sciencebiologicalsciencesbiochemistrybiophysicsstructuralbiology: {
                     title: "Biochemistry, Biophysics & Structural Biology"
                 },
-                cell_developmental_biology: {
+                sciencebiologicalsciencescelldevelopmentalbiology: {
                     title: "Cell & Developmental Biology"
                 },
-                genetics_geonomics_development: {
+                sciencebiologicalsciencesgeneticsgeonomicsdevelopment: {
                     title: "Genetics, Geonomics & Development"
                 },
-                immunology_pathogenesis: {
+                sciencebiologicalsciencesimmunologypathogenesis: {
                     title: "Immunology & Pathogenesis"
                 },
-                integrative_biology: {
+                sciencebiologicalsciencesintegrativebiology: {
                     title: "Integrative Biology"
                 },
-                molecular_and_cell_biology: {
+                sciencebiologicalsciencesmolecularandcellbiology: {
                     title: "Molecular and Cell Biology"
                 },
-                neurobiology: {
+                sciencebiologicalsciencesneurobiology: {
                     title: "Neurobiology"
                 },
-                physical_education: {
+                sciencebiologicalsciencesphysicaleducation: {
                     title: "Physical Education"
                 }
             }
         },
-        haas_school_of_business: {
+        haasschoolofbusiness: {
             title_prefix: "Haas School of",
             title: "Business",
             children: {
-                accounting: {
+                haasaccounting: {
                     title: "Accounting"
                 },
-                business_public_policy: {
+                haasbusinesspublicpolicy: {
                     title: "Business & Public Policy"
                 },
-                economic_analysis_policy: {
+                haaseconomicanalysispolicy: {
                     title: "Economic Analysis & Policy"
                 },
-                finance: {
+                haasfinance: {
                     title: "Finance"
                 },
-                management_of_organizations: {
+                haasmanagementoforganizations: {
                     title: "Management of Organizations"
                 },
-                marketing: {
+                haasmarketing: {
                     title: "Marketing"
                 },
-                operations_information_technology_management: {
+                haasoperationsinformationtechnologymanagement: {
                     title: "Operations & Information Technology Management"
                 },
-                real_estate: {
+                haasrealestate: {
                     title: "Real Estate"
                 }
             }
         },
-        college_of_chemistry: {
+        collegeofchemistry: {
             title_prefix: "College of",
             title: "Chemistry",
             children: {
-                chemical_biomolecular_engineering: {
+                collegeofchemistrychemicalbiomolecularengineering: {
                     title: "Chemical & Biomolecular Engineering"
                 },
-                chemistry: {
+                collegeofchemistrychemistry: {
                     title: "Chemistry"
                 },
-                materials_science_engineering: {
+                collegeofchemistrymaterialsscienceengineering: {
                     title: "Materials Science & Engineering"
                 },
-                nuclear_engineering: {
+                collegeofchemistrynuclearengineering: {
                     title: "Nuclear Engineering"
                 }
             }
         },
-        graduate_school_of_education: {
+        graduateschoolofeducation: {
             title_prefix: "Graduate School of",
             title: "Education",
             children: {
-                education: {
+                graduateschoolofeducationeducation: {
                     title: "Education"
                 },
-                science_mathematics_education: {
+                graduateschoolofeducationsciencemathematicseducation: {
                     title: "Science & Mathematics Education"
                 }
             }
         },
-        college_of_engineering: {
+        collegeofengineering: {
             title_prefix: "College of",
             title: "Engineering",
             children: {
-                applied_science_technology: {
+                collegeofengineeringappliedsciencetechnology: {
                     title: "Applied Science & Technology"
                 },
-                bioengineering: {
+                collegeofengineeringbioengineering: {
                     title: "Bioengineering"
                 },
-                civil_environmental_engineering: {
+                collegeofengineeringcivilenvironmentalengineering: {
                     title: "Civil & Environmental Engineering"
                 },
-                computational_genomic_biology: {
+                collegeofengineeringcomputationalgenomicbiology: {
                     title: "Computational & Genomic Biology "
                 },
-                computer_science: {
+                collegeofengineeringcomputerscience: {
                     title: "Computer Science"
                 },
-                electrical_engineering: {
+                collegeofengineeringelectricalengineering: {
                     title: "Electrical Engineering"
                 },
-                engineering: {
+                collegeofengineeringengineering: {
                     title: "Engineering"
                 },
-                industrial_engineering_operations_research: {
+                collegeofengineeringindustrialengineeringoperationsresearch: {
                     title: "Industrial Engineering & Operations Research"
                 },
-                materials_science_engineering: {
+                collegeofengineeringmaterialsscienceengineering: {
                     title: "Materials Science & Engineering "
                 },
-                mechanical_engineering: {
+                collegeofengineeringmechanicalengineering: {
                     title: "Mechanical Engineering"
                 },
-                nanoscale_science_engineering: {
+                collegeofengineeringnanoscalescienceengineering: {
                     title: "Nanoscale Science & Engineering"
                 },
-                ocean_engineering: {
+                collegeofengineeringoceanengineering: {
                     title: "Ocean Engineering"
                 }
             }
         },
-        college_of_environmental_design: {
+        collegeofenvironmentaldesign: {
             title_prefix: "College of",
             title: "Environmental Design",
             children: {
-                architecture: {
+                cedarchitecture: {
                     title: "Architecture"
                 },
-                city_regional_planning: {
+                cedcityregionalplanning: {
                     title: "City & Regional Planning"
                 },
-                environmental_design: {
+                cedenvironmentaldesign: {
                     title: "Environmental Design"
                 },
-                landscape_architecture: {
+                cedlandscapearchitecture: {
                     title: "Landscape Architecture"
                 },
-                visual_studies: {
+                cedvisualstudies: {
                     title: "Visual Studies"
                 }
             }
         },
-        school_of_information: {
+        schoolofinformation: {
             title_prefix: "School of",
             title: "Information",
             children: {
-                human_computer_interaction: {
+                schoolofinformationhumancomputerinteraction: {
                     title: "Human-Computer Interaction"
                 },
-                information_communication_technologies_development: {
+                schoolofinformationinformationcommunicationtechnologiesdevelopment: {
                     title: "Information & Communication Technologies & Development"
                 },
-                information_economics_policy: {
+                schoolofinformationinformationeconomicspolicy: {
                     title: "Information Economics & Policy"
                 },
-                information_law_policy: {
+                schoolofinformationinformationlawpolicy: {
                     title: "Information Law & Policy"
                 },
-                information_organization_retrieval: {
+                schoolofinformationinformationorganizationretrieval: {
                     title: "Information Organization & Retrieval"
                 },
-                information_systems_design: {
+                schoolofinformationinformationsystemsdesign: {
                     title: "Information Systems Design"
                 },
-                social_aspects_of_information: {
+                schoolofinformationsocialaspectsofinformation: {
                     title: "Social Aspects of Information"
                 }
             }
         },
-        interdepartmental_graduate_programs: {
+        interdepartmentalgraduateprograms: {
             title: "Interdepartmental Graduate Programs",
             children: {
-                comparative_biochemistry: {
+                interdepartmentalgraduateprogramscomparativebiochemistry: {
                     title: "Comparative Biochemistry"
                 },
-                energy_resources_group: {
+                interdepartmentalgraduateprogramsenergyresourcesgroup: {
                     title: "Energy & Resources Group"
                 }
             }
         },
-        graduate_school_of_journalism: {
+        graduateschoolofjournalism: {
             title_prefix: "Graduate School of",
             title: "Journalism",
             children: {
-                business_reporting: {
+                jschoolbusinessreporting: {
                     title: "Business Reporting"
                 },
-                documentary: {
+                jschooldocumentary: {
                     title: "Documentary"
                 },
-                environmental_science_journalism: {
+                jschoolenvironmentalsciencejournalism: {
                     title: "Environmental & Science Journalism"
                 },
-                international_reporting: {
+                jschoolinternationalreporting: {
                     title: "International Reporting"
                 },
-                investigative_reporting: {
+                jschoolinvestigativereporting: {
                     title: "Investigative Reporting"
                 },
-                magazine: {
+                jschoolmagazine: {
                     title: "Magazine"
                 },
-                new_media: {
+                jschoolnewmedia: {
                     title: "New Media"
                 },
-                newspaper: {
+                jschoolnewspaper: {
                     title: "Newspaper"
                 },
-                photojournalism: {
+                jschoolphotojournalism: {
                     title: "Photojournalism"
                 },
-                political_reporting: {
+                jschoolpoliticalreporting: {
                     title: "Political Reporting"
                 },
-                radio: {
+                jschoolradio: {
                     title: "Radio"
                 },
-                television: {
+                jschooltelevision: {
                     title: "Television"
                 }
             }
         },
-        school_of_law: {
+        schooloflaw: {
             title_prefix: "School of",
             title: "Law",
             children: {
-                business_law_economics: {
+                schooloflawbusinesslaweconomics: {
                     title: "Business, Law & Economics"
                 },
-                comparative_legal_studies: {
+                schooloflawcomparativelegalstudies: {
                     title: "Comparative Legal Studies"
                 },
-                environmental_law: {
+                schooloflawenvironmentallaw: {
                     title: "Environmental Law"
                 },
-                international_legal_studies: {
+                schooloflawinternationallegalstudies: {
                     title: "International Legal Studies"
                 },
-                law: {
+                schooloflawlaw: {
                     title: "Law"
                 },
-                law_technology: {
+                schooloflawlawtechnology: {
                     title: "Law & Technology"
                 },
-                legal_studies: {
+                schooloflawlegalstudies: {
                     title: "Legal Studies"
                 },
-                social_justice: {
+                schooloflawsocialjustice: {
                     title: "Social Justice"
                 }
             }
         },
-        college_of_letters_science_mathematical_physical_sciences: {
+        collegeofletterssciencemathematicalphysicalsciences: {
             title_prefix: "College of Letters & Science",
             title: "Mathematical & Physical Sciences",
             children: {
-                astronomy: {
+                mathematicalphysicalsciencesastronomy: {
                     title: "Astronomy"
                 },
-                earth_planetary_science: {
+                mathematicalphysicalsciencesearthplanetaryscience: {
                     title: "Earth & Planetary Science"
                 },
-                physics: {
+                mathematicalphysicalsciencesphysics: {
                     title: "Physics"
                 },
-                statistics: {
+                mathematicalphysicalsciencesstatistics: {
                     title: "Statistics"
                 }
             }
         },
-        college_of_natural_resources: {
+        collegeofnaturalresources: {
             title_prefix: "College of",
             title: "Natural Resources",
             children: {
-                agricultural_resource_economics: {
+                cnragriculturalresourceeconomics: {
                     title: "Agricultural & Resource Economics"
                 },
-                environmental_science_policy_management: {
+                cnrenvironmentalsciencepolicymanagement: {
                     title: "Environmental Science Policy & Management"
                 },
-                environmental_economics_policy: {
+                cnrenvironmentaleconomicspolicy: {
                     title: "Environmental Economics & Policy"
                 },
-                natural_resources: {
+                cnrnaturalresources: {
                     title: "Natural Resources"
                 },
-                nutritional_sciences_toxicology: {
+                cnrnutritionalsciencestoxicology: {
                     title: "Nutritional Sciences & Toxicology"
                 },
-                plant_microbial_biology: {
+                cnrplantmicrobialbiology: {
                     title: "Plant & Microbial Biology"
                 }
             }
         },
-        school_of_optometry: {
+        schoolofoptometry: {
             title_prefix: "School of",
             title: "Optometry",
             children: {
-                optometry: {
+                schoolofoptometryoptometry: {
                     title: "Optometry"
                 },
-                vision_science: {
+                schoolofoptometryvisionscience: {
                     title: "Vision Science"
                 }
             }
         },
-        school_of_public_health: {
+        schoolofpublichealth: {
             title_prefix: "School of",
             title: "Public Health",
             children: {
-                biostatistics: {
+                schoolofpublichealthbiostatistics: {
                     title: "Biostatistics"
                 },
-                environmental_health_sciences: {
+                schoolofpublichealthenvironmentalhealthsciences: {
                     title: "Environmental Health Sciences"
                 },
-                epidemiology: {
+                schoolofpublichealthepidemiology: {
                     title: "Epidemiology"
                 },
-                health_medical_services: {
+                schoolofpublichealthhealthmedicalservices: {
                     title: "Health & Medical Services"
                 },
-                health_social_behavior: {
+                schoolofpublichealthhealthsocialbehavior: {
                     title: "Health & Social Behavior"
                 },
-                health_policy_management: {
+                schoolofpublichealthhealthpolicymanagement: {
                     title: "Health Policy & Management"
                 },
-                health_services_policy_analysis: {
+                schoolofpublichealthhealthservicespolicyanalysis: {
                     title: "Health Services & Policy Analysis"
                 },
-                infectious_disease_vaccinology: {
+                schoolofpublichealthinfectiousdiseasevaccinology: {
                     title: "Infectious Disease & Vaccinology"
                 },
-                maternal_child_health: {
+                schoolofpublichealthmaternalchildhealth: {
                     title: "Maternal & Child Health"
                 },
-                public_health: {
+                schoolofpublichealthpublichealth: {
                     title: "Public Health"
                 },
-                public_health_nutrition: {
+                schoolofpublichealthpublichealthnutrition: {
                     title: "Public Health Nutrition"
                 }
             }
         },
-        goldman_school_of_public_policy: {
+        goldmanschoolofpublicpolicy: {
             title_prefix: "Goldman School of",
             title: "Public Policy",
             children: {
-                public_policy: {
+                publicpolicypublicpolicy: {
                     title: "Public Policy"
                 }
             }
         },
-        college_of_letters_science_social_sciences: {
+        collegeofletterssciencesocialsciences: {
             title_prefix: "College of Letters & Science",
             title: "Social Sciences",
             children: {
-                african_american_studies: {
+                sciencesocialsciencesafricanamericanstudies: {
                     title: "African American Studies"
                 },
-                anthropology: {
+                sciencesocialsciencesanthropology: {
                     title: "Anthropology"
                 },
-                demography: {
+                sciencesocialsciencesdemography: {
                     title: "Demography"
                 },
-                economics: {
+                sciencesocialscienceseconomics: {
                     title: "Economics"
                 },
-                ethnic_studies: {
+                sciencesocialsciencesethnicstudies: {
                     title: "Ethnic Studies"
                 },
-                gender_and_womens_studies: {
+                sciencesocialsciencesgenderandwomensstudies: {
                     title: "Gender and Women's Studies"
                 },
-                geography: {
+                sciencesocialsciencesgeography: {
                     title: "Geography"
                 },
-                history: {
+                sciencesocialscienceshistory: {
                     title: "History"
                 },
-                linguistics: {
+                sciencesocialscienceslinguistics: {
                     title: "Linguistics"
                 },
-                political_science: {
+                sciencesocialsciencespoliticalscience: {
                     title: "Political Science"
                 },
-                psychology: {
+                sciencesocialsciencespsychology: {
                     title: "Psychology"
                 },
-                sociology: {
+                sciencesocialsciencessociology: {
                     title: "Sociology"
                 }
             }
         },
-        school_of_social_welfare: {
+        schoolofsocialwelfare: {
             title_prefix: "School of",
             title: "Social Welfare",
             children: {
-                social_welfare: {
+                schoolofsocialwelfaresocialwelfare: {
                     title: "Social Welfare"
                 }
             }
         },
-        undergraduate_interdisciplinary_studies: {
+        undergraduateinterdisciplinarystudies: {
             title: "Undergraduate & Interdisciplinary Studies",
             children: {
-                american_studies: {
+                undergraduateinterdisciplinarystudiesamericanstudies: {
                     title: "American Studies"
                 },
-                asian_studies: {
+                undergraduateinterdisciplinarystudiesasianstudies: {
                     title: "Asian Studies"
                 },
-                cognitive_science: {
+                undergraduateinterdisciplinarystudiescognitivescience: {
                     title: "Cognitive Science"
                 },
-                creative_writing: {
+                undergraduateinterdisciplinarystudiescreativewriting: {
                     title: "Creative Writing"
                 },
-                college_writing_program: {
+                undergraduateinterdisciplinarystudiescollegewritingprogram: {
                     title: "College Writing Program"
                 },
-                development_studies: {
+                undergraduateinterdisciplinarystudiesdevelopmentstudies: {
                     title: "Development Studies"
                 },
-                disability_studies: {
+                undergraduateinterdisciplinarystudiesdisabilitystudies: {
                     title: "Disability Studies"
                 },
-                environmental_sciences: {
+                undergraduateinterdisciplinarystudiesenvironmentalsciences: {
                     title: "Environmental Sciences"
                 },
-                interdisciplinary_studies: {
+                undergraduateinterdisciplinarystudiesinterdisciplinarystudies: {
                     title: "Interdisciplinary Studies"
                 },
-                latin_american_studies: {
+                undergraduateinterdisciplinarystudieslatinamericanstudies: {
                     title: "Latin American Studies"
                 },
-                media_studies: {
+                undergraduateinterdisciplinarystudiesmediastudies: {
                     title: "Media Studies"
                 },
-                middle_eastern_studies: {
+                undergraduateinterdisciplinarystudiesmiddleeasternstudies: {
                     title: "Middle Eastern Studies"
                 },
-                military_affairs: {
+                undergraduateinterdisciplinarystudiesmilitaryaffairs: {
                     title: "Military Affairs"
                 },
-                peace_conflict_studies: {
+                undergraduateinterdisciplinarystudiespeaceconflictstudies: {
                     title: "Peace & Conflict Studies"
                 },
-                political_economy_of_industrial_societies: {
+                undergraduateinterdisciplinarystudiespoliticaleconomyofindustrialsocieties: {
                     title: "Political Economy of Industrial Societies"
                 },
-                religious_studies: {
+                undergraduateinterdisciplinarystudiesreligiousstudies: {
                     title: "Religious Studies"
                 }
             }
@@ -847,33 +847,37 @@ define(["config/config", "config/env"], function(config) {
         by_campus_divider: {
             divider: true,
             title: "Campus Life",
-            cssClass: "myb-cat-by-campus"
+            cssClass: "myb-cat-by-campuslife"
         },
-        campus_arts: {
+        campusacademic: {
+            title: "Academic",
+            children: {}
+        },
+        campusarts: {
             title: "Arts",
             children: {}
         },
-        campus_culture: {
+        campusculture: {
             title: "Culture",
             children: {}
         },
-        campus_political: {
+        campuspolitical: {
             title: "Political",
             children: {}
         },
-        campus_professional: {
+        campusprofessional: {
             title: "Professional",
             children: {}
         },
-        campus_sport: {
+        campussport: {
             title: "Sport",
             children: {}
         },
-        campus_religious: {
+        campusreligious: {
             title: "Religious",
             children: {}
         },
-        campus_service: {
+        campusservice: {
             title: "Service",
             children: {}
         }
@@ -1171,41 +1175,41 @@ define(["config/config", "config/env"], function(config) {
         'name': 'mysakai2'
     });
 
-	config.defaultprivstructure.structure0['sakai2sites'] =  {
-	    '_ref': '${refid}2345',
-	    '_title': 'My bSpace sites',
-	    '_order': 2,
-	    '_canEdit': true,
-	    '_reorderOnly': true,
-	    '_nonEditable': true,
-	    'main': {
-	        '_ref': '${refid}2345',
-	        '_order': 0,
-	        '_title': 'My Sakai 2 sites'
-	    }
-	};
+    config.defaultprivstructure.structure0['sakai2sites'] =  {
+        '_ref': '${refid}2345',
+        '_title': 'My bSpace sites',
+        '_order': 2,
+        '_canEdit': true,
+        '_reorderOnly': true,
+        '_nonEditable': true,
+        'main': {
+            '_ref': '${refid}2345',
+            '_order': 0,
+            '_title': 'My Sakai 2 sites'
+        }
+    };
 
-	config.defaultprivstructure['${refid}2345'] = {
-	    'rows': [
-	        {
-	            'id': 'id8965114',
-	            'columns': [
-	                {
-	                    'width': 1,
-	                    'elements': [
-	                        {
-	                            'id': '${refid}2346',
-	                            'type': 'searchsakai2'
-	                        }
-	                    ]
-	                }
-	            ]
-	        }
-	    ]
-	};
+    config.defaultprivstructure['${refid}2345'] = {
+        'rows': [
+            {
+                'id': 'id8965114',
+                'columns': [
+                    {
+                        'width': 1,
+                        'elements': [
+                            {
+                                'id': '${refid}2346',
+                                'type': 'searchsakai2'
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
 
     // adds the My Sakai 2 Sites menu item to the Me menu
-	config.Navigation[0].subnav.splice(2,0, {
+    config.Navigation[0].subnav.splice(2,0, {
         'url': '/me#l=sakai2sites',
         'id': 'subnavigation_sakai2_link',
         'label': 'MY_SAKAI2_SITES'

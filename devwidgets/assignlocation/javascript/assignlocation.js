@@ -23,7 +23,7 @@
  * /dev/lib/jquery/plugins/jqmodal.sakai-edited.js
  */
 
-require(['jquery', 'sakai/sakai.api.core', 'jquery-jstree'], function($, sakai) {
+require(['jquery', 'sakai/sakai.api.core', 'config/config_custom', 'jquery-jstree'], function($, sakai, sakai_conf) {
 
     /**
      * @name sakai_global.assignlocation
@@ -64,6 +64,25 @@ require(['jquery', 'sakai/sakai.api.core', 'jquery-jstree'], function($, sakai) 
         // Actions
         var $assignlocationSaveButton = $("#assignlocation_save_button");
         var $assignlocationActions = $("#assignlocation_actions");
+
+        /* BEGIN CalCentral Custom */
+
+        var addCalCentralLabels = function (){
+            var fullDirectory = sakai_conf.Directory;
+            var dividerTitle = '';
+            $.each(fullDirectory, function (key, item){
+                if (item.divider) {
+                    dividerTitle = item.title;
+                } else {
+                    if (dividerTitle) {
+                        $('#'+key, $assignlocationJSTreeContainer).before('<div class="ccd-list-divider">' + dividerTitle + '</div>');
+                        dividerTitle = ''; // zero out the array for the next pass
+                    }
+                }
+            });
+        };
+
+        /* END CalCentral Custom */
 
         var renderSelected = function() {
             var locations = {
@@ -124,6 +143,9 @@ require(['jquery', 'sakai/sakai.api.core', 'jquery-jstree'], function($, sakai) 
             addWidgetBinding();
             hash.w.show();
             renderSelected(true);
+            /* BEGIN CalCentral Custom */
+            addCalCentralLabels();
+            /* END CalCentral Custom */
         };
 
         var closeContainer = function(){

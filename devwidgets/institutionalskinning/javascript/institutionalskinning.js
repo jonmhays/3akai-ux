@@ -29,6 +29,13 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai) {
      * @param {Boolean} showSettings Show the settings of the widget or not
      */
     sakai_global.institutionalskinning = function (tuid, showSettings) {
+        var $rootel = $('#' + tuid);
+        var $institutionalskinning_logo = $('#institutionalskinning_logo', $rootel);
+
+        $institutionalskinning_logo.css('cursor', 'pointer');
+        $institutionalskinning_logo.on('click', function() {
+            document.location.href = '/index';
+        });
 
     };
 

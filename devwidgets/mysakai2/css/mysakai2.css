@@ -31,7 +31,9 @@
 .mysakai2_items_list {
     margin: 0;
 }
+
 #mysakai2_list{border-left:0px; border-right:0px;}
+
 .mysakai2_widget .fl-widget-content ul li a {
     vertical-align: top;
     padding-bottom: 0;
@@ -52,23 +54,13 @@
 }
 
 /* Start CalCentral Customization */
-.mysakai2_items_list {
-    margin: 0;
-}
 
-.mysakai2_widget .fl-widget-content {
-    max-height: 200px;
-    overflow: scroll;
-    padding: 0;
-}
-
-.mysakai2_widget .fl-widget-content ul li {
-    padding: 10px 0px 0px 36px;
+.mysakai2_widget .s3d-widget-content ul li {
     background:url(/devwidgets/mysakai2/images/bspace_icon.png) no-repeat scroll 10px 10px transparent;
 }
 
-.mysakai2_widget .fl-widget-content ul li a {
-    padding-bottom: 0;
+.mysakai2 .s3d-widget-footer {
+    margin-top: 0;
 }
 
 /* End CalCentral Customization */

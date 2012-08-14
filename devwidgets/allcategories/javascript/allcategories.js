@@ -38,6 +38,7 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai){
         var directory = sakai.config.Directory;
         var allcategoriesToRender = [];
 
+
         ////////////////////////////
         // CAROUSEL AND RENDERING //
         ////////////////////////////
@@ -67,7 +68,58 @@ require(["jquery", "sakai/sakai.api.core"], function($, sakai){
                 allcategoriesToRender.push(toplevel);
             });
             renderallcategories();
+
+            // Begin CalCentral
+            // Register event handler for tabs; initially hide Subjects and Campus Life
+            swapDivs();
+            $(".myb-cat-by-subject, .myb-cat-by-campuslife").hide();
+            // End CalCentral
         };
+
+        // Begin CalCentral custom - Handler to enable/disable sections on tab clicks
+        var swapDivs = function() {
+
+            // These DOM elements get shown/hidden via tab nav
+            var $ccColleges = $(".myb-cat-by-colleges");
+            var $ccSubjects = $(".myb-cat-by-subject");
+            var $ccCampusLife = $(".myb-cat-by-campuslife");
+
+            // The tabs themselves
+            var $tabColleges = $("button#tabColleges");
+            var $tabSubjects = $("button#tabSubjects");
+            var $tabCampusLife = $("button#tabCampusLife");
+
+            // Initially select the Colleges tab
+            $tabColleges.addClass('s3d-tabs-active');
+
+            // On each tab nav change, show/hide appropriate lists, turn off "selected"
+            // state for all tabs, and enable highlighting for current tab.
+
+            $($tabColleges).on('click', function() {
+                $ccColleges.show();
+                $ccSubjects.hide();
+                $ccCampusLife.hide();
+                $('button.s3d-link-button').removeClass('s3d-tabs-active');
+                $tabColleges.addClass('s3d-tabs-active');
+            });
+
+            $($tabSubjects).on('click', function() {
+                $ccColleges.hide();
+                $ccSubjects.show();
+                $ccCampusLife.hide();
+                $('button.s3d-link-button').removeClass('s3d-tabs-active');
+                $tabSubjects.addClass('s3d-tabs-active');
+            });
+
+            $($tabCampusLife).on('click', function() {
+                $ccColleges.hide();
+                $ccSubjects.hide();
+                $ccCampusLife.show();
+                $('button.s3d-link-button').removeClass('s3d-tabs-active');
+                $tabCampusLife.addClass('s3d-tabs-active');
+            });
+        };
+        // End CalCentral custom
 
         /**
          * Get a feed of content to display in the carousel

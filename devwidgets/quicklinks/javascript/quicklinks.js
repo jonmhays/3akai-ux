@@ -47,11 +47,11 @@ require(
 
         /** DOM elements. Configurable but be aware of validator dependencies. */
         var $widgetContainer =  $('#' + tuid);
-        var $linkTitleInput = $('#quicklinks-link-title' , $widgetContainer); //value attached to validator fn, remember to match.
+        var $linkTitleInput = $('#quicklinks-link-title', $widgetContainer); //value attached to validator fn, remember to match.
         var $linkUrlInput = $('#quicklinks-link-url', $widgetContainer); //value attached to validator fn, remember to match.
         var $saveLinkKeydownClass = $('.quicklinks-save-link-keydown', $widgetContainer);
         var $addEditPanel = $('.quicklinks_addedit_link_panel', $widgetContainer);
-        var $addEditPanelTitle = $('.quicklinks_addedit_link_panel_title' , $widgetContainer);
+        var $addEditPanelTitle = $('.quicklinks_addedit_link_panel_title', $widgetContainer);
         var $saveLinkButton = $('#quicklinks-savelink-button', $widgetContainer);
         var $addLinkButton = $('#quicklinks-addlink-button', $widgetContainer);
         var $saveLinkClickClass = $('.quicklinks-save-link-click', $widgetContainer);
@@ -84,7 +84,7 @@ require(
             var listedRoles = [ 'ALL' ];
 
             var strategies = {
-                'default': function(callback) {
+                'default': function (callback) {
                     sakai.api.User.getUser(sakai.data.me.user.userid, function(success, data) {
                         //for now, seems like OAE only supports 1 role per person.
                         var exists = data && data.basic && data.basic.elements && data.basic.elements.role &&
@@ -95,12 +95,12 @@ require(
                     });
                 },
 
-                'testing': function(callback) {
+                'testing': function (callback) {
                     listedRoles.push('academic_related_staff', 'academic_staff', 'research_staff');
                     callback(listedRoles);
                 },
 
-                'berkeley': function(callback) {
+                'berkeley': function (callback) {
                     sakai.api.User.getUser(sakai.data.me.user.userid, function(success, data) {
                         $.each(data.institutional.elements.role, function(key, value) {
                             if (key === 'value') {
@@ -110,13 +110,12 @@ require(
                         callback(listedRoles);
                     });
                 }
-            }
-
+            };
 
             if (strategies[lookupStrategy]) {
                 return strategies[lookupStrategy](callback);
             } else {
-                return strategies.default(callback);
+                return strategies['default'](callback);
             }
         };
 
@@ -129,6 +128,7 @@ require(
          */
         var setFilterLinksList = function(data) {
             filterLinksList = function(linkDataObj) {
+                var linkRoles = [];
                 var whiteListArr = data;
                 var ignoreIndex = defaultLinks.userSectionIndex || '-1';
                 var linkSections = linkDataObj.sections || {};
@@ -146,10 +146,10 @@ require(
 
                         value.links = valuesToRetain;
                     }
-                })
+                });
                 return linkDataObj;
             };
-        }
+        };
 
         /**
          * Default definition of filterLinksList. This could potentially be overwritten
@@ -161,7 +161,7 @@ require(
          */
         var filterLinksList = function(linkDataObj) {
             return linkDataObj;
-        }
+        };
 
         /**
          * Remaps the roles assigned by the system to the roles defined, mapped, and used
@@ -185,7 +185,7 @@ require(
 
             returnArray = _.union(returnArray, systemRoles);
             return returnArray;
-        }
+        };
 
         /**
          * Loading data for display of the widget. This will initially load the config.json file
@@ -333,7 +333,7 @@ require(
                             sakai.api.Util.notification.type.ERROR, false);
                     }
                 });
-            }
+            };
 
             /**
              * Call OAE's wrappper around the jquery Validator plugin function.
