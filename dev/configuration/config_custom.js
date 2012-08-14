@@ -28,7 +28,7 @@ define(["config/config", "config/env"], function(config) {
           description: "CAS_NOTE"
         }
     ];
-    config.Authentication.allowInternalAccountCreation = false;
+    config.Authentication.allowInternalAccountCreation = true;
     config.Authentication.hideLoginOn = [
         "/dev/create_new_account.html"
     ];
